@@ -1,6 +1,6 @@
 spring:
   application:
-    name: api
+    name: ${APP_NAME}
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -16,4 +16,7 @@ spring:
 server:
   servlet:
     context-path: /api
-
+access-token:
+  issuer: ${APP_NAME}
+  secret: ${ACCESS_TOKEN_SECRET}
+  expiration: 3600
