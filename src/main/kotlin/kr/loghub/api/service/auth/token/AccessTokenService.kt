@@ -1,12 +1,10 @@
-package kr.loghub.api.service.auth
+package kr.loghub.api.service.auth.token
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import com.auth0.jwt.exceptions.TokenExpiredException
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.DecodedJWT
-import kr.loghub.api.constant.ResponseMessage
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.entity.user.UserPrivacy
 import kr.loghub.api.entity.user.UserProfile
@@ -17,12 +15,11 @@ import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
 
 @Service
 class AccessTokenService(
-    @Value("\${access-token.issuer}") private val issuer: String,
-    @Value("\${access-token.expiration}") private val expiration: Long,
+    @Value("\${jwt.issuer}") private val issuer: String,
+    @Value("\${jwt.expiration}") private val expiration: Long,
     private val jwtAlgorithm: Algorithm,
     private val jwtVerifier: JWTVerifier,
 ) {
@@ -48,7 +45,7 @@ class AccessTokenService(
             .sign(jwtAlgorithm)
 
     fun generateAuthentication(token: String): UsernamePasswordAuthenticationToken {
-        val decodedToken = decodeToken(token);
+        val decodedToken = jwtVerifier.verify(token)
         return UsernamePasswordAuthenticationToken(
             generatePrincipal(decodedToken),
             null,
@@ -73,12 +70,4 @@ class AccessTokenService(
         claims["role"]!!.asString()
             .let { User.Role.valueOf(it) }
             .let { AuthorityUtils.commaSeparatedStringToAuthorityList(it.getAuthority()) }
-
-    private fun decodeToken(token: String): DecodedJWT {
-        val decodedToken = jwtVerifier.verify(token)
-        if (decodedToken.expiresAt.before(Date(System.currentTimeMillis()))) {
-            throw TokenExpiredException(ResponseMessage.EXPIRED_TOKEN, decodedToken.expiresAt.toInstant())
-        }
-        return decodedToken
-    }
 }

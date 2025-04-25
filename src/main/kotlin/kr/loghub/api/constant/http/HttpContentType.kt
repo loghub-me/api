@@ -1,4 +1,4 @@
-package kr.loghub.api.constant
+package kr.loghub.api.constant.http
 
 object HttpContentType {
     const val APPLICATION_JSON = "application/json"

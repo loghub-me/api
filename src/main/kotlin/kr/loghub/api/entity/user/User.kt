@@ -33,7 +33,7 @@ class User(
     @Embedded
     var privacy: UserPrivacy,
 
-    id: Long = 0L,
+    id: Long? = null,
 ) : PublicEntity(id), UserDetails {
     enum class Provider { LOCAL, GOOGLE, GITHUB }
     enum class Role : GrantedAuthority {

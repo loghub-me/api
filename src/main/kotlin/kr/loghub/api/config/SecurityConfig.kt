@@ -1,14 +1,14 @@
 package kr.loghub.api.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import kr.loghub.api.constant.ResponseMessage
-import kr.loghub.api.constant.ServerMessage
+import jakarta.servlet.DispatcherType
+import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.constant.message.ServerMessage
 import kr.loghub.api.entity.user.User
-import kr.loghub.api.filter.TokenValidationFilter
+import kr.loghub.api.filter.AccessTokenAuthenticationFilter
 import kr.loghub.api.handler.auth.CustomAccessDeniedHandler
 import kr.loghub.api.handler.auth.CustomAuthenticationEntryPoint
-import kr.loghub.api.repository.UserRepository
-import kr.loghub.api.service.auth.AccessTokenService
+import kr.loghub.api.repository.user.UserRepository
+import kr.loghub.api.service.auth.token.AccessTokenService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 class SecurityConfig {
@@ -31,7 +31,6 @@ class SecurityConfig {
         httpSecurity: HttpSecurity,
         userDetailsService: UserDetailsService,
         accessTokenService: AccessTokenService,
-        objectMapper: ObjectMapper,
         authenticationEntryPoint: CustomAuthenticationEntryPoint,
         accessDeniedHandler: CustomAccessDeniedHandler,
     ) = httpSecurity
@@ -42,14 +41,15 @@ class SecurityConfig {
         .formLogin { it.disable() }
         .oauth2Login { it.disable() }  // TODO: Implement OAuth2 login
         .addFilterBefore(
-            TokenValidationFilter(accessTokenService, objectMapper),
-            AnonymousAuthenticationFilter::class.java
+            AccessTokenAuthenticationFilter(accessTokenService),
+            UsernamePasswordAuthenticationFilter::class.java
         )
         .exceptionHandling {
             it.authenticationEntryPoint(authenticationEntryPoint)
             it.accessDeniedHandler(accessDeniedHandler)
         }
         .authorizeHttpRequests {
+            it.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
             it.requestMatchers(HttpMethod.GET, "/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/**").hasRole(User.Role.MEMBER.name)

@@ -1,4 +1,4 @@
-package kr.loghub.api.constant
+package kr.loghub.api.constant.message
 
 object ServerMessage {
     const val FAILED_BUILD_JWT_ALGORITHM = "Failed to build JWT Algorithm"
