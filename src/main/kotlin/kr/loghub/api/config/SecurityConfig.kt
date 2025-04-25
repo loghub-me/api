@@ -7,7 +7,10 @@ import kr.loghub.api.entity.user.User
 import kr.loghub.api.filter.AccessTokenAuthenticationFilter
 import kr.loghub.api.handler.auth.CustomAccessDeniedHandler
 import kr.loghub.api.handler.auth.CustomAuthenticationEntryPoint
+import kr.loghub.api.handler.auth.CustomAuthenticationFailureHandler
+import kr.loghub.api.handler.auth.CustomAuthenticationSuccessHandler
 import kr.loghub.api.repository.user.UserRepository
+import kr.loghub.api.service.auth.CustomOAuth2UserService
 import kr.loghub.api.service.auth.token.AccessTokenService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,6 +34,9 @@ class SecurityConfig {
         httpSecurity: HttpSecurity,
         userDetailsService: UserDetailsService,
         accessTokenService: AccessTokenService,
+        oAuth2UserService: CustomOAuth2UserService,
+        authenticationSuccessHandler: CustomAuthenticationSuccessHandler,
+        authenticationFailureHandler: CustomAuthenticationFailureHandler,
         authenticationEntryPoint: CustomAuthenticationEntryPoint,
         accessDeniedHandler: CustomAccessDeniedHandler,
     ) = httpSecurity
@@ -39,7 +45,12 @@ class SecurityConfig {
         .csrf { it.disable() }
         .httpBasic { it.disable() }
         .formLogin { it.disable() }
-        .oauth2Login { it.disable() }  // TODO: Implement OAuth2 login
+        .oauth2Login { it ->
+            it.authorizationEndpoint { it.baseUri("/oauth2/authorize") }
+            it.userInfoEndpoint { it.userService(oAuth2UserService) }
+            it.successHandler(authenticationSuccessHandler)
+            it.failureHandler(authenticationFailureHandler)
+        }
         .addFilterBefore(
             AccessTokenAuthenticationFilter(accessTokenService),
             UsernamePasswordAuthenticationFilter::class.java

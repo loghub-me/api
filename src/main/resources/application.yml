@@ -10,12 +10,24 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - read:user
+              - user:email
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
 server:
   servlet:
     context-path: /api
+client:
+  host: ${CLIENT_HOST}
 jwt:
   issuer: ${APP_NAME}
   secret: ${ACCESS_TOKEN_SECRET}
