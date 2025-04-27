@@ -24,4 +24,6 @@ object ResponseMessage {
     const val USER_NOT_FOUND = "사용자를 찾을 수 없습니다."
     const val USER_EMAIL_ALREADY_EXISTS = "이미 사용중인 이메일입니다."
     const val USER_USERNAME_ALREADY_EXISTS = "이미 사용중인 아이디입니다."
+
+    const val ARTICLE_NOT_FOUND = "아티클을 찾을 수 없습니다."
 }
