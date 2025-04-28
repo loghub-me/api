@@ -1,7 +1,9 @@
 package kr.loghub.api.entity.article
 
 import jakarta.persistence.*
+import kr.loghub.api.dto.article.PostArticleDTO
 import kr.loghub.api.entity.PublicEntity
+import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -30,9 +32,29 @@ class Article(
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "article_topics",
+        joinColumns = [JoinColumn(name = "article_id")],
+        inverseJoinColumns = [JoinColumn(name = "topic_id")]
+    )
+    var topics: MutableSet<Topic> = mutableSetOf(),
+
     @Column(nullable = false, length = 12)
     val writerUsername: String,  // for search(denormalization)
 
     @Column(nullable = false)
-    val topics: String,          // for search(denormalization)
-) : PublicEntity()
+    var topicsFlat: String,      // for search(denormalization)
+) : PublicEntity() {
+    fun update(requestBody: PostArticleDTO) {
+        this.slug = requestBody.slug
+        this.title = requestBody.title
+        this.content = requestBody.content
+        this.thumbnail = requestBody.thumbnail
+    }
+
+    fun updateTopics(topics: Set<Topic>) {
+        this.topics = topics.toMutableSet()
+        this.topicsFlat = topics.joinToString(",") { "${it.slug}:${it.name}" }
+    }
+}

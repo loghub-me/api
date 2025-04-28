@@ -1,11 +1,20 @@
 package kr.loghub.api.controller.article
 
+import jakarta.validation.Valid
+import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.article.ArticleDTO
 import kr.loghub.api.dto.article.ArticleDetailDTO
 import kr.loghub.api.dto.article.ArticleSort
+import kr.loghub.api.dto.article.PostArticleDTO
+import kr.loghub.api.dto.response.MessageResponseBody
+import kr.loghub.api.dto.response.RedirectResponseBody
+import kr.loghub.api.dto.response.ResponseBody
+import kr.loghub.api.entity.user.User
 import kr.loghub.api.service.article.ArticleService
 import org.springframework.data.domain.Page
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -28,17 +37,40 @@ class ArticleController(private val articleService: ArticleService) {
     }
 
     @PostMapping
-    fun postArticle() {
-        TODO()
+    fun postArticle(
+        @RequestBody @Valid requestBody: PostArticleDTO,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        val createdArticle = articleService.postArticle(requestBody, writer)
+        return RedirectResponseBody(
+            key = "/@${writer.username}/${createdArticle.slug}",
+            message = ResponseMessage.Article.POST_SUCCESS,
+            status = HttpStatus.CREATED,
+        ).toResponseEntity()
     }
 
     @PutMapping("/@{username}/{slug}")
-    fun editArticle(@PathVariable username: String, @PathVariable slug: String) {
-        TODO()
+    fun editArticle(
+        @PathVariable username: String, @PathVariable slug: String,
+        @RequestBody @Valid requestBody: PostArticleDTO, @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        val updatedArticle = articleService.editArticle(username, slug, requestBody, writer)
+        return RedirectResponseBody(
+            key = "@${writer.username}/${updatedArticle.slug}",
+            message = ResponseMessage.Article.EDIT_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
     }
 
     @DeleteMapping("/@{username}/{slug}")
-    fun deleteArticle(@PathVariable username: String, @PathVariable slug: String) {
-        TODO()
+    fun deleteArticle(
+        @PathVariable username: String, @PathVariable slug: String,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        articleService.deleteArticle(username, slug, writer)
+        return MessageResponseBody(
+            message = ResponseMessage.Article.DELETE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
     }
 }

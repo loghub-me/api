@@ -1,7 +1,9 @@
 package kr.loghub.api.exception.entity
 
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.exception.FieldException
 
-class EntityNotFoundException(
+class EntityNotFoundFieldException(
+    field: String,
     message: String = ResponseMessage.Default.NOT_FOUND
-) : RuntimeException(message)
+) : FieldException(field, message)

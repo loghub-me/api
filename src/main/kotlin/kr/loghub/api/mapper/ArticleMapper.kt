@@ -18,7 +18,7 @@ object ArticleMapper {
         thumbnail = article.thumbnail,
         writerUsername = article.writerUsername,
         stats = mapStats(article.stats),
-        topics = mapTopics(article.topics),
+        topics = mapTopics(article.topicsFlat),
         createdAt = article.createdAt.toString(),
         updatedAt = article.updatedAt.toString(),
     )
@@ -31,7 +31,7 @@ object ArticleMapper {
         thumbnail = article.thumbnail,
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
-        topics = mapTopics(article.topics),
+        topics = mapTopics(article.topicsFlat),
         createdAt = article.createdAt.toString(),
         updatedAt = article.updatedAt.toString(),
     )
