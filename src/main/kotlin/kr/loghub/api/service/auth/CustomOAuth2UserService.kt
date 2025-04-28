@@ -34,7 +34,7 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
             "provider" to User.Provider.GITHUB,
         )
 
-        else -> throw UnsupportedOperationException(ResponseMessage.UNSUPPORTED_OAUTH2_PROVIDER)
+        else -> throw UnsupportedOperationException(ResponseMessage.Auth.UNSUPPORTED_OAUTH2_PROVIDER)
     }
 
     fun findOrCreateUser(authentication: Authentication): User {

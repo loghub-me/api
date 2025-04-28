@@ -19,9 +19,9 @@ class RefreshService(
     fun refreshToken(token: UUID): TokenDTO {
         val refreshToken = refreshTokenRepository.findByToken(token)
             ?.also { refreshTokenRepository.delete(it) }
-            ?: throw BadCredentialsException(ResponseMessage.INVALID_TOKEN)
+            ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_TOKEN)
         val user = userRepository.findById(refreshToken.userId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.USER_NOT_FOUND) }
+            .orElseThrow { EntityNotFoundException(ResponseMessage.User.NOT_FOUND) }
         return tokenService.generateToken(user)
     }
 }

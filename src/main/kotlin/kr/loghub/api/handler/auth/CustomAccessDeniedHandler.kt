@@ -20,7 +20,7 @@ class CustomAccessDeniedHandler(private val objectMapper: ObjectMapper) : Access
     ) {
         val responseBody = MessageResponseBody(
             status = HttpStatus.FORBIDDEN,
-            message = ResponseMessage.FORBIDDEN
+            message = ResponseMessage.Auth.FORBIDDEN
         )
 
         response.status = HttpServletResponse.SC_FORBIDDEN

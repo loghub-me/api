@@ -22,7 +22,7 @@ class JoinController(private val joinService: JoinService) {
     fun requestJoin(@RequestBody @Valid requestBody: JoinRequestDTO): ResponseEntity<ResponseBody> {
         joinService.requestJoin(requestBody)
         return MessageResponseBody(
-            message = ResponseMessage.JOIN_REQUEST_SUCCESS,
+            message = ResponseMessage.Join.REQUEST_SUCCESS,
             status = HttpStatus.OK
         ).toResponseEntity()
     }
@@ -31,7 +31,7 @@ class JoinController(private val joinService: JoinService) {
     fun confirmJoin(@RequestBody @Valid requestBody: JoinConfirmDTO): ResponseEntity<ResponseBody> {
         val token = joinService.confirmJoin(requestBody)
         val responseBody = MessageResponseBody(
-            message = ResponseMessage.JOIN_CONFIRM_SUCCESS,
+            message = ResponseMessage.Join.CONFIRM_SUCCESS,
             status = HttpStatus.OK,
         )
         return ResponseEntity.status(responseBody.status)

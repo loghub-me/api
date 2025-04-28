@@ -13,7 +13,7 @@ class RefreshTokenService(private val refreshTokenRepository: RefreshTokenReposi
     fun generateToken(user: User) = refreshTokenRepository.save(
         RefreshToken(
             token = UUID.randomUUID(),
-            userId = user.id ?: throw EntityNotFoundException(ResponseMessage.USER_NOT_FOUND),
+            userId = user.id ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND),
         )
     ).token
 }

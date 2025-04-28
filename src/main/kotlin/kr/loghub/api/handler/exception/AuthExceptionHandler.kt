@@ -14,7 +14,7 @@ class AuthExceptionHandler {
     @ExceptionHandler(BadCredentialsException::class)
     fun handleException(e: BadCredentialsException): ResponseEntity<ResponseBody> {
         return MessageResponseBody(
-            message = e.message ?: ResponseMessage.BAD_CREDENTIALS,
+            message = e.message ?: ResponseMessage.Auth.BAD_CREDENTIALS,
             status = HttpStatus.BAD_REQUEST
         ).toResponseEntity()
     }

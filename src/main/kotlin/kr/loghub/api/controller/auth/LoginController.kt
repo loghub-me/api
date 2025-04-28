@@ -22,7 +22,7 @@ class LoginController(private val loginService: LoginService) {
     fun requestLogin(@RequestBody @Valid requestBody: LoginRequestDTO): ResponseEntity<ResponseBody> {
         loginService.requestLogin(requestBody)
         return MessageResponseBody(
-            message = ResponseMessage.LOGIN_REQUEST_SUCCESS,
+            message = ResponseMessage.Login.REQUEST_SUCCESS,
             status = HttpStatus.OK
         ).toResponseEntity()
     }
@@ -31,7 +31,7 @@ class LoginController(private val loginService: LoginService) {
     fun confirmLogin(@RequestBody @Valid requestBody: LoginConfirmDTO): ResponseEntity<ResponseBody> {
         val token = loginService.confirmLogin(requestBody)
         val responseBody = MessageResponseBody(
-            message = ResponseMessage.LOGIN_CONFIRM_SUCCESS,
+            message = ResponseMessage.Login.CONFIRM_SUCCESS,
             status = HttpStatus.OK,
         )
         return ResponseEntity.status(responseBody.status)

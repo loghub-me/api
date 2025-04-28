@@ -20,7 +20,7 @@ class CustomAuthenticationFailureHandler(private val objectMapper: ObjectMapper)
     ) {
         val responseBody = MessageResponseBody(
             status = HttpStatus.UNAUTHORIZED,
-            message = ResponseMessage.AUTHENTICATION_FAILED
+            message = ResponseMessage.Auth.AUTHENTICATION_FAILED
         )
 
         response.status = HttpServletResponse.SC_FORBIDDEN

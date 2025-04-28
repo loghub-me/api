@@ -21,7 +21,7 @@ class RefreshController(private val refreshService: RefreshService) {
     fun refreshToken(@CookieValue(HttpCookie.RefreshToken.NAME) refreshToken: UUID): ResponseEntity<ResponseBody> {
         val token = refreshService.refreshToken(refreshToken)
         val responseBody = MessageResponseBody(
-            message = ResponseMessage.TOKEN_REFRESH_SUCCESS,
+            message = ResponseMessage.Token.REFRESH_SUCCESS,
             status = HttpStatus.OK,
         )
         return ResponseEntity.status(responseBody.status)
