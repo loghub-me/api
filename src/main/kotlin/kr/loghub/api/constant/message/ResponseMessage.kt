@@ -50,8 +50,15 @@ object ResponseMessage {
         const val EDIT_SUCCESS = "아티클이 성공적으로 수정되었습니다!"
         const val DELETE_SUCCESS = "아티클이 성공적으로 삭제되었습니다!"
         const val PERMISSION_DENIED = "이 아티클에 대한 권한이 없습니다!"
-    }
 
+        object Comment {
+            const val NOT_FOUND = "아티클의 댓글을 찾을 수 없습니다."
+            const val POST_SUCCESS = "댓글이 성공적으로 등록되었습니다!"
+            const val DELETE_SUCCESS = "댓글이 성공적으로 삭제되었습니다!"
+            const val PERMISSION_DENIED = "이 댓글에 대한 권한이 없습니다!"
+        }
+    }
+    
     object Topic {
         const val NOT_FOUND = "토픽을 찾을 수 없습니다."
     }

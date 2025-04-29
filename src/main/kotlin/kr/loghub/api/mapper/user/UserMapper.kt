@@ -1,4 +1,4 @@
-package kr.loghub.api.mapper
+package kr.loghub.api.mapper.user
 
 import kr.loghub.api.dto.user.UserDTO
 import kr.loghub.api.entity.user.User

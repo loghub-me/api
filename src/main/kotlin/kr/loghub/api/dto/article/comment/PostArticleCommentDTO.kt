@@ -1,0 +1,28 @@
+package kr.loghub.api.dto.article.comment
+
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
+import kr.loghub.api.entity.article.Article
+import kr.loghub.api.entity.article.ArticleComment
+import kr.loghub.api.entity.user.User
+
+data class PostArticleCommentDTO(
+    @field:NotBlank(message = "내용은 필수 입력 항목입니다.")
+    @field:Size(max = 512, message = "내용은 512자 이내여야 합니다.")
+    val content: String,
+
+    @field:Min(1, message = "답변 대상이 잘못되었습니다.")
+    val parentId: Long?,
+
+    @field:Min(1, message = "멘션할 유저가 잘못되었습니다.")
+    val mentionId: Long?
+) {
+    fun toEntity(article: Article, parent: ArticleComment?, mention: User?, writer: User) = ArticleComment(
+        content = content,
+        parent = parent,
+        article = article,
+        mention = mention,
+        writer = writer,
+    )
+}

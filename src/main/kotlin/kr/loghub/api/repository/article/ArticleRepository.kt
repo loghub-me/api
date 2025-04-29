@@ -11,9 +11,6 @@ interface ArticleRepository : JpaRepository<Article, Long> {
         const val BY_COMPOSITE_KEY = "a.writerUsername = :username AND a.slug = :slug"
     }
 
-    @Query("SELECT a FROM Article a WHERE ecfts(:query)")
-    fun search(query: String): List<Article>
-
     @Query("$SELECT_ARTICLE WHERE $BY_COMPOSITE_KEY")
     fun findByCompositeKey(username: String, slug: String): Article?
 

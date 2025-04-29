@@ -32,6 +32,10 @@ class Article(
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
+    @OneToMany(mappedBy = "article", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    @OrderBy("id")
+    var comments: MutableList<ArticleComment> = mutableListOf(),
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "article_topics",
@@ -56,5 +60,13 @@ class Article(
     fun updateTopics(topics: Set<Topic>) {
         this.topics = topics.toMutableSet()
         this.topicsFlat = topics.joinToString(",") { "${it.slug}:${it.name}" }
+    }
+
+    fun incrementCommentCount() {
+        stats.commentCount++
+    }
+
+    fun decrementCommentCount() {
+        stats.commentCount--
     }
 }

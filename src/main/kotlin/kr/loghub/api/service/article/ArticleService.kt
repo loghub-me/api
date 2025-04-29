@@ -7,7 +7,7 @@ import kr.loghub.api.dto.article.PostArticleDTO
 import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
-import kr.loghub.api.mapper.ArticleMapper
+import kr.loghub.api.mapper.article.ArticleMapper
 import kr.loghub.api.repository.article.ArticleCustomRepository
 import kr.loghub.api.repository.article.ArticleRepository
 import kr.loghub.api.repository.topic.TopicRepository
