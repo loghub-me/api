@@ -12,14 +12,17 @@ import kr.loghub.api.handler.auth.CustomAuthenticationSuccessHandler
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.CustomOAuth2UserService
 import kr.loghub.api.service.auth.token.AccessTokenService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
 
 @Configuration
 class SecurityConfig {
@@ -39,10 +42,23 @@ class SecurityConfig {
         authenticationFailureHandler: CustomAuthenticationFailureHandler,
         authenticationEntryPoint: CustomAuthenticationEntryPoint,
         accessDeniedHandler: CustomAccessDeniedHandler,
+        @Value("\${client.host}") clientHost: String
     ) = httpSecurity
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .userDetailsService(userDetailsService)
         .csrf { it.disable() }
+        .cors {
+            it.configurationSource { _ ->
+                CorsConfiguration().apply {
+                    allowedOrigins = listOf(clientHost)
+                    allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    allowedHeaders = listOf("*")
+                    allowCredentials = true
+                    exposedHeaders = listOf(HttpHeaders.AUTHORIZATION)
+                    maxAge = 3600
+                }
+            }
+        }
         .httpBasic { it.disable() }
         .formLogin { it.disable() }
         .oauth2Login { it ->
