@@ -43,7 +43,7 @@ class ArticleController(private val articleService: ArticleService) {
     ): ResponseEntity<ResponseBody> {
         val createdArticle = articleService.postArticle(requestBody, writer)
         return RedirectResponseBody(
-            key = "/@${writer.username}/${createdArticle.slug}",
+            pathname = "/articles/@${writer.username}/${createdArticle.slug}",
             message = ResponseMessage.Article.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -56,7 +56,7 @@ class ArticleController(private val articleService: ArticleService) {
     ): ResponseEntity<ResponseBody> {
         val updatedArticle = articleService.editArticle(username, slug, requestBody, writer)
         return RedirectResponseBody(
-            key = "@${writer.username}/${updatedArticle.slug}",
+            pathname = "/articles/@${writer.username}/${updatedArticle.slug}",
             message = ResponseMessage.Article.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

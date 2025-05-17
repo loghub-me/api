@@ -30,8 +30,7 @@ class ArticleCommentController(private val articleCommentService: ArticleComment
     fun getReplies(
         @PathVariable articleId: Long,
         @PathVariable commentId: Long,
-
-        ): ResponseEntity<List<ArticleCommentDTO>> {
+    ): ResponseEntity<List<ArticleCommentDTO>> {
         val comments = articleCommentService.getReplies(articleId, commentId)
         return ResponseEntity.ok(comments)
     }

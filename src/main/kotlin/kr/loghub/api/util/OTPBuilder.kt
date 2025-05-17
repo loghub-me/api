@@ -3,7 +3,7 @@ package kr.loghub.api.util
 import java.security.SecureRandom
 
 object OTPBuilder {
-    private const val CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    private const val CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     private val secureRandom = SecureRandom()
 
     fun generateOTP(length: Int = 6): String {
