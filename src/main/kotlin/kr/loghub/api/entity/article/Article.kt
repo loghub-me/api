@@ -2,9 +2,11 @@ package kr.loghub.api.entity.article
 
 import jakarta.persistence.*
 import kr.loghub.api.dto.article.PostArticleDTO
+import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.entity.PublicEntity
 import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
+import kr.loghub.api.lib.jpa.TopicsFlatConverter
 import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
@@ -48,18 +50,22 @@ class Article(
     val writerUsername: String,  // for search(denormalization)
 
     @Column(nullable = false)
-    var topicsFlat: String,      // for search(denormalization)
+    @Convert(converter = TopicsFlatConverter::class)
+    var topicsFlat: List<TopicDTO>,  // for search(denormalization)
 ) : PublicEntity() {
     fun update(requestBody: PostArticleDTO) {
-        this.slug = requestBody.slug
         this.title = requestBody.title
         this.content = requestBody.content
         this.thumbnail = requestBody.thumbnail
     }
 
-    fun updateTopics(topics: Set<Topic>) {
-        this.topics = topics.toMutableSet()
-        this.topicsFlat = topics.joinToString(",") { "${it.slug}:${it.name}" }
+    fun updateSlug(slug: String) {
+        this.slug = slug
+    }
+
+    fun updateTopics(topics: List<TopicDTO>) {
+        this.topics.clear()
+        this.topicsFlat = topics
     }
 
     fun incrementCommentCount() {

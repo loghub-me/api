@@ -26,7 +26,7 @@ class ArticleService(
     private val topicRepository: TopicRepository,
 ) {
     companion object {
-        private const val PAGE_SIZE = 30
+        private const val PAGE_SIZE = 20
     }
 
     @Transactional(readOnly = true)
@@ -47,11 +47,10 @@ class ArticleService(
 
     @Transactional
     fun postArticle(requestBody: PostArticleDTO, writer: User): Article {
-        requestBody.slug = generateUniqueSlug(writer.username, requestBody.slug)
-
+        val slug = generateUniqueSlug(writer.username, requestBody.title)
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
-            .ifEmpty { throw EntityNotFoundException(ResponseMessage.Topic.NOT_FOUND) }
-        val article = requestBody.toEntity(writer, topics)
+
+        val article = requestBody.toEntity(slug, writer, topics)
         return articleRepository.save(article)
     }
 
@@ -60,12 +59,11 @@ class ArticleService(
         val article = articleRepository.findByCompositeKey(username, slug)
             ?.also { checkPermission(it.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED } }
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
-        val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
-            .ifEmpty { throw EntityNotFoundException(ResponseMessage.Topic.NOT_FOUND) }
-
-        requestBody.slug = generateUniqueSlug(writer.username, requestBody.slug)
+        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val topics = topicRepository.findDTOsBySlugIn(requestBody.topicSlugs)
 
         article.update(requestBody)
+        article.updateSlug(slug)
         article.updateTopics(topics)
         return article
     }
@@ -79,8 +77,13 @@ class ArticleService(
         articleRepository.delete(article)
     }
 
-    private fun generateUniqueSlug(username: String, baseSlug: String): String {
-        var slug = baseSlug
+    private fun generateUniqueSlug(username: String, title: String): String {
+        var slug = title
+            .lowercase()
+            .replace("%20", "-") // "%20" -> "-"
+            .replace(Regex("[^가-힣ㄱ-ㅎㅏ-ㅣa-z0-9-_]"), "-") // 허용 문자 외에는 "-"로 치환
+            .replace(Regex("-{2,}"), "-") // 연속된 "-"는 하나로
+            .replace(Regex("^-|-$"), "") // 앞뒤 "-" 제거
         while (articleRepository.existsByCompositeKey(username, slug)) {
             slug = "$slug-${UUID.randomUUID()}"
         }

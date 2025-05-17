@@ -3,6 +3,8 @@ package kr.loghub.api.entity.user
 import jakarta.persistence.*
 import kr.loghub.api.entity.PublicEntity
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.JdbcType
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -19,12 +21,14 @@ class User(
     @get:JvmName("getUsernameProp")  // to prevent JVM signature conflict
     var username: String,
 
-    @Column(nullable = false, length = 6)
-    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     val provider: Provider = Provider.LOCAL,
 
     @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     val role: Role = Role.MEMBER,
 
     @Embedded

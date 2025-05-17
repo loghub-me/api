@@ -14,6 +14,7 @@ import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,23 +31,27 @@ class ArticleCommentService(
     @Transactional(readOnly = true)
     fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> {
         check(articleRepository.existsById(articleId)) { ResponseMessage.Article.NOT_FOUND }
-        return articleCommentRepository.findByArticleId(
+        return articleCommentRepository.findByArticleIdAndParentIsNull(
             articleId = articleId,
-            pageable = PageRequest.of(page - 1, DEFAULT_PAGE_SIZE),
+            pageable = PageRequest.of(
+                page - 1,
+                DEFAULT_PAGE_SIZE,
+                Sort.by(ArticleComment::createdAt.name).descending()
+            ),
         ).map(ArticleCommentMapper::map)
     }
 
     @Transactional(readOnly = true)
     fun getReplies(articleId: Long, commentId: Long): List<ArticleCommentDTO> {
-        val comment = articleCommentRepository.findByArticleIdAndId(articleId, commentId)
-            ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
-        return comment.replies.map(ArticleCommentMapper::map)
+        check(articleCommentRepository.existsById(commentId)) { ResponseMessage.Article.Comment.NOT_FOUND }
+        return articleCommentRepository.findByArticleIdAndParentId(articleId, commentId)
+            .map(ArticleCommentMapper::map)
     }
 
     @Transactional
     fun postComment(articleId: Long, requestBody: PostArticleCommentDTO, writer: User): ArticleComment {
-        val (article, parent, mention) = findEntitiesToPost(articleId, requestBody)
-        val comment = requestBody.toEntity(article, parent, mention, writer)
+        val (article, parent) = findEntitiesToPost(articleId, requestBody.parentId)
+        val comment = requestBody.toEntity(article, parent, writer)
 
         article.incrementCommentCount()
         comment.parent?.incrementReplyCount()
@@ -66,18 +71,15 @@ class ArticleCommentService(
     }
 
     private fun findEntitiesToPost(
-        articleId: Long, requestBody: PostArticleCommentDTO
-    ): Triple<Article, ArticleComment?, User?> {
+        articleId: Long,
+        parentId: Long?,
+    ): Pair<Article, ArticleComment?> {
         val article = articleRepository.findById(articleId)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
-        val parent: ArticleComment? = requestBody.parentId?.let { parentId ->
+        val parent: ArticleComment? = parentId?.let { parentId ->
             articleCommentRepository.findById(parentId)
                 .orElseThrow { EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND) }
         }
-        val mention: User? = requestBody.mentionId?.let { mentionId ->
-            userRepository.findById(mentionId)
-                .orElseThrow { EntityNotFoundException(ResponseMessage.User.NOT_FOUND) }
-        }
-        return Triple(article, parent, mention)
+        return Pair(article, parent)
     }
 }

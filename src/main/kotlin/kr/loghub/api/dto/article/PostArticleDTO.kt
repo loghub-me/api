@@ -6,14 +6,10 @@ import jakarta.validation.constraints.Size
 import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
+import kr.loghub.api.lib.jpa.TopicsFlatConverter
 import kr.loghub.api.lib.validation.Trimmed
 
 data class PostArticleDTO(
-    @field:NotBlank(message = "슬러그는 필수 입력 항목입니다.")
-    @field:Size(max = 50, message = "슬러그는 50자 이내여야 합니다.")
-    @field:Trimmed
-    var slug: String,
-
     @field:NotBlank(message = "제목은 필수 입력 항목입니다.")
     @field:Size(max = 255, message = "제목은 255자 이내여야 합니다.")
     @field:Trimmed
@@ -31,7 +27,7 @@ data class PostArticleDTO(
     @field:Size(max = 10, message = "토픽은 최대 10개까지 선택할 수 있습니다.")
     val topicSlugs: List<String>,
 ) {
-    fun toEntity(writer: User, topics: Set<Topic>) = Article(
+    fun toEntity(slug: String, writer: User, topics: Set<Topic>) = Article(
         slug = slug,
         title = title,
         content = content,
@@ -39,6 +35,6 @@ data class PostArticleDTO(
         writer = writer,
         writerUsername = writer.username,
         topics = topics.toMutableSet(),
-        topicsFlat = topics.joinToString(",") { "${it.slug}:${it.name}" },
+        topicsFlat = TopicsFlatConverter.toFlat(topics),
     )
 }

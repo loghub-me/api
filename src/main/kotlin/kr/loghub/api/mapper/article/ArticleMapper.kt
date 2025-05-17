@@ -5,7 +5,6 @@ import kr.loghub.api.dto.article.ArticleDetailDTO
 import kr.loghub.api.dto.article.ArticleStatsDTO
 import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.article.ArticleStats
-import kr.loghub.api.mapper.topic.TopicMapper
 import kr.loghub.api.mapper.user.UserMapper
 import java.time.format.DateTimeFormatter
 
@@ -17,7 +16,7 @@ object ArticleMapper {
         thumbnail = article.thumbnail,
         writerUsername = article.writerUsername,
         stats = mapStats(article.stats),
-        topics = TopicMapper.mapTopicsFlat(article.topicsFlat),
+        topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
@@ -30,7 +29,7 @@ object ArticleMapper {
         thumbnail = article.thumbnail,
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
-        topics = TopicMapper.mapTopicsFlat(article.topicsFlat),
+        topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )

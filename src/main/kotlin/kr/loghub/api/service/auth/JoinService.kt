@@ -47,7 +47,7 @@ class JoinService(
 
     private fun checkJoinable(email: String, username: String) {
         checkExists(
-            User::username.name,
+            User::email.name,
             userRepository.existsByEmail(email),
         ) { ResponseMessage.User.EMAIL_ALREADY_EXISTS }
         checkExists(

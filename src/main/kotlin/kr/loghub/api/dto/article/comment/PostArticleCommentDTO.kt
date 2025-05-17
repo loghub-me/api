@@ -14,15 +14,12 @@ data class PostArticleCommentDTO(
 
     @field:Min(1, message = "답변 대상이 잘못되었습니다.")
     val parentId: Long?,
-
-    @field:Min(1, message = "멘션할 유저가 잘못되었습니다.")
-    val mentionId: Long?
 ) {
-    fun toEntity(article: Article, parent: ArticleComment?, mention: User?, writer: User) = ArticleComment(
+    fun toEntity(article: Article, parent: ArticleComment?, writer: User) = ArticleComment(
         content = content,
         parent = parent,
         article = article,
-        mention = mention,
+        mention = parent?.writer,
         writer = writer,
     )
 }
