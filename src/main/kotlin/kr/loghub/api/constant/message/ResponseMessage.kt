@@ -8,6 +8,7 @@ object ResponseMessage {
         const val INVALID_FIELD = "유효하지 않은 필드입니다."
         const val NOT_FOUND = "해당하는 정보를 찾을 수 없습니다."
         const val ALREADY_EXISTS = "이미 존재하는 정보입니다."
+        const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
     }
 
     object Page {
@@ -58,8 +59,15 @@ object ResponseMessage {
             const val PERMISSION_DENIED = "이 댓글에 대한 권한이 없습니다!"
         }
     }
-    
+
     object Topic {
         const val NOT_FOUND = "토픽을 찾을 수 없습니다."
+    }
+
+    object Star {
+        const val NOT_FOUND = "스타를 찾을 수 없습니다."
+        const val ALREADY_EXISTS = "이미 스타가 존재합니다."
+        const val ADD_SUCCESS = "스타가 성공적으로 추가되었습니다!"
+        const val DELETE_SUCCESS = "스타가 성공적으로 삭제되었습니다!"
     }
 }
