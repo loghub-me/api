@@ -11,6 +11,7 @@ import kr.loghub.api.mapper.article.ArticleCommentMapper
 import kr.loghub.api.repository.article.ArticleCommentRepository
 import kr.loghub.api.repository.article.ArticleRepository
 import kr.loghub.api.repository.user.UserRepository
+import kr.loghub.api.util.checkExists
 import kr.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -30,8 +31,10 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> {
-        check(articleRepository.existsById(articleId)) { ResponseMessage.Article.NOT_FOUND }
-        return articleCommentRepository.findByArticleIdAndParentIsNull(
+        checkExists(articleRepository.existsById(articleId)) {
+            ResponseMessage.Article.NOT_FOUND
+        }
+        return articleCommentRepository.findWithWriterByArticleIdAndParentIsNull(
             articleId = articleId,
             pageable = PageRequest.of(
                 page - 1,
@@ -43,8 +46,10 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getReplies(articleId: Long, commentId: Long): List<ArticleCommentDTO> {
-        check(articleCommentRepository.existsById(commentId)) { ResponseMessage.Article.Comment.NOT_FOUND }
-        return articleCommentRepository.findByArticleIdAndParentId(articleId, commentId)
+        checkExists(articleCommentRepository.existsById(commentId)) {
+            ResponseMessage.Article.Comment.NOT_FOUND
+        }
+        return articleCommentRepository.findWithWriterAndMentionByArticleIdAndParentId(articleId, commentId)
             .map(ArticleCommentMapper::map)
     }
 
@@ -59,8 +64,8 @@ class ArticleCommentService(
     }
 
     @Transactional
-    fun deleteComment(articleId: Long, commentId: Long, writer: User) {
-        val comment = articleCommentRepository.findByArticleIdAndId(articleId, commentId)
+    fun removeComment(articleId: Long, commentId: Long, writer: User) {
+        val comment = articleCommentRepository.findWithGraphByArticleIdAndId(articleId, commentId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
 
         checkPermission(comment.writer == writer) { ResponseMessage.Article.Comment.PERMISSION_DENIED }

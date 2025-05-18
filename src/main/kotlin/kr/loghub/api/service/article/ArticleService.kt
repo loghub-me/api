@@ -41,7 +41,7 @@ class ArticleService(
     }
 
     @Transactional(readOnly = true)
-    fun getArticle(username: String, slug: String) = articleRepository.findByCompositeKey(username, slug)
+    fun getArticle(username: String, slug: String) = articleRepository.findWithWriterByCompositeKey(username, slug)
         ?.let(ArticleMapper::mapDetail)
         ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
 
@@ -55,8 +55,8 @@ class ArticleService(
     }
 
     @Transactional
-    fun editArticle(username: String, slug: String, requestBody: PostArticleDTO, writer: User): Article {
-        val article = articleRepository.findByCompositeKey(username, slug)
+    fun editArticle(articleId: Long, requestBody: PostArticleDTO, writer: User): Article {
+        val article = articleRepository.findWithWriterById(articleId)
             ?.also { checkPermission(it.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED } }
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
         val slug = generateUniqueSlug(writer.username, requestBody.title)
@@ -69,8 +69,8 @@ class ArticleService(
     }
 
     @Transactional
-    fun deleteArticle(username: String, slug: String, writer: User) {
-        val article = articleRepository.findByCompositeKey(username, slug)
+    fun removeArticle(articleId: Long, writer: User) {
+        val article = articleRepository.findWithWriterById(articleId)
             ?.also { checkPermission(it.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED } }
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
 

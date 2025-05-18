@@ -49,12 +49,13 @@ class ArticleController(private val articleService: ArticleService) {
         ).toResponseEntity()
     }
 
-    @PutMapping("/@{username}/{slug}")
+    @PutMapping("/{id}")
     fun editArticle(
-        @PathVariable username: String, @PathVariable slug: String,
-        @RequestBody @Valid requestBody: PostArticleDTO, @AuthenticationPrincipal writer: User
+        @PathVariable id: Long,
+        @RequestBody @Valid requestBody: PostArticleDTO,
+        @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedArticle = articleService.editArticle(username, slug, requestBody, writer)
+        val updatedArticle = articleService.editArticle(id, requestBody, writer)
         return RedirectResponseBody(
             pathname = "/articles/@${writer.username}/${updatedArticle.slug}",
             message = ResponseMessage.Article.EDIT_SUCCESS,
@@ -62,12 +63,12 @@ class ArticleController(private val articleService: ArticleService) {
         ).toResponseEntity()
     }
 
-    @DeleteMapping("/@{username}/{slug}")
-    fun deleteArticle(
-        @PathVariable username: String, @PathVariable slug: String,
+    @DeleteMapping("/{id}")
+    fun removeArticle(
+        @PathVariable id: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        articleService.deleteArticle(username, slug, writer)
+        articleService.removeArticle(id, writer)
         return MessageResponseBody(
             message = ResponseMessage.Article.DELETE_SUCCESS,
             status = HttpStatus.OK,

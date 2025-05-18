@@ -11,7 +11,7 @@ import kr.loghub.api.exception.entity.EntityNotFoundFieldException
 import kr.loghub.api.repository.auth.LoginOTPRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.token.TokenService
-import kr.loghub.api.util.checkNotExists
+import kr.loghub.api.util.checkExists
 import kr.loghub.api.worker.MailSendWorker
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service
@@ -25,13 +25,14 @@ class LoginService(
 ) {
     @Transactional
     fun requestLogin(requestBody: LoginRequestDTO) {
-        checkNotExists(
+        checkExists(
             User::email.name,
             userRepository.existsByEmail(requestBody.email)
         ) { ResponseMessage.User.NOT_FOUND }
 
         val loginOTP = loginOTPRepository.save(requestBody.toEntity())
         val mailDTO = LoginOTPMailDTO(to = requestBody.email, otp = loginOTP.otp)
+        println("to: ${mailDTO.to}, otp: ${mailDTO.otp}")  // TODO: remove this
         mailSendWorker.addToQueue(mailDTO)
     }
 

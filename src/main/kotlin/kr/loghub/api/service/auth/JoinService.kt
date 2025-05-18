@@ -10,7 +10,7 @@ import kr.loghub.api.entity.user.User
 import kr.loghub.api.repository.auth.JoinOTPRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.token.TokenService
-import kr.loghub.api.util.checkExists
+import kr.loghub.api.util.checkAlreadyExists
 import kr.loghub.api.worker.MailSendWorker
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service
@@ -46,11 +46,11 @@ class JoinService(
     }
 
     private fun checkJoinable(email: String, username: String) {
-        checkExists(
+        checkAlreadyExists(
             User::email.name,
             userRepository.existsByEmail(email),
         ) { ResponseMessage.User.EMAIL_ALREADY_EXISTS }
-        checkExists(
+        checkAlreadyExists(
             User::username.name,
             userRepository.existsByUsername(username),
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }

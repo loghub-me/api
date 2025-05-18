@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import kr.loghub.api.dto.article.PostArticleDTO
 import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.entity.PublicEntity
+import kr.loghub.api.entity.common.RowMetadata
 import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.lib.jpa.TopicsFlatConverter
@@ -52,6 +53,9 @@ class Article(
     @Column(nullable = false)
     @Convert(converter = TopicsFlatConverter::class)
     var topicsFlat: List<TopicDTO>,  // for search(denormalization)
+
+    @Embedded
+    var rowMetadata: RowMetadata = RowMetadata(),
 ) : PublicEntity() {
     fun update(requestBody: PostArticleDTO) {
         this.title = requestBody.title
@@ -74,5 +78,9 @@ class Article(
 
     fun decrementCommentCount() {
         stats.commentCount--
+    }
+
+    fun incrementStarCount() {
+        stats.starCount++
     }
 }
