@@ -2,7 +2,7 @@ package kr.loghub.api.dto.auth
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
-import kr.loghub.api.entity.auth.otp.LoginOTP
+import kr.loghub.api.entity.auth.LoginOTP
 import kr.loghub.api.lib.validation.Trimmed
 import kr.loghub.api.util.OTPBuilder
 

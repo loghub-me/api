@@ -13,10 +13,12 @@ data class TokenDTO(
     val cookie
         get() = ResponseCookie
             .from(HttpCookie.RefreshToken.NAME, refreshToken.toString())
-            .domain(HttpCookie.RefreshToken.DOMAIN)
+            // TODO: Uncomment this when domain is set
+//            .domain(HttpCookie.RefreshToken.DOMAIN)
             .httpOnly(true)
             .secure(true)
             .sameSite(Cookie.SameSite.NONE.name)
+            .path("/")
             .maxAge(HttpCookie.RefreshToken.MAX_AGE)
             .build()
             .toString()

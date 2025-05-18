@@ -4,6 +4,7 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.response.FieldErrorsResponseBody
 import kr.loghub.api.dto.response.MessageResponseBody
 import kr.loghub.api.dto.response.ResponseBody
+import kr.loghub.api.exception.entity.EntityExistsException
 import kr.loghub.api.exception.entity.EntityExistsFieldException
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.exception.entity.EntityNotFoundFieldException
@@ -27,6 +28,14 @@ class EntityExceptionHandler {
         return FieldErrorsResponseBody(
             fieldErrors = mapOf(e.field to e.message),
             status = HttpStatus.NOT_FOUND
+        ).toResponseEntity()
+    }
+
+    @ExceptionHandler(EntityExistsException::class)
+    fun handleException(e: EntityExistsException): ResponseEntity<ResponseBody> {
+        return MessageResponseBody(
+            message = e.message ?: ResponseMessage.Default.ALREADY_EXISTS,
+            status = HttpStatus.CONFLICT
         ).toResponseEntity()
     }
 

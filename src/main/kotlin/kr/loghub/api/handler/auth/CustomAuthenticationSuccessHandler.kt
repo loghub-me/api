@@ -2,7 +2,7 @@ package kr.loghub.api.handler.auth
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import kr.loghub.api.entity.auth.otp.LoginOTP
+import kr.loghub.api.entity.auth.LoginOTP
 import kr.loghub.api.repository.auth.LoginOTPRepository
 import kr.loghub.api.service.auth.CustomOAuth2UserService
 import kr.loghub.api.util.OTPBuilder

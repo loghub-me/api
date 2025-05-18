@@ -1,4 +1,4 @@
-package kr.loghub.api.entity.auth.otp
+package kr.loghub.api.entity.auth
 
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.entity.user.UserPrivacy

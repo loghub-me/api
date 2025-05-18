@@ -1,4 +1,4 @@
-package kr.loghub.api.entity.auth.otp
+package kr.loghub.api.entity.auth
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash

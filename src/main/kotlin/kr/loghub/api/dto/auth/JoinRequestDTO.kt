@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
-import kr.loghub.api.entity.auth.otp.JoinOTP
+import kr.loghub.api.entity.auth.JoinOTP
 import kr.loghub.api.lib.validation.Trimmed
 import kr.loghub.api.util.OTPBuilder
 
