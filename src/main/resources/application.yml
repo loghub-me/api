@@ -24,6 +24,10 @@ spring:
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 server:
   servlet:
     context-path: /api

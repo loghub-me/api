@@ -18,7 +18,16 @@ class UserImageService(
     private val r2Client: S3Client,
     @Value("\${r2.bucket}") val bucket: String
 ) {
-    fun uploadFile(file: MultipartFile, uploader: User): String {
+    companion object {
+        val ALLOWED_IMAGE_TYPES = arrayOf(
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+        )
+    }
+
+    fun uploadImage(file: MultipartFile, uploader: User): String {
         checkField("file", isImageFile(file)) {
             ResponseMessage.Image.INVALID_IMAGE
         }
@@ -35,28 +44,24 @@ class UserImageService(
 
     private fun isImageFile(file: MultipartFile): Boolean {
         val contentType = file.contentType ?: return false
-        if (!contentType.startsWith("image/")) {
+        if (contentType !in ALLOWED_IMAGE_TYPES) {
             return false
         }
 
-        try {
+        return try {
             file.inputStream.use { input ->
-                val image = ImageIO.read(input) ?: return false
-                if (image.width <= 0 || image.height <= 0) {
-                    return false
-                }
+                val img = ImageIO.read(input) ?: return false
+                img.width > 0 && img.height > 0
             }
         } catch (_: IOException) {
-            return false
+            false
         }
-
-        return true
     }
 
     private fun createKey(file: MultipartFile, username: String): String {
         val original = file.originalFilename ?: "unnamed"
-        val sanitized = Paths.get(original).fileName.toString()
+        val baseName = Paths.get(original).fileName.toString()
             .replace(Regex("[^A-Za-z0-9._-]"), "_")
-        return "$username/${System.currentTimeMillis()}_$sanitized"
+        return "$username/${System.currentTimeMillis()}_${baseName}"
     }
 }

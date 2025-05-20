@@ -21,7 +21,7 @@ class ImageController(private val userImageService: UserImageService) {
         @RequestPart("file") file: MultipartFile,
         @AuthenticationPrincipal uploader: User
     ): ResponseEntity<ResponseBody> {
-        val uploadedPath = userImageService.uploadFile(file, uploader)
+        val uploadedPath = userImageService.uploadImage(file, uploader)
         return DataResponseBody(
             data = uploadedPath,
             status = HttpStatus.CREATED
