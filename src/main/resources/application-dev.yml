@@ -5,4 +5,4 @@ spring:
       schema-locations:
         - classpath:database/public-schema.sql
         - classpath:database/archive-schema.sql
-      data-locations: classpath:database/data.sql
+      data-locations: classpath:database/dummy-data.sql

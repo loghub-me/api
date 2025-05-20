@@ -70,4 +70,8 @@ object ResponseMessage {
         const val ADD_SUCCESS = "스타가 성공적으로 추가되었습니다!"
         const val DELETE_SUCCESS = "스타가 성공적으로 삭제되었습니다!"
     }
+
+    object Image {
+        const val INVALID_IMAGE = "유효하지 않은 이미지입니다."
+    }
 }

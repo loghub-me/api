@@ -36,6 +36,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.auth0:java-jwt:4.5.0")
     implementation("com.resend:resend-java:3.1.0")
+    implementation("software.amazon.awssdk:s3:2.29.44")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
