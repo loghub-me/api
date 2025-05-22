@@ -10,7 +10,6 @@ import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.article.ArticleCommentMapper
 import kr.loghub.api.repository.article.ArticleCommentRepository
 import kr.loghub.api.repository.article.ArticleRepository
-import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkExists
 import kr.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional
 class ArticleCommentService(
     private val articleRepository: ArticleRepository,
     private val articleCommentRepository: ArticleCommentRepository,
-    private val userRepository: UserRepository,
 ) {
     companion object {
         const val DEFAULT_PAGE_SIZE = 10

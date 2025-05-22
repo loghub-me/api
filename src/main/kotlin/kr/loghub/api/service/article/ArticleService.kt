@@ -2,6 +2,7 @@ package kr.loghub.api.service.article
 
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.article.ArticleDTO
+import kr.loghub.api.dto.article.ArticleDetailDTO
 import kr.loghub.api.dto.article.ArticleSort
 import kr.loghub.api.dto.article.PostArticleDTO
 import kr.loghub.api.entity.article.Article
@@ -11,6 +12,7 @@ import kr.loghub.api.mapper.article.ArticleMapper
 import kr.loghub.api.repository.article.ArticleCustomRepository
 import kr.loghub.api.repository.article.ArticleRepository
 import kr.loghub.api.repository.topic.TopicRepository
+import kr.loghub.api.service.cache.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
@@ -24,6 +26,7 @@ class ArticleService(
     private val articleRepository: ArticleRepository,
     private val articleCustomRepository: ArticleCustomRepository,
     private val topicRepository: TopicRepository,
+    private val cacheService: CacheService,
 ) {
     companion object {
         private const val PAGE_SIZE = 20
@@ -41,9 +44,12 @@ class ArticleService(
     }
 
     @Transactional(readOnly = true)
-    fun getArticle(username: String, slug: String) = articleRepository.findWithWriterByCompositeKey(username, slug)
-        ?.let(ArticleMapper::mapDetail)
-        ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+    fun getArticle(username: String, slug: String): ArticleDetailDTO {
+        val article = articleRepository.findWithWriterByCompositeKey(username, slug)
+            ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+        val cachedHTML = cacheService.findOrGenerateMarkdownCache(article.content)
+        return ArticleMapper.mapDetail(article, cachedHTML)
+    }
 
     @Transactional
     fun postArticle(requestBody: PostArticleDTO, writer: User): Article {

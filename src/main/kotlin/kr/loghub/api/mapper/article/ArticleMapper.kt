@@ -21,11 +21,14 @@ object ArticleMapper {
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
-    fun mapDetail(article: Article) = ArticleDetailDTO(
+    fun mapDetail(article: Article, contentHTML: String) = ArticleDetailDTO(
         id = article.id ?: TODO(),
         slug = article.slug,
         title = article.title,
-        content = article.content,
+        content = ArticleDetailDTO.ArticleContentDTO(
+            markdown = article.content,
+            html = contentHTML,
+        ),
         thumbnail = article.thumbnail,
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),

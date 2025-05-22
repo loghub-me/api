@@ -33,6 +33,9 @@ server:
     context-path: /api
 client:
   host: ${CLIENT_HOST}
+task-api:
+  host: ${TASK_API_HOST}
+  interval-token: ${TASK_API_INTERVAL_TOKEN}
 jwt:
   issuer: ${APP_NAME}
   secret: ${ACCESS_TOKEN_SECRET}

@@ -6,3 +6,5 @@ spring:
         - classpath:database/public-schema.sql
         - classpath:database/archive-schema.sql
       data-locations: classpath:database/dummy-data.sql
+  jpa:
+    show-sql: true

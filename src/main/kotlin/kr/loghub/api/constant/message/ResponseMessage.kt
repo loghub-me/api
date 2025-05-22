@@ -9,6 +9,7 @@ object ResponseMessage {
         const val NOT_FOUND = "해당하는 정보를 찾을 수 없습니다."
         const val ALREADY_EXISTS = "이미 존재하는 정보입니다."
         const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
+        const val INTERNAL_SERVER_ERROR = "알 수 없는 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     }
 
     object Page {
