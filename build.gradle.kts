@@ -22,6 +22,7 @@ repositories {
 }
 
 extra["springAiVersion"] = "1.0.0-M7"
+val springCloudVersion by extra("2024.0.1")
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -31,6 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.ai:spring-ai-starter-model-openai")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("io.github.openfeign.querydsl:querydsl-jpa:6.11")
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.9.10")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -50,6 +52,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.ai:spring-ai-bom:${property("springAiVersion")}")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
     }
 }
 
