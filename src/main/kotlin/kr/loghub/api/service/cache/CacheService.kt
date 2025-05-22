@@ -15,8 +15,6 @@ class CacheService(
 ) {
     companion object {
         private const val HASH_ALGORITHM = "SHA-256"
-        private val DIGEST = MessageDigest.getInstance(HASH_ALGORITHM)
-
         private val MARKDOWN_TTL = 7.days.toJavaDuration()
     }
 
@@ -31,6 +29,8 @@ class CacheService(
         return html
     }
 
-    private fun sha256(input: String): String =
-        DIGEST.digest(input.toByteArray()).joinToString("") { "%02x".format(it) }
+    private fun sha256(input: String): String = MessageDigest
+        .getInstance(HASH_ALGORITHM)
+        .digest(input.toByteArray())
+        .joinToString("") { "%02x".format(it) }
 }

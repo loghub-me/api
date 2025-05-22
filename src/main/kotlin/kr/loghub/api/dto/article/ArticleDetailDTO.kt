@@ -16,7 +16,7 @@ data class ArticleDetailDTO(
     val updatedAt: String,
 ) {
     data class ArticleContentDTO(
-        var markdown: String,
+        val markdown: String,
         val html: String,
     )
 }
