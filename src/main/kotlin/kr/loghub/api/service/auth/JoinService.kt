@@ -4,44 +4,53 @@ import jakarta.transaction.Transactional
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.auth.JoinConfirmDTO
 import kr.loghub.api.dto.auth.JoinRequestDTO
+import kr.loghub.api.dto.auth.token.JoinTokenDTO
 import kr.loghub.api.dto.auth.token.TokenDTO
 import kr.loghub.api.dto.mail.JoinOTPMailDTO
 import kr.loghub.api.entity.user.User
-import kr.loghub.api.repository.auth.JoinOTPRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.token.TokenService
+import kr.loghub.api.util.OTPBuilder
 import kr.loghub.api.util.checkAlreadyExists
 import kr.loghub.api.worker.MailSendWorker
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
 
 @Service
 class JoinService(
-    private val joinOTPRepository: JoinOTPRepository,
+    private val redisTemplate: RedisTemplate<String, JoinTokenDTO>,
     private val userRepository: UserRepository,
     private val mailSendWorker: MailSendWorker,
     private val tokenService: TokenService,
 ) {
+    companion object {
+        private const val OTP_LENGTH = 6
+        private val OTP_EXPIRE_MINUTES = 3.minutes.toJavaDuration()
+    }
+
     @Transactional
     fun requestJoin(requestBody: JoinRequestDTO) {
         checkJoinable(requestBody.email, requestBody.username)
 
-        val joinOTP = joinOTPRepository.save(requestBody.toEntity())
-        val mailDTO = JoinOTPMailDTO(to = requestBody.email, otp = joinOTP.otp)
-        mailSendWorker.addToQueue(mailDTO)
+        val otp = issueOTP(requestBody)
+        val mail = JoinOTPMailDTO(to = requestBody.email, otp = otp)
+        mailSendWorker.addToQueue(mail)
     }
 
     @Transactional
     fun confirmJoin(requestBody: JoinConfirmDTO): TokenDTO {
-        val joinOTP = joinOTPRepository.findByOtp(requestBody.otp)
+        val otp = redisTemplate.opsForValue().get("join_otp:${requestBody.email}")
+            ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
+
         when {
-            joinOTP == null -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
-            joinOTP.email != requestBody.email -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
-            else -> joinOTPRepository.delete(joinOTP)
+            requestBody.otp != otp.otp -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
+            else -> redisTemplate.delete("join_otp:${requestBody.email}")
         }
 
-        checkJoinable(joinOTP.email, joinOTP.username)
-        val joinedUser = userRepository.save(joinOTP.toUserEntity())
+        val joinedUser = userRepository.save(otp.toUserEntity())
         return tokenService.generateToken(joinedUser)
     }
 
@@ -54,5 +63,13 @@ class JoinService(
             User::username.name,
             userRepository.existsByUsername(username),
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
+    }
+
+
+    private fun issueOTP(requestBody: JoinRequestDTO): String {
+        val otp = OTPBuilder.generateOTP(OTP_LENGTH)
+        val dto = JoinTokenDTO(otp, requestBody.email, requestBody.username, requestBody.nickname)
+        redisTemplate.opsForValue().set("join_otp:${requestBody.email}", dto, OTP_EXPIRE_MINUTES)
+        return otp
     }
 }

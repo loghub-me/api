@@ -4,22 +4,25 @@ import kr.loghub.api.entity.user.User
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.days
+import kotlin.time.toJavaDuration
 
 @Service
-class RefreshTokenService(private val refreshTokenTemplate: RedisTemplate<String, Long>) {
+class RefreshTokenService(private val redisTemplate: RedisTemplate<String, String>) {
     companion object {
-        const val REFRESH_TOKEN_EXPIRE_TIME = 30L
+        val REFRESH_TOKEN_EXPIRE_TIME = 30.days.toJavaDuration()
     }
 
     fun generateToken(user: User): UUID {
         val token = UUID.randomUUID()
-        refreshTokenTemplate.opsForValue().set(
-            token.toString(),
-            user.id ?: TODO(),
+        redisTemplate.opsForValue().set(
+            "refresh_token:${token}",
+            user.id.toString(),
             REFRESH_TOKEN_EXPIRE_TIME,
-            TimeUnit.DAYS
         )
         return token
     }
+
+    fun revokeToken(token: String) =
+        redisTemplate.delete("refresh_token:${token}")
 }

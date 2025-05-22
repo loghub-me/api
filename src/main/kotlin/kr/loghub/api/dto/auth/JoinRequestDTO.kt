@@ -4,9 +4,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
-import kr.loghub.api.entity.auth.JoinOTP
 import kr.loghub.api.lib.validation.Trimmed
-import kr.loghub.api.util.OTPBuilder
 
 data class JoinRequestDTO(
     @field:Email(message = "이메일 형식이 아닙니다.")
@@ -25,11 +23,4 @@ data class JoinRequestDTO(
     @field:Pattern(regexp = "^[a-zA-Z0-9가-힣]*$", message = "닉네임은 영문 대소문자, 숫자, 한글로만 입력해주세요.")
     @field:Trimmed
     val nickname: String,
-) {
-    fun toEntity() = JoinOTP(
-        otp = OTPBuilder.generateOTP(),
-        email = email,
-        username = username,
-        nickname = nickname,
-    )
-}
+)

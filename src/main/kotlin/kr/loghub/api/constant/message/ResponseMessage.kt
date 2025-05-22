@@ -36,6 +36,10 @@ object ResponseMessage {
         const val CONFIRM_SUCCESS = "로그인이 성공적으로 완료되었습니다!"
     }
 
+    object Logout {
+        const val SUCCESS = "로그아웃이 성공적으로 완료되었습니다!"
+    }
+
     object Token {
         const val REFRESH_SUCCESS = "토큰이 갱신되었습니다!"
     }

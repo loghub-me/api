@@ -19,8 +19,8 @@ class CustomAuthenticationEntryPoint(private val objectMapper: ObjectMapper) : A
         authException: AuthenticationException
     ) {
         val responseBody = MessageResponseBody(
+            message = ResponseMessage.Auth.UNAUTHORIZED,
             status = HttpStatus.UNAUTHORIZED,
-            message = ResponseMessage.Auth.UNAUTHORIZED
         )
 
         response.status = HttpServletResponse.SC_UNAUTHORIZED

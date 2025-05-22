@@ -5,10 +5,7 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.constant.message.ServerMessage
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.filter.AccessTokenAuthenticationFilter
-import kr.loghub.api.handler.auth.CustomAccessDeniedHandler
-import kr.loghub.api.handler.auth.CustomAuthenticationEntryPoint
-import kr.loghub.api.handler.auth.CustomAuthenticationFailureHandler
-import kr.loghub.api.handler.auth.CustomAuthenticationSuccessHandler
+import kr.loghub.api.handler.auth.*
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.CustomOAuth2UserService
 import kr.loghub.api.service.auth.token.AccessTokenService
@@ -42,6 +39,7 @@ class SecurityConfig {
         authenticationFailureHandler: CustomAuthenticationFailureHandler,
         authenticationEntryPoint: CustomAuthenticationEntryPoint,
         accessDeniedHandler: CustomAccessDeniedHandler,
+        logoutSuccessHandler: CustomLogoutHandler,
         @Value("\${client.host}") clientHost: String
     ) = httpSecurity
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
@@ -66,6 +64,10 @@ class SecurityConfig {
             it.userInfoEndpoint { it.userService(oAuth2UserService) }
             it.successHandler(authenticationSuccessHandler)
             it.failureHandler(authenticationFailureHandler)
+        }
+        .logout {
+            it.addLogoutHandler(logoutSuccessHandler)
+            it.logoutUrl("/auth/logout")
         }
         .addFilterBefore(
             AccessTokenAuthenticationFilter(accessTokenService),

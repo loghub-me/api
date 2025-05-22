@@ -19,6 +19,12 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
         const val GITHUB = "github"
     }
 
+    private object OAuth2Attribute {
+        const val EMAIL = "email"
+        const val USERNAME = "username"
+        const val PROVIDER = "provider"
+    }
+
     @Transactional
     override fun loadUser(request: OAuth2UserRequest): OAuth2User {
         val registrationId = request.clientRegistration.registrationId;
@@ -29,9 +35,9 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
 
     private fun mapAttributes(registrationId: String, attributes: Map<String, Any>) = when (registrationId) {
         RegistrationId.GITHUB -> mapOf(
-            "email" to attributes["email"].toString(),
-            "username" to attributes["login"].toString(),
-            "provider" to User.Provider.GITHUB,
+            OAuth2Attribute.EMAIL to attributes["email"].toString(),
+            OAuth2Attribute.USERNAME to attributes["login"].toString(),
+            OAuth2Attribute.PROVIDER to User.Provider.GITHUB,
         )
 
         else -> throw UnsupportedOperationException(ResponseMessage.Auth.UNSUPPORTED_OAUTH2_PROVIDER)
@@ -45,9 +51,9 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
 
     private fun createUser(oAuth2User: OAuth2User) = userRepository.save(
         User(
-            email = oAuth2User.attributes["email"].toString(),
-            username = oAuth2User.attributes["username"].toString(),
-            provider = oAuth2User.attributes["provider"] as User.Provider,
+            email = oAuth2User.attributes[OAuth2Attribute.EMAIL].toString(),
+            username = oAuth2User.attributes[OAuth2Attribute.USERNAME].toString(),
+            provider = oAuth2User.attributes[OAuth2Attribute.PROVIDER] as User.Provider,
             profile = UserProfile(nickname = oAuth2User.attributes["username"].toString()),
             privacy = UserPrivacy(),
         )
