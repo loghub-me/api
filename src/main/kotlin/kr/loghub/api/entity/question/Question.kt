@@ -1,7 +1,7 @@
-package kr.loghub.api.entity.article
+package kr.loghub.api.entity.question
 
 import jakarta.persistence.*
-import kr.loghub.api.dto.article.PostArticleDTO
+import kr.loghub.api.dto.question.PostQuestionDTO
 import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.entity.PublicEntity
 import kr.loghub.api.entity.common.RowMetadata
@@ -9,13 +9,15 @@ import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.lib.jpa.TopicsFlatConverter
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.JdbcType
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 @Entity
-@Table(name = "articles")
+@Table(name = "questions")
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
-class Article(
+class Question(
     @Column(name = "slug", nullable = false, length = 100)
     var slug: String,
 
@@ -25,27 +27,28 @@ class Article(
     @Column(name = "content", nullable = false)
     var content: String,
 
-    @Column(name = "thumbnail", nullable = false)
-    var thumbnail: String,
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType::class)
+    var status: Status = Status.OPEN,
 
     @Embedded
-    var stats: ArticleStats = ArticleStats(),
+    var stats: QuestionStats = QuestionStats(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
-    @OneToMany(mappedBy = "article", cascade = [CascadeType.REMOVE], orphanRemoval = true)
-    @OrderBy("createdAt ASC")
-    var comments: MutableList<ArticleComment> = mutableListOf(),
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "article_topics",
-        joinColumns = [JoinColumn(name = "article_id")],
+        name = "question_topics",
+        joinColumns = [JoinColumn(name = "question_id")],
         inverseJoinColumns = [JoinColumn(name = "topic_id")]
     )
     var topics: MutableSet<Topic> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    @OrderBy("createdAt ASC")
+    var answers: MutableList<Answer> = mutableListOf(),
 
     @Column(nullable = false, length = 12)
     val writerUsername: String,  // for search(denormalization)
@@ -57,10 +60,12 @@ class Article(
     @Embedded
     var rowMetadata: RowMetadata = RowMetadata(),
 ) : PublicEntity() {
-    fun update(requestBody: PostArticleDTO) {
+    enum class Status { OPEN, CLOSED, DELETED }
+
+    fun update(requestBody: PostQuestionDTO) {
         this.title = requestBody.title
         this.content = requestBody.content
-        this.thumbnail = requestBody.thumbnail
+        this.status = requestBody.status
     }
 
     fun updateSlug(slug: String) {
@@ -70,17 +75,5 @@ class Article(
     fun updateTopics(topics: List<TopicDTO>) {
         this.topics.clear()
         this.topicsFlat = topics
-    }
-
-    fun incrementCommentCount() {
-        stats.commentCount++
-    }
-
-    fun decrementCommentCount() {
-        stats.commentCount--
-    }
-
-    fun incrementStarCount() {
-        stats.starCount++
     }
 }

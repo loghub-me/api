@@ -15,6 +15,7 @@ import kr.loghub.api.repository.topic.TopicRepository
 import kr.loghub.api.service.cache.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
+import kr.loghub.api.util.toSlug
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -84,12 +85,7 @@ class ArticleService(
     }
 
     private fun generateUniqueSlug(username: String, title: String): String {
-        var slug = title
-            .lowercase()
-            .replace("%20", "-") // "%20" -> "-"
-            .replace(Regex("[^가-힣ㄱ-ㅎㅏ-ㅣa-z0-9-_]"), "-") // 허용 문자 외에는 "-"로 치환
-            .replace(Regex("-{2,}"), "-") // 연속된 "-"는 하나로
-            .replace(Regex("^-|-$"), "") // 앞뒤 "-" 제거
+        var slug = title.toSlug()
         while (articleRepository.existsByCompositeKey(username, slug)) {
             slug = "$slug-${UUID.randomUUID()}"
         }

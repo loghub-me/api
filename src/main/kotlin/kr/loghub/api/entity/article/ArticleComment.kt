@@ -25,7 +25,7 @@ class ArticleComment(
     val article: Article,
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    @OrderBy("createdAt DESC")
+    @OrderBy("createdAt ASC")
     val replies: MutableList<ArticleComment> = mutableListOf(),
 
     @ManyToOne(fetch = FetchType.LAZY)

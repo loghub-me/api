@@ -3,6 +3,7 @@ package kr.loghub.api.mapper.article
 import kr.loghub.api.dto.article.ArticleDTO
 import kr.loghub.api.dto.article.ArticleDetailDTO
 import kr.loghub.api.dto.article.ArticleStatsDTO
+import kr.loghub.api.dto.common.ContentDTO
 import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.article.ArticleStats
 import kr.loghub.api.mapper.user.UserMapper
@@ -25,7 +26,7 @@ object ArticleMapper {
         id = article.id ?: TODO(),
         slug = article.slug,
         title = article.title,
-        content = ArticleDetailDTO.ArticleContentDTO(
+        content = ContentDTO(
             markdown = article.content,
             html = contentHTML,
         ),

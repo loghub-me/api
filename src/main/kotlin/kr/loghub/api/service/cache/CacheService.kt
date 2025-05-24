@@ -23,6 +23,12 @@ class CacheService(
         return redisTemplate.opsForValue().get(markdownKey) ?: generateMarkdownCache(markdownKey, markdown)
     }
 
+    fun findOrGenerateMarkdownCache(markdowns: List<String>): List<String> =
+        markdowns.map { markdown ->
+            val markdownKey = "markdown:${sha256(markdown)}"
+            redisTemplate.opsForValue().get(markdownKey) ?: generateMarkdownCache(markdownKey, markdown)
+        }
+
     private fun generateMarkdownCache(markdownKey: String, markdown: String): String {
         val html = taskAPIProxy.parseMarkdown(MarkdownParseRequest(markdown)).html
         redisTemplate.opsForValue().set(markdownKey, html, MARKDOWN_TTL)

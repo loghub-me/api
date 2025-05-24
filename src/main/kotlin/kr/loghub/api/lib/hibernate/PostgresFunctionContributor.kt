@@ -20,7 +20,7 @@ class PostgresFunctionContributor : FunctionContributor {
                 ARRAY[title, content, writer_username, topics_flat] &@~ pgroonga_condition(
                     ?1,
                     weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.CONTENT}, ${WEIGHTS.WRITER_USERNAME}, ${WEIGHTS.TOPICS_FLAT}],
-                    index_name => 'articles_search_idx'
+                    index_name => ?2
                 ) 
             """.trimIndent(),
             resolveType

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     name = "task-api",
-    url = "\${task-api.host}",
+    url = "\${task-api.host}/task-api",
     configuration = [TaskAPIConfiguration::class],
 )
 interface TaskAPIProxy {

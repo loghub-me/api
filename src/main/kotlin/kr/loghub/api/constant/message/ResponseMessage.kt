@@ -65,6 +65,25 @@ object ResponseMessage {
         }
     }
 
+    object Question {
+        const val NOT_FOUND = "아티클을 찾을 수 없습니다."
+        const val POST_SUCCESS = "아티클이 성공적으로 등록되었습니다!"
+        const val EDIT_SUCCESS = "아티클이 성공적으로 수정되었습니다!"
+        const val DELETE_SUCCESS = "아티클이 성공적으로 삭제되었습니다!"
+        const val PERMISSION_DENIED = "이 아티클에 대한 권한이 없습니다!"
+        const val STATUS_MUST_BE_OPEN = "질문 상태는 OPEN이어야 합니다!"
+        const val ALREADY_CLOSED = "이미 닫힌 질문입니다."
+    }
+
+    object Answer {
+        const val NOT_FOUND = "답변을 찾을 수 없습니다."
+        const val POST_SUCCESS = "답변이 성공적으로 등록되었습니다!"
+        const val ACCEPT_SUCCESS = "답변이 성공적으로 채택되었습니다!"
+        const val EDIT_SUCCESS = "답변이 성공적으로 수정되었습니다!"
+        const val DELETE_SUCCESS = "답변이 성공적으로 삭제되었습니다!"
+        const val CANNOT_POST_SELF = "자신의 질문에 답변을 작성할 수 없습니다."
+    }
+
     object Topic {
         const val NOT_FOUND = "토픽을 찾을 수 없습니다."
     }

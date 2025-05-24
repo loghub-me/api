@@ -1,18 +1,21 @@
-package kr.loghub.api.dto.article
+package kr.loghub.api.dto.question
 
 import kr.loghub.api.dto.common.ContentDTO
+import kr.loghub.api.dto.question.answer.AnswerDTO
 import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.dto.user.UserDTO
+import kr.loghub.api.entity.question.Question
 
-data class ArticleDetailDTO(
+data class QuestionDetailDTO(
     val id: Long,
     val slug: String,
     val title: String,
     val content: ContentDTO,
-    val thumbnail: String,
+    val status: Question.Status,
     val writer: UserDTO,
-    val stats: ArticleStatsDTO,
+    val stats: QuestionStatsDTO,
     val topics: List<TopicDTO>,
+    val answers: List<AnswerDTO>,
     val createdAt: String,
     val updatedAt: String,
 )
