@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS public.questions
     title           text                 NOT NULL,
     content         text                 NOT NULL,
     status          question_status_enum NOT NULL DEFAULT 'OPEN',
+    solved_at       timestamp(6),                             -- NULL if status is not SOLVED
     star_count      integer              NOT NULL DEFAULT 0,
     answer_count    integer              NOT NULL DEFAULT 0,
     trending_score  integer              NOT NULL DEFAULT 0,

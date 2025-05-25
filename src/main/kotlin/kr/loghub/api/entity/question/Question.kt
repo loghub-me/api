@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "questions")
@@ -30,6 +31,9 @@ class Question(
     @Enumerated
     @JdbcType(PostgreSQLEnumJdbcType::class)
     var status: Status = Status.OPEN,
+
+    @Column(name = "solved_at")
+    var solvedAt: LocalDateTime? = null,
 
     @Embedded
     var stats: QuestionStats = QuestionStats(),
@@ -60,7 +64,7 @@ class Question(
     @Embedded
     var rowMetadata: RowMetadata = RowMetadata(),
 ) : PublicEntity() {
-    enum class Status { OPEN, CLOSED, DELETED }
+    enum class Status { OPEN, CLOSED, SOLVED }
 
     fun update(requestBody: PostQuestionDTO) {
         this.title = requestBody.title
@@ -75,5 +79,10 @@ class Question(
     fun updateTopics(topics: List<TopicDTO>) {
         this.topics.clear()
         this.topicsFlat = topics
+    }
+
+    fun solved() {
+        this.status = Status.SOLVED
+        this.solvedAt = LocalDateTime.now()
     }
 }

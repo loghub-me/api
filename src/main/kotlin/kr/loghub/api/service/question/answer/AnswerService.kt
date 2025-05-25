@@ -38,6 +38,7 @@ class AnswerService(
         val answer = answerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Answer.NOT_FOUND)
         answer.accept()
+        question.solved()
         return answer
     }
 

@@ -19,7 +19,7 @@ class Answer(
     @Column(name = "accepted", nullable = false)
     var accepted: Boolean = false,
 
-    @Column(name = "accepted_at", nullable = false, updatable = false)
+    @Column(name = "accepted_at", nullable = false)
     var acceptedAt: LocalDateTime = LocalDateTime.now(),
 
     @ManyToOne(fetch = FetchType.LAZY)
