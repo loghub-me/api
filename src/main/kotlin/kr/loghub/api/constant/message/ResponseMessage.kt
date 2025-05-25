@@ -68,6 +68,7 @@ object ResponseMessage {
     object Question {
         const val NOT_FOUND = "질문을 찾을 수 없습니다."
         const val POST_SUCCESS = "질문이 성공적으로 등록되었습니다!"
+        const val CLOSE_SUCCESS = "질문이 성공적으로 닫혔습니다!"
         const val EDIT_SUCCESS = "질문이 성공적으로 수정되었습니다!"
         const val DELETE_SUCCESS = "질문이 성공적으로 삭제되었습니다!"
         const val PERMISSION_DENIED = "이 질문에 대한 권한이 없습니다!"

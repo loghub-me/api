@@ -42,7 +42,7 @@ class AnswerController(private val answerService: AnswerService) {
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
-
+    
     @PutMapping("/{answerId}")
     fun editAnswer(
         @PathVariable questionId: Long,

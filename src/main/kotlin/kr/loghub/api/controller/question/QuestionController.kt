@@ -49,6 +49,18 @@ class QuestionController(private val questionService: QuestionService) {
         ).toResponseEntity()
     }
 
+    @PostMapping("/{id}/close")
+    fun closeQuestion(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        questionService.closeQuestion(id, writer)
+        return MessageResponseBody(
+            message = ResponseMessage.Question.CLOSE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
+
     @PutMapping("/{id}")
     fun editQuestion(
         @PathVariable id: Long,

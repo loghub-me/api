@@ -1,6 +1,7 @@
 package kr.loghub.api.entity.question
 
 import jakarta.persistence.*
+import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.PostQuestionDTO
 import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.entity.PublicEntity
@@ -8,6 +9,7 @@ import kr.loghub.api.entity.common.RowMetadata
 import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.lib.jpa.TopicsFlatConverter
+import kr.loghub.api.util.checkField
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
@@ -34,6 +36,9 @@ class Question(
 
     @Column(name = "solved_at")
     var solvedAt: LocalDateTime? = null,
+
+    @Column(name = "closed_at")
+    var closedAt: LocalDateTime? = null,
 
     @Embedded
     var stats: QuestionStats = QuestionStats(),
@@ -82,7 +87,18 @@ class Question(
     }
 
     fun solved() {
+        checkField(this::status.name, this.status == Status.OPEN) {
+            ResponseMessage.Question.STATUS_MUST_BE_OPEN
+        }
         this.status = Status.SOLVED
         this.solvedAt = LocalDateTime.now()
+    }
+
+    fun close() {
+        checkField(this::status.name, this.status == Status.OPEN) {
+            ResponseMessage.Question.STATUS_MUST_BE_OPEN
+        }
+        this.status = Status.CLOSED
+        this.closedAt = LocalDateTime.now()
     }
 }

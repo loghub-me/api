@@ -69,6 +69,16 @@ class QuestionService(
     }
 
     @Transactional
+    fun closeQuestion(questionId: Long, writer: User): Question {
+        val question = questionRepository.findWithWriterById(questionId)
+            ?.also { checkPermission(it.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED } }
+            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+
+        question.close()
+        return question
+    }
+
+    @Transactional
     fun editQuestion(questionId: Long, requestBody: PostQuestionDTO, writer: User): Question {
         val question = questionRepository.findWithWriterById(questionId)
             ?.also { checkPermission(it.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED } }
