@@ -20,7 +20,7 @@ class Answer(
     var accepted: Boolean = false,
 
     @Column(name = "accepted_at", nullable = false)
-    var acceptedAt: LocalDateTime = LocalDateTime.now(),
+    var acceptedAt: LocalDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
