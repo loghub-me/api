@@ -28,9 +28,6 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-server:
-  servlet:
-    context-path: /api
 client:
   host: ${CLIENT_HOST}
 task-api:
