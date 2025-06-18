@@ -18,7 +18,12 @@ import java.util.*
 @RequestMapping("/auth/refresh")
 class RefreshController(private val refreshService: RefreshService) {
     @PostMapping
-    fun refreshToken(@CookieValue(HttpCookie.RefreshToken.NAME) refreshToken: UUID): ResponseEntity<ResponseBody> {
+    fun refreshToken(
+        @CookieValue(
+            HttpCookie.RefreshToken.NAME,
+            required = false
+        ) refreshToken: UUID?
+    ): ResponseEntity<ResponseBody> {
         val token = refreshService.refreshToken(refreshToken)
         val responseBody = MessageResponseBody(
             message = ResponseMessage.Token.REFRESH_SUCCESS,
