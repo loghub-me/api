@@ -34,10 +34,10 @@ class Question(
     @JdbcType(PostgreSQLEnumJdbcType::class)
     var status: Status = Status.OPEN,
 
-    @Column(name = "solved_at")
+    @Column(name = "solved_at", nullable = true)
     var solvedAt: LocalDateTime? = null,
 
-    @Column(name = "closed_at")
+    @Column(name = "closed_at", nullable = true)
     var closedAt: LocalDateTime? = null,
 
     @Embedded
@@ -74,7 +74,6 @@ class Question(
     fun update(requestBody: PostQuestionDTO) {
         this.title = requestBody.title
         this.content = requestBody.content
-        this.status = requestBody.status
     }
 
     fun updateSlug(slug: String) {

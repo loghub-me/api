@@ -1,10 +1,7 @@
 package kr.loghub.api.service.question
 
 import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.dto.question.PostQuestionDTO
-import kr.loghub.api.dto.question.QuestionDTO
-import kr.loghub.api.dto.question.QuestionDetailDTO
-import kr.loghub.api.dto.question.QuestionSort
+import kr.loghub.api.dto.question.*
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
@@ -34,12 +31,13 @@ class QuestionService(
     }
 
     @Transactional(readOnly = true)
-    fun searchQuestions(query: String, sort: QuestionSort, page: Int): Page<QuestionDTO> {
+    fun searchQuestions(query: String, sort: QuestionSort, filter: QuestionFilter, page: Int): Page<QuestionDTO> {
         checkField("page", page > 0) { ResponseMessage.Page.MUST_BE_POSITIVE }
 
         return questionCustomRepository.search(
             query = query.trim(),
             sort = sort,
+            filter = filter,
             pageable = PageRequest.of(page - 1, PAGE_SIZE)
         ).map(QuestionMapper::map)
     }
@@ -57,10 +55,6 @@ class QuestionService(
 
     @Transactional
     fun postQuestion(requestBody: PostQuestionDTO, writer: User): Question {
-        checkField(PostQuestionDTO::status.name, requestBody.status == Question.Status.OPEN) {
-            ResponseMessage.Question.STATUS_MUST_BE_OPEN
-        }
-
         val slug = generateUniqueSlug(writer.username, requestBody.title)
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 

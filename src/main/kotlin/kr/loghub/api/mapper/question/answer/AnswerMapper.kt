@@ -13,6 +13,7 @@ object AnswerMapper {
             html = contentHTML,
         ),
         accepted = answer.accepted,
+        writerUsername = answer.writer.username,
         createdAt = answer.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = answer.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )

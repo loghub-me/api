@@ -19,9 +19,6 @@ data class PostQuestionDTO(
     @field:Size(max = 25565, message = "내용은 25,565자 이내여야 합니다.")
     val content: String,
 
-    @field:NotNull(message = "상태는 필수 입력 항목입니다.")
-    val status: Question.Status,
-
     @field:NotNull(message = "토픽은 필수 입력 항목입니다.")
     @field:Size(max = 10, message = "토픽은 최대 10개까지 선택할 수 있습니다.")
     val topicSlugs: List<String>,
@@ -30,7 +27,6 @@ data class PostQuestionDTO(
         slug = slug,
         title = title,
         content = content,
-        status = status,
         writer = writer,
         writerUsername = writer.username,
         topics = topics.toMutableSet(),

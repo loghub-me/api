@@ -2,10 +2,7 @@ package kr.loghub.api.controller.question
 
 import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.dto.question.PostQuestionDTO
-import kr.loghub.api.dto.question.QuestionDTO
-import kr.loghub.api.dto.question.QuestionDetailDTO
-import kr.loghub.api.dto.question.QuestionSort
+import kr.loghub.api.dto.question.*
 import kr.loghub.api.dto.response.MessageResponseBody
 import kr.loghub.api.dto.response.RedirectResponseBody
 import kr.loghub.api.dto.response.ResponseBody
@@ -24,9 +21,10 @@ class QuestionController(private val questionService: QuestionService) {
     fun searchQuestions(
         @RequestParam(defaultValue = "") query: String,
         @RequestParam(defaultValue = "latest") sort: QuestionSort,
+        @RequestParam(defaultValue = "all") filter: QuestionFilter,
         @RequestParam(defaultValue = "1") page: Int,
     ): ResponseEntity<Page<QuestionDTO>> {
-        val foundQuestions = questionService.searchQuestions(query, sort, page)
+        val foundQuestions = questionService.searchQuestions(query, sort, filter, page)
         return ResponseEntity.ok(foundQuestions)
     }
 

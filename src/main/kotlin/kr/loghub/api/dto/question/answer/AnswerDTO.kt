@@ -6,6 +6,7 @@ data class AnswerDTO(
     val id: Long,
     val content: ContentDTO,
     val accepted: Boolean,
+    val writerUsername: String,
     val createdAt: String,
     val updatedAt: String,
 )
