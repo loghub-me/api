@@ -21,43 +21,51 @@ class AnswerService(
     @Transactional
     fun postAnswer(questionId: Long, requestBody: PostAnswerDTO, writer: User): Answer {
         val question = questionRepository.findWithWriterById(questionId)
-            ?.also { checkPermission(it.writer == writer) { ResponseMessage.Answer.CANNOT_POST_SELF } }
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+
+        checkPermission(question.writer == writer) { ResponseMessage.Answer.CANNOT_POST_SELF }
+
         val answer = requestBody.toEntity(question, writer)
         return answerRepository.save(answer)
     }
 
     @Transactional
     fun acceptAnswer(questionId: Long, answerId: Long, writer: User): Answer {
-        val question = questionRepository.findWithWriterById(questionId)
-            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+        val answer = findUpdatableAnswer(questionId, answerId, writer)
 
-        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
-        checkField("status", question.status == Question.Status.OPEN) { ResponseMessage.Question.ALREADY_CLOSED }
-
-        val answer = answerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
-            ?: throw EntityNotFoundException(ResponseMessage.Answer.NOT_FOUND)
         answer.accept()
-        question.solved()
+        answer.question.solved()
         return answer
     }
 
     @Transactional
     fun editAnswer(questionId: Long, answerId: Long, requestBody: PostAnswerDTO, writer: User): Answer {
-        val answer = answerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
-            ?.also { checkPermission(it.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED } }
-            ?: throw EntityNotFoundException(ResponseMessage.Answer.NOT_FOUND)
-
+        val answer = findUpdatableAnswer(questionId, answerId, writer)
         answer.update(requestBody)
         return answer
     }
 
     @Transactional
     fun removeAnswer(questionId: Long, answerId: Long, writer: User) {
-        val answer = answerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
-            ?.also { checkPermission(it.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED } }
-            ?: throw EntityNotFoundException(ResponseMessage.Answer.NOT_FOUND)
-
+        val answer = findUpdatableAnswer(questionId, answerId, writer)
         answerRepository.delete(answer)
+    }
+
+    private fun findUpdatableAnswer(questionId: Long, answerId: Long, writer: User): Answer {
+        val answer = answerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
+            ?: throw EntityNotFoundException(ResponseMessage.Answer.NOT_FOUND)
+        val question = answer.question
+
+        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
+        checkField(
+            Question::status.name,
+            question.status == Question.Status.OPEN
+        ) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
+        checkField(
+            Answer::accepted.name,
+            !answer.accepted,
+        ) { ResponseMessage.Answer.ALREADY_ACCEPTED }
+
+        return answer
     }
 }

@@ -3,6 +3,7 @@ package kr.loghub.api.mapper.question.answer
 import kr.loghub.api.dto.common.ContentDTO
 import kr.loghub.api.dto.question.answer.AnswerDTO
 import kr.loghub.api.entity.question.Answer
+import kr.loghub.api.mapper.user.UserMapper
 import java.time.format.DateTimeFormatter
 
 object AnswerMapper {
@@ -13,7 +14,7 @@ object AnswerMapper {
             html = contentHTML,
         ),
         accepted = answer.accepted,
-        writerUsername = answer.writer.username,
+        writer = UserMapper.map(answer.writer),
         createdAt = answer.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = answer.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )

@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.answer.PostAnswerDTO
 import kr.loghub.api.dto.response.MethodResponseBody
+import kr.loghub.api.dto.response.RedirectResponseBody
 import kr.loghub.api.dto.response.ResponseBody
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.service.question.answer.AnswerService
@@ -22,8 +23,9 @@ class AnswerController(private val answerService: AnswerService) {
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val createdAnswer = answerService.postAnswer(questionId, requestBody, writer)
-        return MethodResponseBody(
-            id = createdAnswer.id ?: TODO(),
+        val question = createdAnswer.question
+        return RedirectResponseBody(
+            pathname = "/questions/@${question.writerUsername}/${question.slug}",
             message = ResponseMessage.Answer.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -42,7 +44,7 @@ class AnswerController(private val answerService: AnswerService) {
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
-    
+
     @PutMapping("/{answerId}")
     fun editAnswer(
         @PathVariable questionId: Long,
@@ -51,8 +53,9 @@ class AnswerController(private val answerService: AnswerService) {
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val updatedAnswer = answerService.editAnswer(questionId, answerId, requestBody, writer)
-        return MethodResponseBody(
-            id = updatedAnswer.id ?: TODO(),
+        val question = updatedAnswer.question
+        return RedirectResponseBody(
+            pathname = "/questions/@${question.writerUsername}/${question.slug}",
             message = ResponseMessage.Answer.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

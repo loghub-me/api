@@ -28,6 +28,12 @@ class QuestionController(private val questionService: QuestionService) {
         return ResponseEntity.ok(foundQuestions)
     }
 
+    @GetMapping("/{id}")
+    fun getQuestion(@PathVariable id: Long): ResponseEntity<QuestionSimpleDTO> {
+        val foundQuestion = questionService.getQuestionSimple(id)
+        return ResponseEntity.ok(foundQuestion)
+    }
+
     @GetMapping("/@{username}/{slug}")
     fun getQuestion(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<QuestionDetailDTO> {
         val foundQuestion = questionService.getQuestion(username, slug)
@@ -52,8 +58,9 @@ class QuestionController(private val questionService: QuestionService) {
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        questionService.closeQuestion(id, writer)
-        return MessageResponseBody(
+        val closedQuestion = questionService.closeQuestion(id, writer)
+        return RedirectResponseBody(
+            pathname = "/questions/@${writer.username}/${closedQuestion.slug}",
             message = ResponseMessage.Question.CLOSE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

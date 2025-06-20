@@ -1,13 +1,12 @@
 package kr.loghub.api.entity.common
 
-import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
 class RowMetadata {
-    @Column(nullable = false)
+    @Transient
     val tableoid: String = ""
 
-    @Column(nullable = false)
+    @Transient
     val ctid: String = ""
 }
