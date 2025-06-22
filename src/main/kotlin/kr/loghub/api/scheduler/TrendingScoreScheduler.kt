@@ -37,6 +37,8 @@ class TrendingScoreScheduler(
     }
 
     private fun updateTrendingScore(trendingScoreKey: String, updateTrendingScoreById: (Double, Long) -> Int) {
+        val tempKey = "${trendingScoreKey}_temp"
+        redisTemplate.rename(trendingScoreKey, tempKey)  // to avoid race condition
         zSetOps.reverseRangeWithScores(trendingScoreKey, 0, MAX_SIZE)?.forEach { entry ->
             val articleId = entry.value?.toLong() ?: return@forEach
             val score = entry.score ?: 0.0
