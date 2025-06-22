@@ -1,5 +1,6 @@
 package kr.loghub.api.service.cache
 
+import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.task.markdown.MarkdownParseRequest
 import kr.loghub.api.proxy.TaskAPIProxy
 import org.springframework.data.redis.core.RedisTemplate
@@ -25,7 +26,7 @@ class CacheService(
 
     fun findOrGenerateMarkdownCache(markdowns: List<String>): List<String> =
         markdowns.map { markdown ->
-            val markdownKey = "markdown:${sha256(markdown)}"
+            val markdownKey = "${RedisKey.MARKDOWN}:${sha256(markdown)}"
             redisTemplate.opsForValue().get(markdownKey) ?: generateMarkdownCache(markdownKey, markdown)
         }
 

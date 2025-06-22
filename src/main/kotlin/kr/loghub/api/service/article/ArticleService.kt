@@ -64,8 +64,10 @@ class ArticleService(
     @Transactional
     fun editArticle(articleId: Long, requestBody: PostArticleDTO, writer: User): Article {
         val article = articleRepository.findWithWriterById(articleId)
-            ?.also { checkPermission(it.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED } }
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+
+        checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
+
         val slug = generateUniqueSlug(writer.username, requestBody.title)
         val topics = topicRepository.findDTOsBySlugIn(requestBody.topicSlugs)
 
@@ -78,8 +80,9 @@ class ArticleService(
     @Transactional
     fun removeArticle(articleId: Long, writer: User) {
         val article = articleRepository.findWithWriterById(articleId)
-            ?.also { checkPermission(it.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED } }
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+
+        checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
         articleRepository.delete(article)
     }

@@ -2,6 +2,7 @@ package kr.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.auth.LoginConfirmDTO
 import kr.loghub.api.dto.auth.LoginRequestDTO
 import kr.loghub.api.dto.auth.token.TokenDTO
@@ -45,12 +46,12 @@ class LoginService(
 
     @Transactional
     fun confirmLogin(requestBody: LoginConfirmDTO): TokenDTO {
-        val otp = redisTemplate.opsForValue().get("login_otp:${requestBody.email}")
+        val otp = redisTemplate.opsForValue().get("${RedisKey.LOGIN_OTP}:${requestBody.email}")
             ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
             requestBody.otp != otp -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
-            else -> redisTemplate.delete("login_otp:${requestBody.email}")
+            else -> redisTemplate.delete("${RedisKey.LOGIN_OTP}:${requestBody.email}")
         }
 
         val user = userRepository.findByEmail(requestBody.email)
@@ -61,7 +62,7 @@ class LoginService(
     @Transactional
     fun issueOTP(email: String): String {
         val otp = OTPBuilder.generateOTP(OTP_LENGTH)
-        redisTemplate.opsForValue().set("login_otp:${email}", otp, OTP_EXPIRE_MINUTES)
+        redisTemplate.opsForValue().set("${RedisKey.LOGIN_OTP}:${email}", otp, OTP_EXPIRE_MINUTES)
         return otp
     }
 }

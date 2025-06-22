@@ -2,6 +2,7 @@ package kr.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.auth.token.TokenDTO
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.token.TokenService
@@ -22,8 +23,13 @@ class RefreshService(
     fun refreshToken(token: UUID?): TokenDTO {
         requireNotNull(token) { ResponseMessage.Auth.INVALID_TOKEN }
 
-        val userId = redisTemplate.opsForValue().get("refresh_token:$token")
-            ?.also { redisTemplate.expire("refresh_token:$token", 10.seconds.toJavaDuration()) }  // Grace period
+        val userId = redisTemplate.opsForValue().get("${RedisKey.REFRESH_TOKEN}:$token")
+            ?.also {
+                redisTemplate.expire(
+                    "${RedisKey.REFRESH_TOKEN}:$token",
+                    10.seconds.toJavaDuration()
+                )
+            }  // Grace period
             ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_TOKEN)
         val user = userRepository.findById(userId.toLong())
             .orElseThrow { BadCredentialsException(ResponseMessage.Auth.INVALID_TOKEN) }

@@ -1,5 +1,6 @@
 package kr.loghub.api.service.auth.token
 
+import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.entity.user.User
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -24,5 +25,5 @@ class RefreshTokenService(private val redisTemplate: RedisTemplate<String, Strin
     }
 
     fun revokeToken(token: String) =
-        redisTemplate.delete("refresh_token:${token}")
+        redisTemplate.delete("${RedisKey.REFRESH_TOKEN}:${token}")
 }

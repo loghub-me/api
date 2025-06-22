@@ -28,4 +28,8 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Modifying
     @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount - 1 WHERE a.id = :id")
     fun decrementStarCount(id: Long)
+
+    @Modifying
+    @Query("UPDATE Question q SET q.stats.trendingScore = :trendingScore WHERE q.id = :id")
+    fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
 }
