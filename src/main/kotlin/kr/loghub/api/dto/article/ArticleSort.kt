@@ -11,7 +11,7 @@ enum class ArticleSort(val order: OrderSpecifier<*>) {
         Expressions.numberTemplate(
             Double::class.java,
             "pgroonga_score({0}, {1})",
-            QArticle.article.rowMetadata.tableoid, QArticle.article.rowMetadata.ctid
+            QArticle.article.tableoid, QArticle.article.ctid
         ).desc()
     ),
     trending(QArticle.article.stats.trendingScore.desc());

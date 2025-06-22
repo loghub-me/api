@@ -5,12 +5,12 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.PostQuestionDTO
 import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.entity.PublicEntity
-import kr.loghub.api.entity.common.RowMetadata
 import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.lib.jpa.TopicsFlatConverter
 import kr.loghub.api.util.checkField
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.Formula
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -66,8 +66,11 @@ class Question(
     @Convert(converter = TopicsFlatConverter::class)
     var topicsFlat: List<TopicDTO>,  // for search(denormalization)
 
-    @Embedded
-    var rowMetadata: RowMetadata = RowMetadata(),
+    @Formula("tableoid")
+    val tableoid: String? = null,
+
+    @Formula("ctid")
+    val ctid: String? = null,
 ) : PublicEntity() {
     enum class Status { OPEN, CLOSED, SOLVED }
 

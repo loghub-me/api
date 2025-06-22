@@ -4,11 +4,11 @@ import jakarta.persistence.*
 import kr.loghub.api.dto.article.PostArticleDTO
 import kr.loghub.api.dto.topic.TopicDTO
 import kr.loghub.api.entity.PublicEntity
-import kr.loghub.api.entity.common.RowMetadata
 import kr.loghub.api.entity.topic.Topic
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.lib.jpa.TopicsFlatConverter
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.Formula
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 @Entity
@@ -54,8 +54,11 @@ class Article(
     @Convert(converter = TopicsFlatConverter::class)
     var topicsFlat: List<TopicDTO>,  // for search(denormalization)
 
-    @Embedded
-    var rowMetadata: RowMetadata = RowMetadata(),
+    @Formula("tableoid")
+    val tableoid: String? = null,
+
+    @Formula("ctid")
+    val ctid: String? = null,
 ) : PublicEntity() {
     fun update(requestBody: PostArticleDTO) {
         this.title = requestBody.title

@@ -13,12 +13,12 @@ abstract class PublicEntity(
     var id: Long? = null,
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(nullable = false, updatable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
+    @Column(nullable = false)
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
     override fun equals(other: Any?) = when {
         this === other -> true

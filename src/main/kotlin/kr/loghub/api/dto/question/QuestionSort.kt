@@ -11,7 +11,7 @@ enum class QuestionSort(val order: OrderSpecifier<*>) {
         Expressions.numberTemplate(
             Double::class.java,
             "pgroonga_score({0}, {1})",
-            QQuestion.question.rowMetadata.tableoid, QQuestion.question.rowMetadata.ctid
+            QQuestion.question.tableoid, QQuestion.question.ctid
         ).desc()
     ),
     trending(QQuestion.question.stats.trendingScore.desc());
