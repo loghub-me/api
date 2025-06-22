@@ -6,8 +6,8 @@ import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.question.QuestionMapper
-import kr.loghub.api.repository.quesiton.QuestionCustomRepository
-import kr.loghub.api.repository.quesiton.QuestionRepository
+import kr.loghub.api.repository.question.QuestionCustomRepository
+import kr.loghub.api.repository.question.QuestionRepository
 import kr.loghub.api.repository.topic.TopicRepository
 import kr.loghub.api.service.cache.CacheService
 import kr.loghub.api.util.checkField

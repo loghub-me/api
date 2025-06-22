@@ -6,8 +6,8 @@ import kr.loghub.api.entity.question.Answer
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
-import kr.loghub.api.repository.quesiton.QuestionRepository
-import kr.loghub.api.repository.quesiton.answer.AnswerRepository
+import kr.loghub.api.repository.question.QuestionRepository
+import kr.loghub.api.repository.question.answer.AnswerRepository
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import org.springframework.stereotype.Service

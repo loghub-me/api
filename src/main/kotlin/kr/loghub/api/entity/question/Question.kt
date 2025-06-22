@@ -100,4 +100,8 @@ class Question(
         this.status = Status.CLOSED
         this.closedAt = LocalDateTime.now()
     }
+
+    fun incrementStarCount() {
+        stats.starCount++
+    }
 }

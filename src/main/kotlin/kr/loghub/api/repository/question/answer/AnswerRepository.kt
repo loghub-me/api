@@ -1,4 +1,4 @@
-package kr.loghub.api.repository.quesiton.answer
+package kr.loghub.api.repository.question.answer
 
 import kr.loghub.api.entity.question.Answer
 import org.springframework.data.jpa.repository.EntityGraph

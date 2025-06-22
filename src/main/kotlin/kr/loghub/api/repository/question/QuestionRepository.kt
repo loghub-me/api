@@ -1,8 +1,9 @@
-package kr.loghub.api.repository.quesiton
+package kr.loghub.api.repository.question
 
 import kr.loghub.api.entity.question.Question
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface QuestionRepository : JpaRepository<Question, Long> {
@@ -23,4 +24,8 @@ interface QuestionRepository : JpaRepository<Question, Long> {
 
     @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
+
+    @Modifying
+    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount - 1 WHERE a.id = :id")
+    fun decrementStarCount(id: Long)
 }

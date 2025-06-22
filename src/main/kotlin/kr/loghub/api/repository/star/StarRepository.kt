@@ -9,4 +9,9 @@ interface StarRepository : JpaRepository<Star, Long> {
 
     @EntityGraph(attributePaths = ["article", "user"])
     fun deleteByArticleIdAndUserId(articleId: Long, userId: Long): Int
+
+    fun existsByQuestionIdAndUserId(questionId: Long, userId: Long): Boolean
+
+    @EntityGraph(attributePaths = ["question", "user"])
+    fun deleteByQuestionIdAndUserId(questionId: Long, userId: Long): Int
 }

@@ -1,4 +1,4 @@
-package kr.loghub.api.repository.quesiton
+package kr.loghub.api.repository.question
 
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
