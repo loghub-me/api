@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 
 object AnswerMapper {
     fun map(answer: Answer, contentHTML: String) = AnswerDTO(
-        id = answer.id ?: TODO(),
+        id = answer.id!!,
         content = ContentDTO(
             markdown = answer.content,
             html = contentHTML,

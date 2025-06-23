@@ -74,7 +74,7 @@ class QuestionService(
         if (requestBody.requestBotAnswer) {
             answerGenerateWorker.addToQueue(
                 AnswerGenerateRequest(
-                    questionId = savedQuestion.id ?: TODO(),
+                    questionId = savedQuestion.id!!,
                     questionContent = "${savedQuestion.title}\n\n${savedQuestion.content}",
                 )
             )

@@ -19,13 +19,13 @@ class QuestionStarService(
 ) : StarService {
     @Transactional(readOnly = true)
     override fun existsStar(questionId: Long, user: User): Boolean =
-        starRepository.existsByQuestionIdAndUserId(questionId, user.id ?: TODO())
+        starRepository.existsByQuestionIdAndUserId(questionId, user.id!!)
 
     @Transactional
     override fun addStar(questionId: Long, user: User): Star {
         val question = questionRepository.findById(questionId)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Question.NOT_FOUND) }
-        checkAlreadyExists(starRepository.existsByQuestionIdAndUserId(questionId, user.id ?: TODO())) {
+        checkAlreadyExists(starRepository.existsByQuestionIdAndUserId(questionId, user.id!!)) {
             ResponseMessage.Star.ALREADY_EXISTS
         }
         question.incrementStarCount()
@@ -36,7 +36,7 @@ class QuestionStarService(
 
     @Transactional
     override fun removeStar(questionId: Long, user: User) {
-        val affectedRows = starRepository.deleteByQuestionIdAndUserId(questionId, user.id ?: TODO())
+        val affectedRows = starRepository.deleteByQuestionIdAndUserId(questionId, user.id!!)
         checkExists(affectedRows > 0) {
             ResponseMessage.Star.NOT_FOUND
         }

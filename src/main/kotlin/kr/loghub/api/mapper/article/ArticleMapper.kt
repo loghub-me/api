@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 
 object ArticleMapper {
     fun map(article: Article) = ArticleDTO(
-        id = article.id ?: TODO(),
+        id = article.id!!,
         slug = article.slug,
         title = article.title,
         thumbnail = article.thumbnail,
@@ -23,7 +23,7 @@ object ArticleMapper {
     )
 
     fun mapDetail(article: Article, contentHTML: String) = ArticleDetailDTO(
-        id = article.id ?: TODO(),
+        id = article.id!!,
         slug = article.slug,
         title = article.title,
         content = ContentDTO(

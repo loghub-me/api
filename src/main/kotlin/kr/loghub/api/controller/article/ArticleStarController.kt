@@ -34,7 +34,7 @@ class ArticleStarController(private val articleStarService: ArticleStarService) 
     ): ResponseEntity<ResponseBody> {
         val star = articleStarService.addStar(articleId, user)
         return MethodResponseBody(
-            id = star.id ?: TODO(),
+            id = star.id!!,
             message = ResponseMessage.Star.ADD_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()

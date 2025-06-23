@@ -39,7 +39,7 @@ class AnswerController(private val answerService: AnswerService) {
     ): ResponseEntity<ResponseBody> {
         val acceptedAnswer = answerService.acceptAnswer(questionId, answerId, writer)
         return MethodResponseBody(
-            id = acceptedAnswer.id ?: TODO(),
+            id = acceptedAnswer.id!!,
             message = ResponseMessage.Answer.ACCEPT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

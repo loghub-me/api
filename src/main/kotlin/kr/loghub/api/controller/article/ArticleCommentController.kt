@@ -43,7 +43,7 @@ class ArticleCommentController(private val articleCommentService: ArticleComment
     ): ResponseEntity<ResponseBody> {
         val comment = articleCommentService.postComment(articleId, requestBody, writer)
         return MethodResponseBody(
-            id = comment.id ?: TODO(),
+            id = comment.id!!,
             message = ResponseMessage.Article.Comment.POST_SUCCESS,
             status = HttpStatus.CREATED
         ).toResponseEntity()

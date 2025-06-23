@@ -9,7 +9,7 @@ object ArticleCommentMapper {
     const val DELETED_CONTENT = "[삭제된 댓글입니다.]"
 
     fun map(comment: ArticleComment) = ArticleCommentDTO(
-        id = comment.id ?: TODO(),
+        id = comment.id!!,
         content = if (comment.deleted) DELETED_CONTENT else comment.content,
         deleted = comment.deleted,
         replyCount = comment.replyCount,

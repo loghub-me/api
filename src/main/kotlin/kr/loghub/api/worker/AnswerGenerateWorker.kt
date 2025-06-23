@@ -26,7 +26,7 @@ class AnswerGenerateWorker(
     companion object {
         private val queue = ConcurrentLinkedQueue<AnswerGenerateRequest>()
         private const val BOT_USERNAME = "bot"
-        private const val SYSTEM_PROMPT = """
+        private val SYSTEM_PROMPT = """
         당신은 개발자 질문 커뮤니티의 AI 답변 봇입니다.
         질문에 대한 답변을 작성할 때는 다음 규칙을 따르세요
         
@@ -36,7 +36,7 @@ class AnswerGenerateWorker(
         4. 당신은 최고의 프로그래머입니다. 답변은 자세하고 구체적으로 작성하세요. (예: 코드 예제, 설명 등)
         5. 답변은 질문에 대한 정확한 해결책을 제공해야 합니다.
         6. 답변의 마지막에는 재치있는 농담 한마디를 추가하세요.
-        """
+        """.trimIndent()
     }
 
     @Scheduled(fixedRate = 1000 * 10)  // 10 seconds
@@ -59,7 +59,7 @@ class AnswerGenerateWorker(
 
     private fun generateAnswerAndSave(req: AnswerGenerateRequest, bot: User) {
         val res = chatClient.prompt()
-            .system(SYSTEM_PROMPT.trimIndent())
+            .system(SYSTEM_PROMPT)
             .user(req.questionContent)
             .call()
             .entity(AnswerGenerateResponse::class.java)
@@ -72,7 +72,12 @@ class AnswerGenerateWorker(
             .orElseThrow { EntityNotFoundException(ResponseMessage.Question.NOT_FOUND) }
 
         if (rejectionReason != AnswerGenerateResponse.RejectionReason.NONE) {
-            return
+            val answer = Answer(
+                content = rejectionReason.message,
+                question = question,
+                writer = bot,
+            )
+            answerRepository.save(answer)
         }
 
         val answer = Answer(
