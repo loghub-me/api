@@ -46,6 +46,7 @@ object ResponseMessage {
 
     object User {
         const val NOT_FOUND = "사용자를 찾을 수 없습니다."
+        const val BOT_NOT_FOUND = "봇 사용자를 찾을 수 없습니다."
         const val EMAIL_ALREADY_EXISTS = "이미 사용중인 이메일입니다."
         const val USERNAME_ALREADY_EXISTS = "이미 사용중인 아이디입니다."
     }

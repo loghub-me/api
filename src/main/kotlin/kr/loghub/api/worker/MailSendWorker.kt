@@ -3,7 +3,7 @@ package kr.loghub.api.worker
 import com.resend.Resend
 import com.resend.core.exception.ResendException
 import com.resend.services.emails.model.CreateEmailOptions
-import kr.loghub.api.dto.mail.MailDTO
+import kr.loghub.api.dto.internal.mail.MailDTO
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

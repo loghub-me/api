@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-class TrendingScoreAspect(
-    private val redisTemplate: RedisTemplate<String, String>,
-) {
+class TrendingScoreAspect(private val redisTemplate: RedisTemplate<String, String>) {
     private object TrendingScoreDelta {
         const val COMMENT = 0.5
         const val ANSWER = 1.0

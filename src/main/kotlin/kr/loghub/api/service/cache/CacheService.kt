@@ -1,7 +1,7 @@
 package kr.loghub.api.service.cache
 
 import kr.loghub.api.constant.redis.RedisKey
-import kr.loghub.api.dto.task.markdown.MarkdownParseRequest
+import kr.loghub.api.dto.internal.markdown.MarkdownParseRequest
 import kr.loghub.api.proxy.TaskAPIProxy
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service

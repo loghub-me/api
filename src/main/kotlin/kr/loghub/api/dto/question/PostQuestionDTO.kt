@@ -22,6 +22,9 @@ data class PostQuestionDTO(
     @field:NotNull(message = "토픽은 필수 입력 항목입니다.")
     @field:Size(max = 10, message = "토픽은 최대 10개까지 선택할 수 있습니다.")
     val topicSlugs: List<String>,
+
+    @field:NotNull(message = "봇 답변 여부는 필수 입력 항목입니다.")
+    val requestBotAnswer: Boolean = false,
 ) {
     fun toEntity(slug: String, writer: User, topics: Set<Topic>) = Question(
         slug = slug,

@@ -21,7 +21,7 @@ repositories {
     mavenCentral()
 }
 
-extra["springAiVersion"] = "1.0.0-M7"
+extra["springAiVersion"] = "1.0.0"
 val springCloudVersion by extra("2024.0.1")
 
 dependencies {

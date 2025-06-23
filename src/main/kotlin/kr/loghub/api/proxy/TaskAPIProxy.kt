@@ -1,9 +1,9 @@
 package kr.loghub.api.proxy
 
-import kr.loghub.api.dto.task.markdown.MarkdownParseRequest
-import kr.loghub.api.dto.task.markdown.MarkdownParseResponse
-import kr.loghub.api.dto.task.markdown.MarkdownsParseRequest
-import kr.loghub.api.dto.task.markdown.MarkdownsParseResponse
+import kr.loghub.api.dto.internal.markdown.MarkdownParseRequest
+import kr.loghub.api.dto.internal.markdown.MarkdownParseResponse
+import kr.loghub.api.dto.internal.markdown.MarkdownsParseRequest
+import kr.loghub.api.dto.internal.markdown.MarkdownsParseResponse
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

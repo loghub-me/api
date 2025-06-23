@@ -1,6 +1,7 @@
 package kr.loghub.api.service.question
 
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.dto.internal.answer.AnswerGenerateRequest
 import kr.loghub.api.dto.question.*
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.user.User
@@ -13,6 +14,7 @@ import kr.loghub.api.service.cache.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
+import kr.loghub.api.worker.AnswerGenerateWorker
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -25,6 +27,7 @@ class QuestionService(
     private val questionCustomRepository: QuestionCustomRepository,
     private val topicRepository: TopicRepository,
     private val cacheService: CacheService,
+    private val answerGenerateWorker: AnswerGenerateWorker,
 ) {
     companion object {
         private const val PAGE_SIZE = 20
@@ -66,7 +69,18 @@ class QuestionService(
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         val question = requestBody.toEntity(slug, writer, topics)
-        return questionRepository.save(question)
+        val savedQuestion = questionRepository.save(question)
+
+        if (requestBody.requestBotAnswer) {
+            answerGenerateWorker.addToQueue(
+                AnswerGenerateRequest(
+                    questionId = savedQuestion.id ?: TODO(),
+                    questionContent = "${savedQuestion.title}\n\n${savedQuestion.content}",
+                )
+            )
+        }
+
+        return savedQuestion
     }
 
     @Transactional
