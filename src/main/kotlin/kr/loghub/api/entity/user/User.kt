@@ -1,6 +1,8 @@
 package kr.loghub.api.entity.user
 
 import jakarta.persistence.*
+import kr.loghub.api.dto.user.UpdateUserPrivacyDTO
+import kr.loghub.api.dto.user.UpdateUserProfileDTO
 import kr.loghub.api.entity.PublicEntity
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcType
@@ -51,4 +53,18 @@ class User(
     override fun getUsername(): String = username
 
     override fun getPassword(): String? = null
+
+    fun updateProfile(requestBody: UpdateUserProfileDTO) {
+        this.profile = UserProfile(
+            nickname = requestBody.nickname,
+            readme = requestBody.readme,
+        )
+    }
+
+    fun updatePrivacy(requestBody: UpdateUserPrivacyDTO) {
+        this.privacy = UserPrivacy(
+            emailVisible = requestBody.emailVisible,
+            starVisible = requestBody.starVisible,
+        )
+    }
 }

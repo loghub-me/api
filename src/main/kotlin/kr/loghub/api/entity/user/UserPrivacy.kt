@@ -6,8 +6,8 @@ import jakarta.persistence.Embeddable
 @Embeddable
 class UserPrivacy(
     @Column(name = "email_visible", nullable = false)
-    var emailVisible: Boolean = false,
+    val emailVisible: Boolean = false,
 
     @Column(name = "star_visible", nullable = false)
-    var starVisible: Boolean = true
+    val starVisible: Boolean = true
 )
