@@ -13,23 +13,37 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class ArticleCustomRepository(private val entityManager: EntityManager) {
-    fun search(query: String, sort: ArticleSort, pageable: Pageable): Page<Article> {
-        val searchQuery = JPAQuery<Article>(entityManager)
-            .select(QArticle.article).from(QArticle.article)
-            .orderBy(sort.order)
-            .offset(pageable.offset).limit(pageable.pageSize.toLong())
-        val countQuery = JPAQuery<Article>(entityManager)
-            .select(QArticle.article.count()).from(QArticle.article)
+    fun search(
+        query: String,
+        sort: ArticleSort,
+        pageable: Pageable,
+        username: String? = null
+    ): Page<Article> {
+        val article = QArticle.article
+        val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
+            "ecfts({0}, {1})",
+            Expressions.constant(query),
+            Expressions.constant("articles_search_index")
+        ) else null
 
-        if (query.isNotBlank()) {
-            val fullTextSearch = Expressions.booleanTemplate(
-                "ecfts({0}, {1})",
-                Expressions.constant(query),
-                Expressions.constant("articles_search_index")
-            );
-            searchQuery.where(fullTextSearch)
-            countQuery.where(fullTextSearch)
-        }
+        val searchQuery = JPAQuery<Article>(entityManager)
+            .select(article)
+            .from(article)
+            .where(
+                username?.let { article.writerUsername.eq(it) },
+                fullTextSearch
+            )
+            .orderBy(sort.order)
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+
+        val countQuery = JPAQuery<Long>(entityManager)
+            .select(article.count())
+            .from(article)
+            .where(
+                username?.let { article.writerUsername.eq(it) },
+                fullTextSearch
+            )
 
         val articles = searchQuery.fetch()
         val total = countQuery.fetchOne() ?: 0L

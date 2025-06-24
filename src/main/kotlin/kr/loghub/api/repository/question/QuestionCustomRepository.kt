@@ -14,26 +14,40 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class QuestionCustomRepository(private val entityManager: EntityManager) {
-    fun search(query: String, sort: QuestionSort, filter: QuestionFilter, pageable: Pageable): Page<Question> {
-        val searchQuery = JPAQuery<Question>(entityManager)
-            .select(QQuestion.question).from(QQuestion.question)
-            .orderBy(sort.order)
-            .offset(pageable.offset).limit(pageable.pageSize.toLong())
-        val countQuery = JPAQuery<Question>(entityManager)
-            .select(QQuestion.question.count()).from(QQuestion.question)
+    fun search(
+        query: String,
+        sort: QuestionSort,
+        filter: QuestionFilter,
+        pageable: Pageable,
+        username: String? = null
+    ): Page<Question> {
+        val question = QQuestion.question
+        val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
+            "ecfts({0}, {1})",
+            Expressions.constant(query),
+            Expressions.constant("questions_search_index")
+        ) else null
 
-        var where = filter.where
-        if (query.isNotBlank()) {
-            where = where.and(
-                Expressions.booleanTemplate(
-                    "ecfts({0}, {1})",
-                    Expressions.constant(query),
-                    Expressions.constant("questions_search_index")
-                )
+        val searchQuery = JPAQuery<Question>(entityManager)
+            .select(question)
+            .from(question)
+            .where(
+                username?.let { question.writerUsername.eq(it) },
+                filter.where,
+                fullTextSearch
             )
-        }
-        searchQuery.where(where)
-        countQuery.where(where)
+            .orderBy(sort.order)
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+
+        val countQuery = JPAQuery<Long>(entityManager)
+            .select(question.count())
+            .from(question)
+            .where(
+                username?.let { question.writerUsername.eq(it) },
+                filter.where,
+                fullTextSearch
+            )
 
         val questions = searchQuery.fetch()
         val total = countQuery.fetchOne() ?: 0L
