@@ -36,5 +36,5 @@ class Star(
     @JoinColumn(name = "question_id", nullable = true)
     val question: Question? = null,
 ) {
-    enum class Target { ARTICLE, QUESTION }
+    enum class Target(val label: String) { ARTICLE("아티클"), QUESTION("질문") }
 }
