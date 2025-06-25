@@ -1,5 +1,6 @@
 package kr.loghub.api.proxy
 
+import kr.loghub.api.dto.internal.avatar.AvatarRenameRequest
 import kr.loghub.api.dto.internal.markdown.MarkdownParseRequest
 import kr.loghub.api.dto.internal.markdown.MarkdownParseResponse
 import kr.loghub.api.dto.internal.markdown.MarkdownsParseRequest
@@ -19,4 +20,7 @@ interface TaskAPIProxy {
 
     @PostMapping("/markdown/parse")
     fun parseMarkdowns(@RequestBody request: MarkdownsParseRequest): MarkdownsParseResponse
+
+    @PostMapping("/avatar/rename")
+    fun renameAvatar(@RequestBody request: AvatarRenameRequest)
 }

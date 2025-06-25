@@ -54,6 +54,10 @@ class User(
 
     override fun getPassword(): String? = null
 
+    fun updateUsername(username: String) {
+        this.username = username
+    }
+
     fun updateProfile(requestBody: UpdateUserProfileDTO) {
         this.profile = UserProfile(
             nickname = requestBody.nickname,

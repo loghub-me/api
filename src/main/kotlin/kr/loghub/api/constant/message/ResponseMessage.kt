@@ -8,6 +8,7 @@ object ResponseMessage {
         const val INVALID_FIELD = "유효하지 않은 필드입니다."
         const val NOT_FOUND = "해당하는 정보를 찾을 수 없습니다."
         const val ALREADY_EXISTS = "이미 존재하는 정보입니다."
+        const val CONFLICT_FIELD = "필드 값이 충돌합니다."
         const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
         const val INTERNAL_SERVER_ERROR = "알 수 없는 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     }
@@ -51,6 +52,8 @@ object ResponseMessage {
         const val USERNAME_ALREADY_EXISTS = "이미 사용중인 아이디입니다."
         const val PROFILE_UPDATE_SUCCESS = "프로필이 성공적으로 업데이트되었습니다!"
         const val PRIVACY_UPDATE_SUCCESS = "정보 공개 설정이 성공적으로 업데이트되었습니다!"
+        const val USERNAME_UPDATE_SUCCESS = "아이디가 성공적으로 변경되었습니다!"
+        const val USERNAME_NOT_CHANGED = "유저네임이 변경되지 않았습니다."
     }
 
     object Article {

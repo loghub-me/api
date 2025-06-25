@@ -4,6 +4,7 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.response.FieldErrorsResponseBody
 import kr.loghub.api.dto.response.MessageResponseBody
 import kr.loghub.api.dto.response.ResponseBody
+import kr.loghub.api.exception.validation.ConflictFieldException
 import kr.loghub.api.exception.validation.IllegalFieldException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,6 +28,14 @@ class ValidationExceptionHandler {
         return MessageResponseBody(
             message = e.message ?: ResponseMessage.Default.INVALID_REQUEST,
             status = HttpStatus.BAD_REQUEST
+        ).toResponseEntity()
+    }
+
+    @ExceptionHandler(ConflictFieldException::class)
+    fun handleException(e: ConflictFieldException): ResponseEntity<ResponseBody> {
+        return FieldErrorsResponseBody(
+            fieldErrors = mapOf(e.field to e.message),
+            status = HttpStatus.CONFLICT
         ).toResponseEntity()
     }
 

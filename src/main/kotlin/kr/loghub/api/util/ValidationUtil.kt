@@ -5,6 +5,7 @@ import kr.loghub.api.exception.entity.EntityExistsException
 import kr.loghub.api.exception.entity.EntityExistsFieldException
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.exception.entity.EntityNotFoundFieldException
+import kr.loghub.api.exception.validation.ConflictFieldException
 import kr.loghub.api.exception.validation.IllegalFieldException
 
 inline fun checkField(
@@ -67,5 +68,17 @@ inline fun checkPermission(
     if (!condition) {
         val message = lazyMessage()
         throw PermissionDeniedException(message)
+    }
+}
+
+inline fun requireNotEquals(
+    field: String,
+    a: Any?,
+    b: Any?,
+    lazyMessage: () -> String,
+) {
+    if (a == b) {
+        val message = lazyMessage()
+        throw ConflictFieldException(field, message)
     }
 }

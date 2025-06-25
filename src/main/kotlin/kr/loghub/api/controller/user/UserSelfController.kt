@@ -4,10 +4,7 @@ import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.response.MessageResponseBody
 import kr.loghub.api.dto.response.ResponseBody
-import kr.loghub.api.dto.user.UpdateUserPrivacyDTO
-import kr.loghub.api.dto.user.UpdateUserProfileDTO
-import kr.loghub.api.dto.user.UserPrivacyDTO
-import kr.loghub.api.dto.user.UserProfileDTO
+import kr.loghub.api.dto.user.*
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.service.user.UserSelfService
 import org.springframework.http.HttpStatus
@@ -28,6 +25,18 @@ class UserSelfController(private val userSelfService: UserSelfService) {
     fun getPrivacy(@AuthenticationPrincipal user: User): ResponseEntity<UserPrivacyDTO> {
         val privacy = userSelfService.getPrivacy(user)
         return ResponseEntity.ok(privacy)
+    }
+
+    @PutMapping("/username")
+    fun updateUsername(
+        @RequestBody @Valid requestBody: UpdateUsernameDTO,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<ResponseBody> {
+        userSelfService.updateUsername(requestBody, user)
+        return MessageResponseBody(
+            message = ResponseMessage.User.USERNAME_UPDATE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
     }
 
     @PutMapping("/profile")
