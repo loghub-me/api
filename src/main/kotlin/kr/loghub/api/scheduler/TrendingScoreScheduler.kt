@@ -16,7 +16,7 @@ class TrendingScoreScheduler(
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
-        const val CRON = "0 0 */6 * * *"
+        const val CRON = "0 0 */6 * * *" // Every 6 hours
         const val MAX_SIZE = 49L
     }
 
@@ -28,22 +28,31 @@ class TrendingScoreScheduler(
     fun updateTrendingScores() {
         updateTrendingScore(
             RedisKey.Article.TRENDING_SCORE,
-            articleRepository::updateTrendingScoreById
+            articleRepository::clearTrendingScore,
+            articleRepository::updateTrendingScoreById,
         )
         updateTrendingScore(
             RedisKey.Question.TRENDING_SCORE,
+            questionRepository::clearTrendingScore,
             questionRepository::updateTrendingScoreById
         )
     }
 
-    private fun updateTrendingScore(trendingScoreKey: String, updateTrendingScoreById: (Double, Long) -> Int) {
+    private fun updateTrendingScore(
+        trendingScoreKey: String,
+        clearTrendingScore: () -> Unit,
+        updateTrendingScoreById: (Double, Long) -> Int
+    ) {
+        clearTrendingScore()
+
         val tempKey = "${trendingScoreKey}_temp"
         redisTemplate.rename(trendingScoreKey, tempKey)  // to avoid race condition
-        zSetOps.reverseRangeWithScores(trendingScoreKey, 0, MAX_SIZE)?.forEach { entry ->
+        zSetOps.reverseRangeWithScores(tempKey, 0, MAX_SIZE)?.forEach { entry ->
             val articleId = entry.value?.toLong() ?: return@forEach
             val score = entry.score ?: 0.0
             updateTrendingScoreById(score, articleId)
         }
+
         redisTemplate.delete(trendingScoreKey)
     }
 }

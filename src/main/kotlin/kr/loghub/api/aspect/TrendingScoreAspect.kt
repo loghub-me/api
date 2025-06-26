@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component
 @Component
 class TrendingScoreAspect(private val redisTemplate: RedisTemplate<String, String>) {
     private object TrendingScoreDelta {
-        const val COMMENT = 0.5
-        const val ANSWER = 1.0
-        const val STAR = 1.0
+        const val COMMENT = 1.toDouble()
+        const val ANSWER = 2.toDouble()
+        const val STAR = 3.toDouble()
     }
 
     private val zSetOps: ZSetOperations<String, String>
