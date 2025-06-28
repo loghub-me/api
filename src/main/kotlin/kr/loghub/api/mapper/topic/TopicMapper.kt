@@ -1,17 +1,18 @@
 package kr.loghub.api.mapper.topic
 
 import kr.loghub.api.dto.topic.TopicDTO
+import kr.loghub.api.dto.topic.TopicDetailDTO
+import kr.loghub.api.entity.topic.Topic
 
 object TopicMapper {
-    const val TOPIC_DELIMITER = ","
-    const val TOPIC_ATTRIBUTE_DELIMITER = ":"
+    fun map(topic: Topic) = TopicDTO(
+        slug = topic.slug,
+        name = topic.name
+    )
 
-    fun mapTopicsFlat(topicsFlat: String) = topicsFlat
-        .split(TOPIC_DELIMITER)
-        .map {
-            TopicDTO(
-                slug = it.substringBefore(TOPIC_ATTRIBUTE_DELIMITER),
-                name = it.substringAfter(TOPIC_ATTRIBUTE_DELIMITER)
-            )
-        }
+    fun mapDetail(topic: Topic) = TopicDetailDTO(
+        slug = topic.slug,
+        name = topic.name,
+        description = topic.description,
+    )
 }

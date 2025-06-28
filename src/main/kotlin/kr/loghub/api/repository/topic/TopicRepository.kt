@@ -13,6 +13,12 @@ interface TopicRepository : JpaRepository<Topic, Long> {
 
     fun findBySlugIn(slugs: List<String>): Set<Topic>
 
+    fun findBySlug(slug: String): Topic?
+
+    fun findLimit20AllByOrderByTrendingScoreDesc(): List<Topic>
+
+    fun findContainsByNameIgnoreCaseOrderByTrendingScoreDesc(name: String): List<Topic>
+
     @Query("$SELECT_TOPIC_DTO $BY_SLUGS")
     fun findDTOsBySlugIn(slugs: List<String>): List<TopicDTO>
 }

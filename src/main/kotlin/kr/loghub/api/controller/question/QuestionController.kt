@@ -28,10 +28,10 @@ class QuestionController(private val questionService: QuestionService) {
         return ResponseEntity.ok(foundQuestions)
     }
 
-    @GetMapping("/{id}")
-    fun getQuestion(@PathVariable id: Long): ResponseEntity<QuestionSimpleDTO> {
-        val foundQuestion = questionService.getQuestionSimple(id)
-        return ResponseEntity.ok(foundQuestion)
+    @GetMapping("/trending")
+    fun getTrendingQuestions(): ResponseEntity<List<QuestionDTO>> {
+        val questions = questionService.getTrendingQuestions()
+        return ResponseEntity.ok(questions)
     }
 
     @GetMapping("/@{username}/{slug}")
@@ -50,19 +50,6 @@ class QuestionController(private val questionService: QuestionService) {
             pathname = "/questions/@${writer.username}/${createdQuestion.slug}",
             message = ResponseMessage.Question.POST_SUCCESS,
             status = HttpStatus.CREATED,
-        ).toResponseEntity()
-    }
-
-    @PostMapping("/{id}/close")
-    fun closeQuestion(
-        @PathVariable id: Long,
-        @AuthenticationPrincipal writer: User
-    ): ResponseEntity<ResponseBody> {
-        val closedQuestion = questionService.closeQuestion(id, writer)
-        return RedirectResponseBody(
-            pathname = "/questions/@${writer.username}/${closedQuestion.slug}",
-            message = ResponseMessage.Question.CLOSE_SUCCESS,
-            status = HttpStatus.OK,
         ).toResponseEntity()
     }
 
@@ -88,6 +75,19 @@ class QuestionController(private val questionService: QuestionService) {
         questionService.removeQuestion(id, writer)
         return MessageResponseBody(
             message = ResponseMessage.Question.DELETE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
+
+    @PostMapping("/{id}/close")
+    fun closeQuestion(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        val closedQuestion = questionService.closeQuestion(id, writer)
+        return RedirectResponseBody(
+            pathname = "/questions/@${writer.username}/${closedQuestion.slug}",
+            message = ResponseMessage.Question.CLOSE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }

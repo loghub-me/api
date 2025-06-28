@@ -21,4 +21,7 @@ class Topic(
 
     @Column(nullable = false)
     val description: String,
+
+    @Column(name = "trending_score", nullable = false)
+    var trendingScore: Int = 0,
 ) : PublicEntity()

@@ -31,20 +31,6 @@ class AnswerController(private val answerService: AnswerService) {
         ).toResponseEntity()
     }
 
-    @PostMapping("/{answerId}/accept")
-    fun acceptAnswer(
-        @PathVariable questionId: Long,
-        @PathVariable answerId: Long,
-        @AuthenticationPrincipal writer: User
-    ): ResponseEntity<ResponseBody> {
-        val acceptedAnswer = answerService.acceptAnswer(questionId, answerId, writer)
-        return MethodResponseBody(
-            id = acceptedAnswer.id!!,
-            message = ResponseMessage.Answer.ACCEPT_SUCCESS,
-            status = HttpStatus.OK,
-        ).toResponseEntity()
-    }
-
     @PutMapping("/{answerId}")
     fun editAnswer(
         @PathVariable questionId: Long,
@@ -71,6 +57,20 @@ class AnswerController(private val answerService: AnswerService) {
         return MethodResponseBody(
             id = answerId,
             message = ResponseMessage.Answer.DELETE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
+
+    @PostMapping("/{answerId}/accept")
+    fun acceptAnswer(
+        @PathVariable questionId: Long,
+        @PathVariable answerId: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        val acceptedAnswer = answerService.acceptAnswer(questionId, answerId, writer)
+        return MethodResponseBody(
+            id = acceptedAnswer.id!!,
+            message = ResponseMessage.Answer.ACCEPT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }

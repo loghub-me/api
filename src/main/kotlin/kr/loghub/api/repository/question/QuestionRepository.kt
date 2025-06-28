@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface QuestionRepository : JpaRepository<Question, Long> {
     companion object {
@@ -32,4 +33,15 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Modifying
     @Query("UPDATE Question q SET q.stats.trendingScore = :trendingScore WHERE q.id = :id")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
+
+    @Modifying
+    @Query("UPDATE Question q SET q.stats.trendingScore = 0")
+    fun clearTrendingScore(): Int
+
+    @Modifying
+    @Query("UPDATE Question q SET q.writerUsername = :newUsername WHERE q.writerUsername = :oldUsername")
+    fun updateWriterUsernameByWriterUsername(
+        @Param("oldUsername") oldUsername: String,
+        @Param("newUsername") newUsername: String
+    ): Int
 }

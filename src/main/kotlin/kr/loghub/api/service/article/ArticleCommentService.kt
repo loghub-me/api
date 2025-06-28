@@ -3,14 +3,12 @@ package kr.loghub.api.service.article
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.article.comment.ArticleCommentDTO
 import kr.loghub.api.dto.article.comment.PostArticleCommentDTO
-import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.article.ArticleComment
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.article.ArticleCommentMapper
 import kr.loghub.api.repository.article.ArticleCommentRepository
 import kr.loghub.api.repository.article.ArticleRepository
-import kr.loghub.api.util.checkExists
 import kr.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -29,11 +27,10 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> {
-        checkExists(articleRepository.existsById(articleId)) {
-            ResponseMessage.Article.NOT_FOUND
-        }
-        return articleCommentRepository.findWithWriterByArticleIdAndParentIsNull(
-            articleId = articleId,
+        val article = articleRepository.findById(articleId)
+            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
+        return articleCommentRepository.findWithGraphByArticleAndParentIsNull(
+            article = article,
             pageable = PageRequest.of(
                 page - 1,
                 DEFAULT_PAGE_SIZE,
@@ -44,16 +41,20 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getReplies(articleId: Long, commentId: Long): List<ArticleCommentDTO> {
-        checkExists(articleCommentRepository.existsById(commentId)) {
-            ResponseMessage.Article.Comment.NOT_FOUND
-        }
-        return articleCommentRepository.findWithWriterAndMentionByArticleIdAndParentId(articleId, commentId)
+        val parent = articleCommentRepository.findById(commentId)
+            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND) }
+        return articleCommentRepository.findWithGraphByArticleIdAndParentOrderByCreatedAtDesc(articleId, parent)
             .map(ArticleCommentMapper::map)
     }
 
     @Transactional
     fun postComment(articleId: Long, requestBody: PostArticleCommentDTO, writer: User): ArticleComment {
-        val (article, parent) = findEntitiesToPost(articleId, requestBody.parentId)
+        val article = articleRepository.findById(articleId)
+            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
+        val parent: ArticleComment? = requestBody.parentId?.let { parentId ->
+            articleCommentRepository.findByArticleAndId(article, parentId)
+                ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
+        }
         val comment = requestBody.toEntity(article, parent, writer)
 
         article.incrementCommentCount()
@@ -71,18 +72,5 @@ class ArticleCommentService(
         comment.parent?.decrementReplyCount()
         comment.article.decrementCommentCount()
         comment.delete()
-    }
-
-    private fun findEntitiesToPost(
-        articleId: Long,
-        parentId: Long?,
-    ): Pair<Article, ArticleComment?> {
-        val article = articleRepository.findById(articleId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
-        val parent: ArticleComment? = parentId?.let { parentId ->
-            articleCommentRepository.findById(parentId)
-                .orElseThrow { EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND) }
-        }
-        return Pair(article, parent)
     }
 }

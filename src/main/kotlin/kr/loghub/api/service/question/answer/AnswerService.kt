@@ -30,15 +30,6 @@ class AnswerService(
     }
 
     @Transactional
-    fun acceptAnswer(questionId: Long, answerId: Long, writer: User): Answer {
-        val answer = findUpdatableAnswer(questionId, answerId, writer)
-
-        answer.accept()
-        answer.question.solved()
-        return answer
-    }
-
-    @Transactional
     fun editAnswer(questionId: Long, answerId: Long, requestBody: PostAnswerDTO, writer: User): Answer {
         val answer = findUpdatableAnswer(questionId, answerId, writer)
         answer.update(requestBody)
@@ -49,6 +40,14 @@ class AnswerService(
     fun removeAnswer(questionId: Long, answerId: Long, writer: User) {
         val answer = findUpdatableAnswer(questionId, answerId, writer)
         answerRepository.delete(answer)
+    }
+
+    @Transactional
+    fun acceptAnswer(questionId: Long, answerId: Long, writer: User): Answer {
+        val answer = findUpdatableAnswer(questionId, answerId, writer)
+        answer.accept()
+        answer.question.solved()
+        return answer
     }
 
     private fun findUpdatableAnswer(questionId: Long, answerId: Long, writer: User): Answer {

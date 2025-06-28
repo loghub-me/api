@@ -3,7 +3,6 @@ package kr.loghub.api.mapper.question
 import kr.loghub.api.dto.common.ContentDTO
 import kr.loghub.api.dto.question.QuestionDTO
 import kr.loghub.api.dto.question.QuestionDetailDTO
-import kr.loghub.api.dto.question.QuestionSimpleDTO
 import kr.loghub.api.dto.question.QuestionStatsDTO
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.question.QuestionStats
@@ -23,14 +22,6 @@ object QuestionMapper {
         createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
-
-    fun mapSimple(question: Question): QuestionSimpleDTO =
-        QuestionSimpleDTO(
-            id = question.id!!,
-            slug = question.slug,
-            title = question.title,
-            writerUsername = question.writerUsername,
-        )
 
     fun mapDetail(question: Question, questionContentHTML: String, answerContentHTMLs: List<String>) =
         QuestionDetailDTO(

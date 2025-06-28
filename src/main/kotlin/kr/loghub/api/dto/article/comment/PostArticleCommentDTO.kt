@@ -17,8 +17,8 @@ data class PostArticleCommentDTO(
 ) {
     fun toEntity(article: Article, parent: ArticleComment?, writer: User) = ArticleComment(
         content = content,
-        parent = parent,
         article = article,
+        parent = parent,
         mention = parent?.writer,
         writer = writer,
     )

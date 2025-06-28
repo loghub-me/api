@@ -4,6 +4,7 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.internal.answer.AnswerGenerateRequest
 import kr.loghub.api.dto.question.*
 import kr.loghub.api.entity.question.Question
+import kr.loghub.api.entity.question.QuestionStats
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.question.QuestionMapper
@@ -17,6 +18,7 @@ import kr.loghub.api.util.toSlug
 import kr.loghub.api.worker.AnswerGenerateWorker
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -46,11 +48,13 @@ class QuestionService(
     }
 
     @Transactional(readOnly = true)
-    fun getQuestionSimple(id: Long): QuestionSimpleDTO {
-        val question = questionRepository.findWithWriterById(id)
-            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
-        return QuestionMapper.mapSimple(question)
-    }
+    fun getTrendingQuestions(): List<QuestionDTO> = questionRepository.findAll(
+        PageRequest.of(
+            0,
+            PAGE_SIZE,
+            Sort.by("${Question::stats.name}.${QuestionStats::trendingScore.name}").descending(),
+        )
+    ).toList().map(QuestionMapper::map)
 
     @Transactional(readOnly = true)
     fun getQuestion(username: String, slug: String): QuestionDetailDTO {
@@ -84,21 +88,6 @@ class QuestionService(
     }
 
     @Transactional
-    fun closeQuestion(questionId: Long, writer: User): Question {
-        val question = questionRepository.findWithWriterById(questionId)
-            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
-
-        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
-        checkField(
-            Question::status.name,
-            question.status == Question.Status.OPEN
-        ) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
-
-        question.close()
-        return question
-    }
-
-    @Transactional
     fun editQuestion(questionId: Long, requestBody: PostQuestionDTO, writer: User): Question {
         val question = questionRepository.findWithWriterById(questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
@@ -122,6 +111,21 @@ class QuestionService(
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
         questionRepository.delete(question)
+    }
+
+    @Transactional
+    fun closeQuestion(questionId: Long, writer: User): Question {
+        val question = questionRepository.findWithWriterById(questionId)
+            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+
+        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
+        checkField(
+            Question::status.name,
+            question.status == Question.Status.OPEN
+        ) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
+
+        question.close()
+        return question
     }
 
     private fun generateUniqueSlug(username: String, title: String): String {

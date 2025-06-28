@@ -6,6 +6,7 @@ import kr.loghub.api.dto.article.ArticleDetailDTO
 import kr.loghub.api.dto.article.ArticleSort
 import kr.loghub.api.dto.article.PostArticleDTO
 import kr.loghub.api.entity.article.Article
+import kr.loghub.api.entity.article.ArticleStats
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.article.ArticleMapper
@@ -18,6 +19,7 @@ import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -43,6 +45,15 @@ class ArticleService(
             pageable = PageRequest.of(page - 1, PAGE_SIZE)
         ).map(ArticleMapper::map)
     }
+
+    @Transactional(readOnly = true)
+    fun getTrendingArticles(): List<ArticleDTO> = articleRepository.findAll(
+        PageRequest.of(
+            0,
+            PAGE_SIZE,
+            Sort.by("${Article::stats.name}.${ArticleStats::trendingScore.name}").descending(),
+        )
+    ).toList().map(ArticleMapper::map)
 
     @Transactional(readOnly = true)
     fun getArticle(username: String, slug: String): ArticleDetailDTO {

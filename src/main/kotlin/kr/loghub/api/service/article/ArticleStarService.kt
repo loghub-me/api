@@ -25,9 +25,11 @@ class ArticleStarService(
     override fun addStar(articleId: Long, user: User): Star {
         val article = articleRepository.findById(articleId)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
-        checkAlreadyExists(starRepository.existsByArticleIdAndUserId(articleId, user.id!!)) {
+
+        checkAlreadyExists(starRepository.existsByArticleAndUserId(article, user.id!!)) {
             ResponseMessage.Star.ALREADY_EXISTS
         }
+
         article.incrementStarCount()
         return starRepository.save(Star(user = user, article = article, target = Star.Target.ARTICLE))
     }
@@ -35,9 +37,9 @@ class ArticleStarService(
     @Transactional
     override fun removeStar(articleId: Long, user: User) {
         val affectedRows = starRepository.deleteByArticleIdAndUserId(articleId, user.id!!)
-        checkExists(affectedRows > 0) {
-            ResponseMessage.Star.NOT_FOUND
-        }
+
+        checkExists(affectedRows > 0) { ResponseMessage.Star.NOT_FOUND }
+
         articleRepository.decrementStarCount(articleId)
     }
 }
