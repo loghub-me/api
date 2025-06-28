@@ -17,7 +17,7 @@ interface TopicRepository : JpaRepository<Topic, Long> {
 
     fun findTop20ByOrderByTrendingScoreDesc(): List<Topic>
 
-    fun findByNameContainingIgnoreCaseOrderByTrendingScoreDe(name: String): List<Topic>
+    fun findByNameContainingIgnoreCaseOrderByTrendingScoreDesc(name: String): List<Topic>
 
     @Query("$SELECT_TOPIC_DTO $BY_SLUGS")
     fun findDTOsBySlugIn(slugs: List<String>): List<TopicDTO>
