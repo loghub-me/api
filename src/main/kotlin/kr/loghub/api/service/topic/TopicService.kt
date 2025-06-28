@@ -13,8 +13,8 @@ class TopicService(private val topicRepository: TopicRepository) {
     @Transactional(readOnly = true)
     fun getTrendingArticles(query: String): List<TopicDTO> {
         val topics = if (query.isBlank())
-            topicRepository.findLimit20AllByOrderByTrendingScoreDesc() else
-            topicRepository.findContainsByNameIgnoreCaseOrderByTrendingScoreDesc(query)
+            topicRepository.findTop20ByOrderByTrendingScoreDesc() else
+            topicRepository.findByNameContainingIgnoreCaseOrderByTrendingScoreDe(query)
         return topics.map { TopicMapper.map(it) }
     }
 
