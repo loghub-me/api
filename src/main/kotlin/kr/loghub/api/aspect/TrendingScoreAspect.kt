@@ -38,19 +38,19 @@ class TrendingScoreAspect(private val redisTemplate: RedisTemplate<String, Strin
 
     @AfterReturning("execution(* kr.loghub.api.service.book.BookReviewService.postReview(..)) && args(bookId, ..))")
     fun updateTrendingScoreAfterPostBookReview(bookId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, bookId.toString(), TrendingScoreDelta.REVIEW)
+        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, bookId.toString(), TrendingScoreDelta.REVIEW)
 
     @AfterReturning("execution(* kr.loghub.api.service.book.BookReviewService.removeReview(..)) && args(bookId, ..))")
     fun updateTrendingScoreAfterRemoveBookReview(bookId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, bookId.toString(), -TrendingScoreDelta.REVIEW)
+        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, bookId.toString(), -TrendingScoreDelta.REVIEW)
 
     @AfterReturning("execution(* kr.loghub.api.service.book.BookStarService.addStar(..)) && args(articleId, ..)")
     fun updateTrendingScoreAfterAddBookStar(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.STAR)
 
     @AfterReturning("execution(* kr.loghub.api.service.book.BookStarService.removeStar(..)) && args(articleId, ..)")
     fun updateTrendingScoreAfterRemoveBookStar(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
 
     @AfterReturning("execution(* kr.loghub.api.service.question.answer.AnswerService.postAnswer(..)) && args(questionId, ..)")
     fun updateTrendingScoreAfterPostAnswer(questionId: Long) =

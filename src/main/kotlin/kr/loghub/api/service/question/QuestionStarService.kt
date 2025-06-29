@@ -31,7 +31,7 @@ class QuestionStarService(
         }
 
         question.incrementStarCount()
-        return starRepository.save(Star(user = user, question = question, target = Star.Target.ARTICLE))
+        return starRepository.save(Star(user = user, question = question, target = Star.Target.QUESTION))
     }
 
     @Transactional

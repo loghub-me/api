@@ -31,7 +31,7 @@ class BookStarService(
         }
 
         book.incrementStarCount()
-        return starRepository.save(Star(user = user, book = book, target = Star.Target.ARTICLE))
+        return starRepository.save(Star(user = user, book = book, target = Star.Target.BOOK))
     }
 
     @Transactional

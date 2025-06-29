@@ -12,8 +12,6 @@ import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.book.BookMapper
 import kr.loghub.api.repository.book.BookCustomRepository
 import kr.loghub.api.repository.book.BookRepository
-import kr.loghub.api.repository.topic.TopicRepository
-import kr.loghub.api.service.cache.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
@@ -28,8 +26,6 @@ import java.util.*
 class BookService(
     private val bookRepository: BookRepository,
     private val bookCustomRepository: BookCustomRepository,
-    private val topicRepository: TopicRepository,
-    private val cacheService: CacheService,
 ) {
     companion object {
         private const val PAGE_SIZE = 20
