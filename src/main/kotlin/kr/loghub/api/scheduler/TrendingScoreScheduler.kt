@@ -2,6 +2,7 @@ package kr.loghub.api.scheduler
 
 import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.repository.article.ArticleRepository
+import kr.loghub.api.repository.book.BookRepository
 import kr.loghub.api.repository.question.QuestionRepository
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ZSetOperations
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class TrendingScoreScheduler(
     private val articleRepository: ArticleRepository,
+    private val bookRepository: BookRepository,
     private val questionRepository: QuestionRepository,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
@@ -30,6 +32,11 @@ class TrendingScoreScheduler(
             RedisKey.Article.TRENDING_SCORE,
             articleRepository::clearTrendingScore,
             articleRepository::updateTrendingScoreById,
+        )
+        updateTrendingScore(
+            RedisKey.Book.TRENDING_SCORE,
+            bookRepository::clearTrendingScore,
+            bookRepository::updateTrendingScoreById
         )
         updateTrendingScore(
             RedisKey.Question.TRENDING_SCORE,

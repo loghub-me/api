@@ -2,6 +2,7 @@ package kr.loghub.api.entity.star
 
 import jakarta.persistence.*
 import kr.loghub.api.entity.article.Article
+import kr.loghub.api.entity.book.Book
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.user.User
 import org.hibernate.annotations.JdbcType
@@ -33,8 +34,12 @@ class Star(
     val article: Article? = null,
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "book_id", nullable = true)
+    val book: Book? = null,
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = true)
     val question: Question? = null,
 ) {
-    enum class Target(val label: String) { ARTICLE("아티클"), QUESTION("질문") }
+    enum class Target(val label: String) { ARTICLE("아티클"), BOOK("도서"), QUESTION("질문") }
 }

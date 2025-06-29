@@ -71,6 +71,30 @@ object ResponseMessage {
         }
     }
 
+    object Book {
+        const val NOT_FOUND = "책을 찾을 수 없습니다."
+        const val POST_SUCCESS = "책이 성공적으로 등록되었습니다!"
+        const val EDIT_SUCCESS = "책이 성공적으로 수정되었습니다!"
+        const val DELETE_SUCCESS = "책이 성공적으로 삭제되었습니다!"
+        const val PERMISSION_DENIED = "이 책에 대한 권한이 없습니다!"
+
+        object Chapter {
+            const val NOT_FOUND = "책 챕터를 찾을 수 없습니다."
+            const val POST_SUCCESS = "책 챕터가 성공적으로 등록되었습니다!"
+            const val EDIT_SUCCESS = "책 챕터가 성공적으로 수정되었습니다!"
+            const val DELETE_SUCCESS = "책 챕터가 성공적으로 삭제되었습니다!"
+            const val CHANGE_SEQUENCE_SUCCESS = "책 챕터 순서가 성공적으로 변경되었습니다!"
+            const val SEQUENCE_MUST_BE_DIFF = "챕터 순서는 서로 다른 값이어야 합니다!"
+        }
+
+        object Review {
+            const val NOT_FOUND = "책 리뷰를 찾을 수 없습니다."
+            const val POST_SUCCESS = "책 리뷰가 성공적으로 등록되었습니다!"
+            const val DELETE_SUCCESS = "책 리뷰가 성공적으로 삭제되었습니다!"
+            const val PERMISSION_DENIED = "이 책 리뷰에 대한 권한이 없습니다!"
+        }
+    }
+
     object Question {
         const val NOT_FOUND = "질문을 찾을 수 없습니다."
         const val POST_SUCCESS = "질문이 성공적으로 등록되었습니다!"

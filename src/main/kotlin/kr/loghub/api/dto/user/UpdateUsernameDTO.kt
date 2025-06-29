@@ -10,5 +10,5 @@ data class UpdateUsernameDTO(
     @field:Size(min = 4, max = 12, message = "아이디는 4자 이상 12자 이하로 입력해주세요.")
     @field:Pattern(regexp = "^[a-z0-9]*$", message = "유저명은 영문 소문자와 숫자로만 입력해주세요.")
     @field:Trimmed
-    val username: String,
+    val newUsername: String,
 )

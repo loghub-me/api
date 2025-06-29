@@ -10,6 +10,10 @@ object RedisKey {
         const val TRENDING_SCORE = "articles:trending_score"
     }
 
+    object Book {
+        const val TRENDING_SCORE = "books:trending_score"
+    }
+
     object Question {
         const val TRENDING_SCORE = "questions:trending_score"
     }

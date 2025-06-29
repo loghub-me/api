@@ -20,6 +20,20 @@ object StarMapper {
             )
         }
 
+        Star.Target.BOOK -> {
+            val target = star.book!!
+            StarDTO(
+                id = star.id!!,
+                path = "/books/${target.id}",
+                title = target.title,
+                writerUsername = target.writerUsername,
+                topics = target.topicsFlat,
+                createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+                target = star.target,
+                targetLabel = star.target.label
+            )
+        }
+
         Star.Target.QUESTION -> {
             val target = star.question!!
             StarDTO(
