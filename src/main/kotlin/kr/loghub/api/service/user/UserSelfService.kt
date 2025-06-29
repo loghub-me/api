@@ -9,7 +9,9 @@ import kr.loghub.api.entity.user.User
 import kr.loghub.api.mapper.user.UserMapper
 import kr.loghub.api.proxy.TaskAPIProxy
 import kr.loghub.api.repository.article.ArticleRepository
+import kr.loghub.api.repository.book.BookRepository
 import kr.loghub.api.repository.question.QuestionRepository
+import kr.loghub.api.repository.user.UserPostRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkAlreadyExists
 import kr.loghub.api.util.requireNotEquals
@@ -20,10 +22,16 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserSelfService(
     private val userRepository: UserRepository,
+    private val userPostRepository: UserPostRepository,
     private val articleRepository: ArticleRepository,
+    private val bookRepository: BookRepository,
     private val questionRepository: QuestionRepository,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
+    @Transactional(readOnly = true)
+    fun getRecentPosts(user: User) = userPostRepository.findTop20ByUserOrderByUpdatedAtDesc(user)
+        .map { UserMapper.mapPost(it) }
+
     @Transactional(readOnly = true)
     fun getProfile(user: User) = userRepository.findByUsername(user.username)
         ?.let { UserMapper.mapProfile(it) }
@@ -37,21 +45,22 @@ class UserSelfService(
     @Transactional
     fun updateUsername(requestBody: UpdateUsernameDTO, user: User) {
         requireNotEquals(
-            User::username.name,
-            user.username, requestBody.username,
+            UpdateUsernameDTO::newUsername.name,
+            user.username, requestBody.newUsername,
         ) { ResponseMessage.User.USERNAME_NOT_CHANGED }
         checkAlreadyExists(
-            User::username.name,
-            userRepository.existsByUsername(requestBody.username)
+            UpdateUsernameDTO::newUsername.name,
+            userRepository.existsByUsername(requestBody.newUsername)
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
 
         val existingUser = userRepository.findByUsername(user.username)
             ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
-        val (oldUsername, newUsername) = Pair(existingUser.username, requestBody.username)
+        val (oldUsername, newUsername) = Pair(existingUser.username, requestBody.newUsername)
 
-        existingUser.updateUsername(requestBody.username)
+        existingUser.updateUsername(newUsername)
         taskAPIProxy.renameAvatar(AvatarRenameRequest(oldUsername, newUsername))
         articleRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
+        bookRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
         questionRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
     }
 
