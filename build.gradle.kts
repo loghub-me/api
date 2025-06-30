@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.22"
     kotlin("plugin.jpa") version "1.9.22"
 
-    id("org.springframework.boot") version "3.4.4"
+    id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
 }
@@ -22,7 +22,7 @@ repositories {
 }
 
 extra["springAiVersion"] = "1.0.0"
-val springCloudVersion by extra("2024.0.1")
+val springCloudVersion by extra("2025.0.0")
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -38,7 +38,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.auth0:java-jwt:4.5.0")
     implementation("com.resend:resend-java:3.1.0")
-    implementation("software.amazon.awssdk:s3:2.29.44")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

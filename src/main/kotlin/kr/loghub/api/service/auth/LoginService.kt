@@ -6,7 +6,7 @@ import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.auth.LoginConfirmDTO
 import kr.loghub.api.dto.auth.LoginRequestDTO
 import kr.loghub.api.dto.auth.token.TokenDTO
-import kr.loghub.api.dto.internal.mail.LoginOTPMailDTO
+import kr.loghub.api.dto.task.mail.LoginOTPMailDTO
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundFieldException
 import kr.loghub.api.repository.user.UserRepository

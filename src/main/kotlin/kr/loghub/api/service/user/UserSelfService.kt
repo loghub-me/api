@@ -1,7 +1,7 @@
 package kr.loghub.api.service.user
 
 import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.dto.internal.avatar.AvatarRenameRequest
+import kr.loghub.api.dto.task.avatar.AvatarRenameRequest
 import kr.loghub.api.dto.user.UpdateUserPrivacyDTO
 import kr.loghub.api.dto.user.UpdateUserProfileDTO
 import kr.loghub.api.dto.user.UpdateUsernameDTO
@@ -18,6 +18,7 @@ import kr.loghub.api.util.requireNotEquals
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class UserSelfService(
@@ -63,6 +64,10 @@ class UserSelfService(
         bookRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
         questionRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
     }
+
+    @Transactional
+    fun updateAvatar(file: MultipartFile, user: User) =
+        taskAPIProxy.uploadAvatar(file, user.username)
 
     @Transactional
     fun updateProfile(requestBody: UpdateUserProfileDTO, user: User) {

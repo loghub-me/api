@@ -50,6 +50,7 @@ object ResponseMessage {
         const val BOT_NOT_FOUND = "봇 사용자를 찾을 수 없습니다."
         const val EMAIL_ALREADY_EXISTS = "이미 사용중인 이메일입니다."
         const val USERNAME_ALREADY_EXISTS = "이미 사용중인 아이디입니다."
+        const val AVATAR_UPDATE_SUCCESS = "아바타가 성공적으로 업데이트되었습니다!"
         const val PROFILE_UPDATE_SUCCESS = "프로필이 성공적으로 업데이트되었습니다!"
         const val PRIVACY_UPDATE_SUCCESS = "정보 공개 설정이 성공적으로 업데이트되었습니다!"
         const val USERNAME_UPDATE_SUCCESS = "아이디가 성공적으로 변경되었습니다!"

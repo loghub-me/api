@@ -1,3 +1,3 @@
-package kr.loghub.api.dto.internal.markdown
+package kr.loghub.api.dto.task.markdown
 
 data class MarkdownParseRequest(val markdown: String)

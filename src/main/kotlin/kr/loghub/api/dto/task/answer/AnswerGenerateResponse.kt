@@ -1,4 +1,4 @@
-package kr.loghub.api.dto.internal.answer
+package kr.loghub.api.dto.task.answer
 
 data class AnswerGenerateResponse(
     val answerContent: String,

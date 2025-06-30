@@ -1,4 +1,4 @@
-package kr.loghub.api.dto.internal.mail
+package kr.loghub.api.dto.task.mail
 
 interface MailDTO {
     val to: String;

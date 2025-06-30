@@ -1,4 +1,4 @@
-package kr.loghub.api.dto.internal.avatar
+package kr.loghub.api.dto.task.avatar
 
 data class AvatarRenameRequest(
     val oldUsername: String,

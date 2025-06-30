@@ -40,11 +40,6 @@ jwt:
   issuer: ${APP_NAME}
   secret: ${ACCESS_TOKEN_SECRET}
   expiration: 600  # 10 minutes
-r2:
-  access-key: ${R2_ACCESS_KEY}
-  secret-key: ${R2_SECRET_KEY}
-  endpoint: ${R2_ENDPOINT}
-  bucket: ${R2_BUCKET}
 resend:
   api-key: ${RESEND_API_KEY}
   from: ${RESEND_FROM}

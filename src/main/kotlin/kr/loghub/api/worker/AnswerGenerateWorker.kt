@@ -2,8 +2,8 @@ package kr.loghub.api.worker
 
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.constant.message.ServerMessage
-import kr.loghub.api.dto.internal.answer.AnswerGenerateRequest
-import kr.loghub.api.dto.internal.answer.AnswerGenerateResponse
+import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
+import kr.loghub.api.dto.task.answer.AnswerGenerateResponse
 import kr.loghub.api.entity.question.Answer
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException

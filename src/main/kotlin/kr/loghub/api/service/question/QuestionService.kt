@@ -1,8 +1,8 @@
 package kr.loghub.api.service.question
 
 import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.dto.internal.answer.AnswerGenerateRequest
 import kr.loghub.api.dto.question.*
+import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.question.QuestionStats
 import kr.loghub.api.entity.user.User

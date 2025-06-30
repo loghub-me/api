@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/users/self")
@@ -41,6 +42,18 @@ class UserSelfController(private val userSelfService: UserSelfService) {
         userSelfService.updateUsername(requestBody, user)
         return MessageResponseBody(
             message = ResponseMessage.User.USERNAME_UPDATE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
+
+    @PutMapping("/avatar")
+    fun updateAvatar(
+        @RequestPart("file") file: MultipartFile,
+        @AuthenticationPrincipal user: User,
+    ): ResponseEntity<ResponseBody> {
+        userSelfService.updateAvatar(file, user)
+        return MessageResponseBody(
+            message = ResponseMessage.User.AVATAR_UPDATE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
