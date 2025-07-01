@@ -7,7 +7,7 @@ import kr.loghub.api.dto.auth.JoinConfirmDTO
 import kr.loghub.api.dto.auth.JoinRequestDTO
 import kr.loghub.api.dto.auth.token.JoinTokenDTO
 import kr.loghub.api.dto.auth.token.TokenDTO
-import kr.loghub.api.dto.task.mail.JoinOTPMailDTO
+import kr.loghub.api.dto.task.mail.JoinMailSendRequest
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.token.TokenService
@@ -37,7 +37,7 @@ class JoinService(
         checkJoinable(requestBody.email, requestBody.username)
 
         val otp = issueOTP(requestBody)
-        val mail = JoinOTPMailDTO(to = requestBody.email, otp = otp)
+        val mail = JoinMailSendRequest(to = requestBody.email, otp = otp)
         mailSendWorker.addToQueue(mail)
     }
 

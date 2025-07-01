@@ -3,6 +3,7 @@ package kr.loghub.api.proxy
 import kr.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import kr.loghub.api.dto.task.avatar.AvatarRenameRequest
 import kr.loghub.api.dto.task.image.ImageUploadResponse
+import kr.loghub.api.dto.task.mail.MailSendRequest
 import kr.loghub.api.dto.task.markdown.MarkdownParseRequest
 import kr.loghub.api.dto.task.markdown.MarkdownParseResponse
 import kr.loghub.api.dto.task.markdown.MarkdownsParseRequest
@@ -46,4 +47,7 @@ interface TaskAPIProxy {
 
     @PostMapping("/avatar/rename")
     fun renameAvatar(@RequestBody request: AvatarRenameRequest)
+
+    @PostMapping("/mail/send")
+    fun sendMail(@RequestBody request: MailSendRequest)
 }

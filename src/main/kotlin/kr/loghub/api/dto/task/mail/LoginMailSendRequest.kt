@@ -1,6 +1,6 @@
 package kr.loghub.api.dto.task.mail
 
-class LoginOTPMailDTO(
+class LoginMailSendRequest(
     override val to: String,
     override val subject: String = "[LogHub] 로그인 인증코드",
     val otp: String,
@@ -12,4 +12,4 @@ class LoginOTPMailDTO(
             </body>
         </html>
     """,  // TODO: Refactor
-) : MailDTO
+) : MailSendRequest

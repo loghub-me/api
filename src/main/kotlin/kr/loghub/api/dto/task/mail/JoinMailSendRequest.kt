@@ -1,6 +1,6 @@
 package kr.loghub.api.dto.task.mail
 
-class JoinOTPMailDTO(
+class JoinMailSendRequest(
     override val to: String,
     override val subject: String = "[LogHub] 가입 절차를 완료해주세요!",
     val otp: String,
@@ -12,4 +12,4 @@ class JoinOTPMailDTO(
             </body>
         </html>
     """,  // TODO: Refactor
-) : MailDTO
+) : MailSendRequest

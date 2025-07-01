@@ -6,7 +6,7 @@ import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.auth.LoginConfirmDTO
 import kr.loghub.api.dto.auth.LoginRequestDTO
 import kr.loghub.api.dto.auth.token.TokenDTO
-import kr.loghub.api.dto.task.mail.LoginOTPMailDTO
+import kr.loghub.api.dto.task.mail.LoginMailSendRequest
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundFieldException
 import kr.loghub.api.repository.user.UserRepository
@@ -40,7 +40,7 @@ class LoginService(
         ) { ResponseMessage.User.NOT_FOUND }
 
         val otp = issueOTP(requestBody.email)
-        val mail = LoginOTPMailDTO(to = requestBody.email, otp = otp)
+        val mail = LoginMailSendRequest(to = requestBody.email, otp = otp)
         mailSendWorker.addToQueue(mail)
     }
 
