@@ -1,7 +1,7 @@
 package kr.loghub.api.entity.question
 
 import jakarta.persistence.*
-import kr.loghub.api.dto.question.answer.PostAnswerDTO
+import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import kr.loghub.api.entity.PublicEntity
 import kr.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
@@ -9,10 +9,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "answers")
+@Table(name = "question_answers")
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
-class Answer(
+class QuestionAnswer(
     @Column(name = "content", nullable = false)
     var content: String,
 
@@ -30,7 +30,7 @@ class Answer(
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 ) : PublicEntity() {
-    fun update(requestBody: PostAnswerDTO) {
+    fun update(requestBody: PostQuestionAnswerDTO) {
         this.content = requestBody.content
     }
 

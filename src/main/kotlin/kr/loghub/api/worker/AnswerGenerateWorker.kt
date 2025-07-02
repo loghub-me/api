@@ -4,11 +4,11 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.constant.message.ServerMessage
 import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
 import kr.loghub.api.dto.task.answer.AnswerGenerateResponse
-import kr.loghub.api.entity.question.Answer
+import kr.loghub.api.entity.question.QuestionAnswer
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
+import kr.loghub.api.repository.question.QuestionAnswerRepository
 import kr.loghub.api.repository.question.QuestionRepository
-import kr.loghub.api.repository.question.answer.AnswerRepository
 import kr.loghub.api.repository.user.UserRepository
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.scheduling.annotation.Scheduled
@@ -21,7 +21,7 @@ class AnswerGenerateWorker(
     private val chatClient: ChatClient,
     private val userRepository: UserRepository,
     private val questionRepository: QuestionRepository,
-    private val answerRepository: AnswerRepository
+    private val questionAnswerRepository: QuestionAnswerRepository
 ) {
     companion object {
         private val queue = ConcurrentLinkedQueue<AnswerGenerateRequest>()
@@ -72,19 +72,19 @@ class AnswerGenerateWorker(
             .orElseThrow { EntityNotFoundException(ResponseMessage.Question.NOT_FOUND) }
 
         if (rejectionReason != AnswerGenerateResponse.RejectionReason.NONE) {
-            val answer = Answer(
+            val answer = QuestionAnswer(
                 content = rejectionReason.message,
                 question = question,
                 writer = bot,
             )
-            answerRepository.save(answer)
+            questionAnswerRepository.save(answer)
         }
 
-        val answer = Answer(
+        val answer = QuestionAnswer(
             content = answerContent,
             question = question,
             writer = bot
         )
-        answerRepository.save(answer)
+        questionAnswerRepository.save(answer)
     }
 }

@@ -57,7 +57,7 @@ class Question(
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     @OrderBy("createdAt ASC")
-    var answers: MutableList<Answer> = mutableListOf(),
+    var answers: MutableList<QuestionAnswer> = mutableListOf(),
 
     @Column(nullable = false, length = 12)
     val writerUsername: String,  // for search(denormalization)

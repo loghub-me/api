@@ -1,13 +1,13 @@
-package kr.loghub.api.mapper.question.answer
+package kr.loghub.api.mapper.question
 
 import kr.loghub.api.dto.common.ContentDTO
-import kr.loghub.api.dto.question.answer.AnswerDTO
-import kr.loghub.api.entity.question.Answer
+import kr.loghub.api.dto.question.answer.QuestionAnswerDTO
+import kr.loghub.api.entity.question.QuestionAnswer
 import kr.loghub.api.mapper.user.UserMapper
 import java.time.format.DateTimeFormatter
 
-object AnswerMapper {
-    fun map(answer: Answer, contentHTML: String) = AnswerDTO(
+object QuestionAnswerMapper {
+    fun map(answer: QuestionAnswer, contentHTML: String) = QuestionAnswerDTO(
         id = answer.id!!,
         content = ContentDTO(
             markdown = answer.content,

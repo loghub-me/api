@@ -52,11 +52,11 @@ class TrendingScoreAspect(private val redisTemplate: RedisTemplate<String, Strin
     fun updateTrendingScoreAfterRemoveBookStar(articleId: Long) =
         zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
 
-    @AfterReturning("execution(* kr.loghub.api.service.question.answer.AnswerService.postAnswer(..)) && args(questionId, ..)")
+    @AfterReturning("execution(* kr.loghub.api.service.question.answer.QuestionAnswerService.postAnswer(..)) && args(questionId, ..)")
     fun updateTrendingScoreAfterPostAnswer(questionId: Long) =
         zSetOps.incrementScore(RedisKey.Question.TRENDING_SCORE, questionId.toString(), TrendingScoreDelta.ANSWER)
 
-    @AfterReturning("execution(* kr.loghub.api.service.question.answer.AnswerService.removeAnswer(..)) && args(questionId, ..)")
+    @AfterReturning("execution(* kr.loghub.api.service.question.QuestionAnswerService.removeAnswer(..)) && args(questionId, ..)")
     fun updateTrendingScoreAfterRemoveAnswer(questionId: Long) =
         zSetOps.incrementScore(RedisKey.Question.TRENDING_SCORE, questionId.toString(), -TrendingScoreDelta.ANSWER)
 

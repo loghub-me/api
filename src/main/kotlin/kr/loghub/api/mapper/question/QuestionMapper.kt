@@ -6,7 +6,6 @@ import kr.loghub.api.dto.question.QuestionDetailDTO
 import kr.loghub.api.dto.question.QuestionStatsDTO
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.question.QuestionStats
-import kr.loghub.api.mapper.question.answer.AnswerMapper
 import kr.loghub.api.mapper.user.UserMapper
 import java.time.format.DateTimeFormatter
 
@@ -37,7 +36,7 @@ object QuestionMapper {
             stats = mapStats(question.stats),
             topics = question.topicsFlat,
             answers = question.answers.mapIndexed { i, answer ->
-                AnswerMapper.map(answer, answerContentHTMLs[i])
+                QuestionAnswerMapper.map(answer, answerContentHTMLs[i])
             },
             createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
             updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),

@@ -1,13 +1,13 @@
-package kr.loghub.api.controller.question.answer
+package kr.loghub.api.controller.question
 
 import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.dto.question.answer.PostAnswerDTO
+import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import kr.loghub.api.dto.response.MethodResponseBody
 import kr.loghub.api.dto.response.RedirectResponseBody
 import kr.loghub.api.dto.response.ResponseBody
 import kr.loghub.api.entity.user.User
-import kr.loghub.api.service.question.answer.AnswerService
+import kr.loghub.api.service.question.QuestionAnswerService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/questions/{questionId}/answers")
-class AnswerController(private val answerService: AnswerService) {
+class QuestionAnswerController(private val questionAnswerService: QuestionAnswerService) {
     @PostMapping
     fun postAnswer(
         @PathVariable questionId: Long,
-        @RequestBody @Valid requestBody: PostAnswerDTO,
+        @RequestBody @Valid requestBody: PostQuestionAnswerDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val createdAnswer = answerService.postAnswer(questionId, requestBody, writer)
+        val createdAnswer = questionAnswerService.postAnswer(questionId, requestBody, writer)
         val question = createdAnswer.question
         return RedirectResponseBody(
             pathname = "/questions/@${question.writerUsername}/${question.slug}",
-            message = ResponseMessage.Answer.POST_SUCCESS,
+            message = ResponseMessage.Question.Answer.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
     }
@@ -35,14 +35,14 @@ class AnswerController(private val answerService: AnswerService) {
     fun editAnswer(
         @PathVariable questionId: Long,
         @PathVariable answerId: Long,
-        @RequestBody @Valid requestBody: PostAnswerDTO,
+        @RequestBody @Valid requestBody: PostQuestionAnswerDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedAnswer = answerService.editAnswer(questionId, answerId, requestBody, writer)
+        val updatedAnswer = questionAnswerService.editAnswer(questionId, answerId, requestBody, writer)
         val question = updatedAnswer.question
         return RedirectResponseBody(
             pathname = "/questions/@${question.writerUsername}/${question.slug}",
-            message = ResponseMessage.Answer.EDIT_SUCCESS,
+            message = ResponseMessage.Question.Answer.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
@@ -53,10 +53,10 @@ class AnswerController(private val answerService: AnswerService) {
         @PathVariable answerId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        answerService.removeAnswer(questionId, answerId, writer)
+        questionAnswerService.removeAnswer(questionId, answerId, writer)
         return MethodResponseBody(
             id = answerId,
-            message = ResponseMessage.Answer.DELETE_SUCCESS,
+            message = ResponseMessage.Question.Answer.DELETE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
@@ -67,10 +67,10 @@ class AnswerController(private val answerService: AnswerService) {
         @PathVariable answerId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val acceptedAnswer = answerService.acceptAnswer(questionId, answerId, writer)
+        val acceptedAnswer = questionAnswerService.acceptAnswer(questionId, answerId, writer)
         return MethodResponseBody(
             id = acceptedAnswer.id!!,
-            message = ResponseMessage.Answer.ACCEPT_SUCCESS,
+            message = ResponseMessage.Question.Answer.ACCEPT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
