@@ -47,7 +47,7 @@ class QuestionController(private val questionService: QuestionService) {
     ): ResponseEntity<ResponseBody> {
         val createdQuestion = questionService.postQuestion(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/questions/@${writer.username}/${createdQuestion.slug}",
+            pathname = "/@${writer.username}/questions/${createdQuestion.slug}",
             message = ResponseMessage.Question.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -86,7 +86,7 @@ class QuestionController(private val questionService: QuestionService) {
     ): ResponseEntity<ResponseBody> {
         val closedQuestion = questionService.closeQuestion(id, writer)
         return RedirectResponseBody(
-            pathname = "/questions/@${writer.username}/${closedQuestion.slug}",
+            pathname = "/@${writer.username}/questions/${closedQuestion.slug}",
             message = ResponseMessage.Question.CLOSE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

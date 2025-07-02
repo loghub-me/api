@@ -20,8 +20,8 @@ interface BookRepository : JpaRepository<Book, Long> {
     fun findWithWriterById(id: Long): Book?
 
     @Query("$SELECT_BOOK WHERE $BY_COMPOSITE_KEY")
-    @EntityGraph(attributePaths = ["writer"])
-    fun findWithWriterByCompositeKey(username: String, slug: String): Book?
+    @EntityGraph(attributePaths = ["writer", "chapters"])
+    fun findWithGraphByCompositeKey(username: String, slug: String): Book?
 
     @Query("$EXISTS_BOOK WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean

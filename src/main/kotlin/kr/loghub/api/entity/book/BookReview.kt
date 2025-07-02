@@ -17,11 +17,11 @@ class BookReview(
     @Column(name = "rating", nullable = false)
     val rating: Int,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "book_id", nullable = false)
     val book: Book,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 ) : PublicEntity()

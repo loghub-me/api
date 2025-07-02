@@ -31,7 +31,7 @@ class Book(
     @Embedded
     var stats: BookStats = BookStats(),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
@@ -72,6 +72,12 @@ class Book(
 
     fun updateSlug(slug: String) {
         this.slug = slug
+    }
+
+    fun updateTopics(topics: Set<Topic>) {
+        this.topics.clear()
+        this.topics = topics.toMutableSet()
+        this.topicsFlat = TopicsFlatConverter.toFlat(topics)
     }
 
     fun incrementReviewCount() {

@@ -12,6 +12,7 @@ import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.book.BookMapper
 import kr.loghub.api.repository.book.BookCustomRepository
 import kr.loghub.api.repository.book.BookRepository
+import kr.loghub.api.repository.topic.TopicRepository
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
@@ -26,6 +27,7 @@ import java.util.*
 class BookService(
     private val bookRepository: BookRepository,
     private val bookCustomRepository: BookCustomRepository,
+    private val topicRepository: TopicRepository,
 ) {
     companion object {
         private const val PAGE_SIZE = 20
@@ -53,14 +55,16 @@ class BookService(
 
     @Transactional(readOnly = true)
     fun getBook(username: String, slug: String): BookDetailDTO =
-        bookRepository.findWithWriterByCompositeKey(username, slug)
+        bookRepository.findWithGraphByCompositeKey(username, slug)
             ?.let { BookMapper.mapDetail(it) }
             ?: throw EntityNotFoundException(ResponseMessage.Book.NOT_FOUND)
 
     @Transactional
     fun postBook(requestBody: PostBookDTO, writer: User): Book {
         val slug = generateUniqueSlug(writer.username, requestBody.title)
-        val book = requestBody.toEntity(slug, writer)
+        val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
+
+        val book = requestBody.toEntity(slug, writer, topics)
         return bookRepository.save(book)
     }
 
@@ -72,9 +76,11 @@ class BookService(
         checkPermission(book.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
 
         val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         book.update(requestBody)
         book.updateSlug(slug)
+        book.updateTopics(topics)
         return book
     }
 

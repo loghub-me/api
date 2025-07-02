@@ -9,6 +9,7 @@ import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.book.BookReviewMapper
 import kr.loghub.api.repository.book.BookRepository
 import kr.loghub.api.repository.book.BookReviewRepository
+import kr.loghub.api.util.checkAlreadyExists
 import kr.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -26,25 +27,26 @@ class BookReviewService(
     }
 
     @Transactional(readOnly = true)
-    fun getReviews(bookId: Long, page: Int): Page<BookReviewDTO> {
-        val book = bookRepository.findById(bookId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Book.NOT_FOUND) }
-        return bookReviewRepository.findWithGraphByBook(
-            book = book,
+    fun getReviews(bookId: Long, page: Int): Page<BookReviewDTO> =
+        bookReviewRepository.findByBookId(
+            bookId = bookId,
             pageable = PageRequest.of(
                 page - 1,
                 DEFAULT_PAGE_SIZE,
                 Sort.by(BookReview::createdAt.name).descending()
             ),
         ).map(BookReviewMapper::map)
-    }
 
     @Transactional
     fun postReview(bookId: Long, requestBody: PostBookReviewDTO, writer: User): BookReview {
         val book = bookRepository.findById(bookId)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Book.NOT_FOUND) }
-        val comment = requestBody.toEntity(book, writer)
 
+        checkAlreadyExists(bookReviewRepository.existsByBookAndWriter(book, writer)) {
+            ResponseMessage.Book.Review.ALREADY_EXISTS
+        }
+
+        val comment = requestBody.toEntity(book, writer)
         book.incrementReviewCount()
         return bookReviewRepository.save(comment)
     }

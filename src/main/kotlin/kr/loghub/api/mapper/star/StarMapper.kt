@@ -10,7 +10,7 @@ object StarMapper {
             val target = star.article!!
             StarDTO(
                 id = star.id!!,
-                path = "/articles/@${target.writerUsername}/${target.slug}",
+                path = "/@${target.writerUsername}/articles/${target.slug}",
                 title = target.title,
                 writerUsername = target.writerUsername,
                 topics = target.topicsFlat,
@@ -24,7 +24,7 @@ object StarMapper {
             val target = star.book!!
             StarDTO(
                 id = star.id!!,
-                path = "/books/${target.id}",
+                path = "/@${target.writerUsername}/books/${target.slug}",
                 title = target.title,
                 writerUsername = target.writerUsername,
                 topics = target.topicsFlat,
@@ -38,7 +38,7 @@ object StarMapper {
             val target = star.question!!
             StarDTO(
                 id = star.id!!,
-                path = "/questions/@${target.writerUsername}/${target.slug}",
+                path = "/@${target.writerUsername}/questions/${target.slug}",
                 title = target.title,
                 writerUsername = target.writerUsername,
                 topics = target.topicsFlat,

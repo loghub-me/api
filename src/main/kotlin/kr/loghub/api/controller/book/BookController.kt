@@ -43,7 +43,7 @@ class BookController(private val bookService: BookService) {
     ): ResponseEntity<ResponseBody> {
         val createdBook = bookService.postBook(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/books/@${writer.username}/${createdBook.slug}/edit",
+            pathname = "/@${writer.username}/books/${createdBook.slug}/edit",
             message = ResponseMessage.Book.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -57,7 +57,7 @@ class BookController(private val bookService: BookService) {
     ): ResponseEntity<ResponseBody> {
         val updatedBook = bookService.editBook(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/books/@${writer.username}/${updatedBook.slug}",
+            pathname = "/@${writer.username}/books/${updatedBook.slug}",
             message = ResponseMessage.Book.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

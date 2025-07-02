@@ -49,7 +49,7 @@ class ArticleController(private val articleService: ArticleService) {
     ): ResponseEntity<ResponseBody> {
         val createdArticle = articleService.postArticle(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/articles/@${writer.username}/${createdArticle.slug}",
+            pathname = "/@${writer.username}/articles/${createdArticle.slug}",
             message = ResponseMessage.Article.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -63,7 +63,7 @@ class ArticleController(private val articleService: ArticleService) {
     ): ResponseEntity<ResponseBody> {
         val updatedArticle = articleService.editArticle(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/articles/@${writer.username}/${updatedArticle.slug}",
+            pathname = "/@${writer.username}/articles/${updatedArticle.slug}",
             message = ResponseMessage.Article.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

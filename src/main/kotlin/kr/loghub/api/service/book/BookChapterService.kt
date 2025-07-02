@@ -27,9 +27,7 @@ class BookChapterService(
 
     @Transactional(readOnly = true)
     fun getChapter(bookId: Long, sequence: Int): BookChapterDetailDTO {
-        val book = bookRepository.findById(bookId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Book.NOT_FOUND) }
-        val chapter = bookChapterRepository.findByBookAndSequence(book, sequence)
+        val chapter = bookChapterRepository.findByBookIdAndSequence(bookId, sequence)
             ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
         val cachedHTML = cacheService.findOrGenerateMarkdownCache(chapter.content)
         return BookChapterMapper.mapDetail(chapter, cachedHTML)
@@ -47,6 +45,7 @@ class BookChapterService(
             title = DEFAULT_CHAPTER_TITLE,
             sequence = chapterSize + 1,
             book = book,
+            writer = writer,
         )
         return bookChapterRepository.save(chapter)
     }
@@ -55,14 +54,22 @@ class BookChapterService(
     fun editChapter(
         bookId: Long, sequence: Int, requestBody: EditBookChapterDTO, writer: User
     ): BookChapter {
-        val chapter = bookChapterRepository.findAccessibleChapter(bookId, sequence, writer)
+        val chapter = bookChapterRepository.findByBookIdAndSequence(bookId, sequence)
+            ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
+
+        checkPermission(chapter.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
+
         chapter.update(requestBody)
         return chapter
     }
 
     @Transactional
     fun deleteChapter(bookId: Long, sequence: Int, writer: User) {
-        val chapter = bookChapterRepository.findAccessibleChapter(bookId, sequence, writer)
+        val chapter = bookChapterRepository.findByBookIdAndSequence(bookId, sequence)
+            ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
+
+        checkPermission(chapter.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
+
         bookChapterRepository.delete(chapter)
     }
 
@@ -70,27 +77,15 @@ class BookChapterService(
     fun changeChapterSequence(bookId: Long, sequenceA: Int, sequenceB: Int, writer: User) {
         requireNotEquals("sequenceB", sequenceA, sequenceB) { ResponseMessage.Book.Chapter.SEQUENCE_MUST_BE_DIFF }
 
-        val book = bookRepository.findById(bookId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Book.NOT_FOUND) }
-
-        checkPermission(book.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
-
-        val chapterA = bookChapterRepository.findByBookAndSequence(book, sequenceA)
+        val chapterA = bookChapterRepository.findByBookIdAndSequence(bookId, sequenceA)
             ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
-        val chapterB = bookChapterRepository.findByBookAndSequence(book, sequenceB)
+        val chapterB = bookChapterRepository.findByBookIdAndSequence(bookId, sequenceB)
             ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
+
+        checkPermission(chapterA.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
+        checkPermission(chapterB.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
+
         chapterA.updateSequence(sequenceB)
         chapterB.updateSequence(sequenceA)
-    }
-
-    private fun BookChapterRepository.findAccessibleChapter(bookId: Long, sequence: Int, writer: User): BookChapter {
-        val book = bookRepository.findById(bookId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Book.NOT_FOUND) }
-        val chapter = bookChapterRepository.findByBookAndSequence(book, sequence)
-            ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
-
-        checkPermission(book.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
-
-        return chapter
     }
 }

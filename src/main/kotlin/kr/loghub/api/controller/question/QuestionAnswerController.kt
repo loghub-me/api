@@ -25,7 +25,7 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         val createdAnswer = questionAnswerService.postAnswer(questionId, requestBody, writer)
         val question = createdAnswer.question
         return RedirectResponseBody(
-            pathname = "/questions/@${question.writerUsername}/${question.slug}",
+            pathname = "/@${question.writerUsername}/questions/${question.slug}",
             message = ResponseMessage.Question.Answer.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -41,7 +41,7 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         val updatedAnswer = questionAnswerService.editAnswer(questionId, answerId, requestBody, writer)
         val question = updatedAnswer.question
         return RedirectResponseBody(
-            pathname = "/questions/@${question.writerUsername}/${question.slug}",
+            pathname = "/@${question.writerUsername}/questions/${question.slug}",
             message = ResponseMessage.Question.Answer.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

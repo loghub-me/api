@@ -26,37 +26,31 @@ class ArticleCommentService(
     }
 
     @Transactional(readOnly = true)
-    fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> {
-        val article = articleRepository.findById(articleId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
-        return articleCommentRepository.findWithGraphByArticleAndParentIsNull(
-            article = article,
+    fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> =
+        articleCommentRepository.findRootByArticleId(
+            articleId = articleId,
             pageable = PageRequest.of(
                 page - 1,
                 DEFAULT_PAGE_SIZE,
                 Sort.by(ArticleComment::createdAt.name).descending()
             ),
         ).map(ArticleCommentMapper::map)
-    }
 
     @Transactional(readOnly = true)
-    fun getReplies(articleId: Long, commentId: Long): List<ArticleCommentDTO> {
-        val parent = articleCommentRepository.findById(commentId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND) }
-        return articleCommentRepository.findWithGraphByArticleIdAndParentOrderByCreatedAtDesc(articleId, parent)
+    fun getReplies(articleId: Long, parentId: Long): List<ArticleCommentDTO> =
+        articleCommentRepository.findByArticleIdAndParentId(articleId, parentId)
             .map(ArticleCommentMapper::map)
-    }
 
     @Transactional
     fun postComment(articleId: Long, requestBody: PostArticleCommentDTO, writer: User): ArticleComment {
         val article = articleRepository.findById(articleId)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
-        val parent: ArticleComment? = requestBody.parentId?.let { parentId ->
+        val parent = requestBody.parentId?.let { parentId ->
             articleCommentRepository.findByArticleAndId(article, parentId)
                 ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
         }
-        val comment = requestBody.toEntity(article, parent, writer)
 
+        val comment = requestBody.toEntity(article, parent, writer)
         article.incrementCommentCount()
         comment.parent?.incrementReplyCount()
         return articleCommentRepository.save(comment)

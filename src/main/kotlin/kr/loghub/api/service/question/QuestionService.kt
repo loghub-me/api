@@ -95,7 +95,7 @@ class QuestionService(
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
         val slug = generateUniqueSlug(writer.username, requestBody.title)
-        val topics = topicRepository.findDTOsBySlugIn(requestBody.topicSlugs)
+        val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         question.update(requestBody)
         question.updateSlug(slug)

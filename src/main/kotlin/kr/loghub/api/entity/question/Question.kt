@@ -43,7 +43,7 @@ class Question(
     @Embedded
     var stats: QuestionStats = QuestionStats(),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
@@ -83,9 +83,10 @@ class Question(
         this.slug = slug
     }
 
-    fun updateTopics(topics: List<TopicDTO>) {
+    fun updateTopics(topics: Set<Topic>) {
         this.topics.clear()
-        this.topicsFlat = topics
+        this.topics = topics.toMutableSet()
+        this.topicsFlat = TopicsFlatConverter.toFlat(topics)
     }
 
     fun solved() {

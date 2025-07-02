@@ -80,7 +80,7 @@ class ArticleService(
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
         val slug = generateUniqueSlug(writer.username, requestBody.title)
-        val topics = topicRepository.findDTOsBySlugIn(requestBody.topicSlugs)
+        val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         article.update(requestBody)
         article.updateSlug(slug)

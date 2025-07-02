@@ -22,11 +22,11 @@ class QuestionAnswer(
     @Column(name = "accepted_at", nullable = false)
     var acceptedAt: LocalDateTime? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "question_id", nullable = false)
     val question: Question,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 ) : PublicEntity() {

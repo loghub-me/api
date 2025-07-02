@@ -31,7 +31,7 @@ class Article(
     @Embedded
     var stats: ArticleStats = ArticleStats(),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
@@ -70,9 +70,10 @@ class Article(
         this.slug = slug
     }
 
-    fun updateTopics(topics: List<TopicDTO>) {
+    fun updateTopics(topics: Set<Topic>) {
         this.topics.clear()
-        this.topicsFlat = topics
+        this.topics = topics.toMutableSet()
+        this.topicsFlat = TopicsFlatConverter.toFlat(topics)
     }
 
     fun incrementCommentCount() {

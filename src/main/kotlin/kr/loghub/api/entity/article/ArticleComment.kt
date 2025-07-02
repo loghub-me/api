@@ -20,7 +20,7 @@ class ArticleComment(
     @Column(name = "reply_count", nullable = false)
     var replyCount: Int = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "article_id", nullable = false)
     val article: Article,
 
@@ -28,15 +28,15 @@ class ArticleComment(
     @OrderBy("createdAt ASC")
     val replies: MutableList<ArticleComment> = mutableListOf(),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "parent_id", nullable = true)
     val parent: ArticleComment?,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "mention_id", nullable = true)
     val mention: User?,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 ) : PublicEntity() {

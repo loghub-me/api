@@ -93,6 +93,7 @@ object ResponseMessage {
             const val POST_SUCCESS = "책 리뷰가 성공적으로 등록되었습니다!"
             const val DELETE_SUCCESS = "책 리뷰가 성공적으로 삭제되었습니다!"
             const val PERMISSION_DENIED = "이 책 리뷰에 대한 권한이 없습니다!"
+            const val ALREADY_EXISTS = "이미 작성한 책 리뷰가 존재합니다!"
         }
     }
 
@@ -125,9 +126,5 @@ object ResponseMessage {
         const val ALREADY_EXISTS = "이미 스타가 존재합니다."
         const val ADD_SUCCESS = "스타가 성공적으로 추가되었습니다!"
         const val DELETE_SUCCESS = "스타가 성공적으로 삭제되었습니다!"
-    }
-
-    object Image {
-        const val INVALID_IMAGE = "유효하지 않은 이미지입니다."
     }
 }

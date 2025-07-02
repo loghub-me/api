@@ -25,19 +25,19 @@ class Star(
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "article_id", nullable = true)
     val article: Article? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "book_id", nullable = true)
     val book: Book? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "question_id", nullable = true)
     val question: Question? = null,
 ) {
