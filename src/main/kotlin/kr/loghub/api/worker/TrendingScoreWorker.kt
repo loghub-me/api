@@ -1,4 +1,4 @@
-package kr.loghub.api.scheduler
+package kr.loghub.api.worker
 
 import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.repository.article.ArticleRepository
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-class TrendingScoreScheduler(
+class TrendingScoreWorker(
     private val articleRepository: ArticleRepository,
     private val bookRepository: BookRepository,
     private val questionRepository: QuestionRepository,
