@@ -2,6 +2,8 @@ package kr.loghub.api.controller.user
 
 import kr.loghub.api.dto.article.ArticleDTO
 import kr.loghub.api.dto.article.ArticleSort
+import kr.loghub.api.dto.book.BookDTO
+import kr.loghub.api.dto.book.BookSort
 import kr.loghub.api.dto.question.QuestionDTO
 import kr.loghub.api.dto.question.QuestionFilter
 import kr.loghub.api.dto.question.QuestionSort
@@ -29,6 +31,17 @@ class UserController(private val userService: UserService) {
     ): ResponseEntity<Page<ArticleDTO>> {
         val articles = userService.searchUserArticles(username, query, sort, page)
         return ResponseEntity.ok(articles)
+    }
+
+    @GetMapping("/@{username}/books")
+    fun searchUserBooks(
+        @PathVariable username: String,
+        @RequestParam(defaultValue = "") query: String,
+        @RequestParam(defaultValue = "latest") sort: BookSort,
+        @RequestParam(defaultValue = "1") page: Int,
+    ): ResponseEntity<Page<BookDTO>> {
+        val books = userService.searchUserBooks(username, query, sort, page)
+        return ResponseEntity.ok(books)
     }
 
     @GetMapping("/@{username}/questions")
