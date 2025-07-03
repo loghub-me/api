@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS public.book_chapters
         CONSTRAINT book_chapters_book_id_fk REFERENCES public.books ON DELETE CASCADE,
     writer_id  bigint       NOT NULL
         CONSTRAINT book_chapters_writer_id_fk REFERENCES public.users ON DELETE CASCADE,
-    CONSTRAINT book_chapters_sequence_idx UNIQUE (book_id, sequence)
+    CONSTRAINT book_chapters_sequence_idx UNIQUE (book_id, sequence) DEFERRABLE INITIALLY DEFERRED
 );
 CREATE INDEX IF NOT EXISTS book_chapters_book_id_sequence_idx ON public.book_chapters (book_id, sequence ASC);
 

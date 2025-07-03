@@ -28,7 +28,7 @@ class BookReviewService(
 
     @Transactional(readOnly = true)
     fun getReviews(bookId: Long, page: Int): Page<BookReviewDTO> =
-        bookReviewRepository.findByBookId(
+        bookReviewRepository.findAllByBookId(
             bookId = bookId,
             pageable = PageRequest.of(
                 page - 1,

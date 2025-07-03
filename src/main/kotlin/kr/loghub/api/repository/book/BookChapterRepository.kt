@@ -15,5 +15,8 @@ interface BookChapterRepository : JpaRepository<BookChapter, Long> {
     @Query("$SELECT_CHAPTER WHERE $BY_BOOK_ID AND bc.sequence = :sequence")
     @EntityGraph(attributePaths = ["writer"])
     fun findByBookIdAndSequence(bookId: Long, sequence: Int): BookChapter?
+
+    fun findAllByBookIdAndSequenceGreaterThanOrderBySequenceAsc(bookId: Long, sequence: Int): List<BookChapter>
+
     fun countByBook(book: Book): Int
 }

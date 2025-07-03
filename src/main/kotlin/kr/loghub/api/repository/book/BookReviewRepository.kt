@@ -17,7 +17,7 @@ interface BookReviewRepository : JpaRepository<BookReview, Long> {
 
     @EntityGraph(attributePaths = ["writer"])
     @Query("$SELECT_REVIEW WHERE $BY_BOOK_ID")
-    fun findByBookId(bookId: Long, pageable: Pageable): Page<BookReview>
+    fun findAllByBookId(bookId: Long, pageable: Pageable): Page<BookReview>
 
     @EntityGraph(attributePaths = ["writer", "book"])
     fun findWithGraphByBookIdAndId(bookId: Long, commentId: Long): BookReview?

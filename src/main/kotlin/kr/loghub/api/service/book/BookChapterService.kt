@@ -67,10 +67,13 @@ class BookChapterService(
     fun deleteChapter(bookId: Long, sequence: Int, writer: User) {
         val chapter = bookChapterRepository.findByBookIdAndSequence(bookId, sequence)
             ?: throw EntityNotFoundException(ResponseMessage.Book.Chapter.NOT_FOUND)
+        val chaptersToShift =
+            bookChapterRepository.findAllByBookIdAndSequenceGreaterThanOrderBySequenceAsc(bookId, sequence)
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Book.PERMISSION_DENIED }
 
         bookChapterRepository.delete(chapter)
+        chaptersToShift.forEach { it.updateSequence(it.sequence - 1) }
     }
 
     @Transactional
