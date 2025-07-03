@@ -27,7 +27,7 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> =
-        articleCommentRepository.findRootByArticleId(
+        articleCommentRepository.findRootsByArticleId(
             articleId = articleId,
             pageable = PageRequest.of(
                 page - 1,
@@ -38,7 +38,7 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getReplies(articleId: Long, parentId: Long): List<ArticleCommentDTO> =
-        articleCommentRepository.findByArticleIdAndParentId(articleId, parentId)
+        articleCommentRepository.findAllByArticleIdAndParentId(articleId, parentId)
             .map(ArticleCommentMapper::map)
 
     @Transactional

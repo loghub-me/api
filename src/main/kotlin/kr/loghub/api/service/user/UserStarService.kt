@@ -25,7 +25,7 @@ class UserStarService(
 
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
-        return starRepository.findByUser(user, PageRequest.of(page - 1, PAGE_SIZE))
+        return starRepository.findAllByUser(user, PageRequest.of(page - 1, PAGE_SIZE))
             .map { StarMapper.map(it) }
     }
 }

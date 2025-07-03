@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface StarRepository : JpaRepository<Star, Long> {
     @EntityGraph(attributePaths = ["article", "book", "question", "user"])
-    fun findByUser(user: User, pageable: Pageable): Page<Star>
+    fun findAllByUser(user: User, pageable: Pageable): Page<Star>
 
     // -----------[Article]-----------
     fun existsByArticleIdAndUser(articleId: Long, user: User): Boolean
