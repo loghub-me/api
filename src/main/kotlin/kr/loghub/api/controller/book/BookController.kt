@@ -30,6 +30,12 @@ class BookController(private val bookService: BookService) {
         return ResponseEntity.ok(foundBooks)
     }
 
+    @GetMapping("/trending")
+    fun getTrendingBooks(): ResponseEntity<List<BookDTO>> {
+        val books = bookService.getTrendingBooks()
+        return ResponseEntity.ok(books)
+    }
+
     @GetMapping("/@{username}/{slug}")
     fun getBook(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<BookDetailDTO> {
         val foundBook = bookService.getBook(username, slug)
