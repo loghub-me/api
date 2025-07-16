@@ -1,7 +1,6 @@
 package kr.loghub.api.proxy
 
 import kr.loghub.api.dto.task.avatar.AvatarGenerateRequest
-import kr.loghub.api.dto.task.avatar.AvatarRenameRequest
 import kr.loghub.api.dto.task.image.ImageUploadResponse
 import kr.loghub.api.dto.task.mail.MailSendRequest
 import kr.loghub.api.dto.task.markdown.MarkdownParseRequest
@@ -31,7 +30,10 @@ interface TaskAPIProxy {
         value = ["/image/upload"],
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
     )
-    fun uploadImage(@RequestPart("file") file: MultipartFile): ImageUploadResponse
+    fun uploadImage(
+        @RequestPart("file") file: MultipartFile,
+        @RequestPart("userId") userId: Long,
+    ): ImageUploadResponse
 
     @PostMapping("/avatar/generate")
     fun generateAvatar(@RequestBody request: AvatarGenerateRequest)
@@ -42,11 +44,8 @@ interface TaskAPIProxy {
     )
     fun uploadAvatar(
         @RequestPart("file") file: MultipartFile,
-        @RequestPart("username") username: String,
+        @RequestPart("userId") userId: Long,
     )
-
-    @PostMapping("/avatar/rename")
-    fun renameAvatar(@RequestBody request: AvatarRenameRequest)
 
     @PostMapping("/mail/send")
     fun sendMail(@RequestBody request: MailSendRequest)

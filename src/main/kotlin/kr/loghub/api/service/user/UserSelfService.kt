@@ -1,7 +1,6 @@
 package kr.loghub.api.service.user
 
 import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.dto.task.avatar.AvatarRenameRequest
 import kr.loghub.api.dto.user.UpdateUserPrivacyDTO
 import kr.loghub.api.dto.user.UpdateUserProfileDTO
 import kr.loghub.api.dto.user.UpdateUsernameDTO
@@ -9,8 +8,8 @@ import kr.loghub.api.entity.user.User
 import kr.loghub.api.mapper.user.UserMapper
 import kr.loghub.api.proxy.TaskAPIProxy
 import kr.loghub.api.repository.article.ArticleRepository
-import kr.loghub.api.repository.series.SeriesRepository
 import kr.loghub.api.repository.question.QuestionRepository
+import kr.loghub.api.repository.series.SeriesRepository
 import kr.loghub.api.repository.user.UserPostRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkAlreadyExists
@@ -59,7 +58,6 @@ class UserSelfService(
         val (oldUsername, newUsername) = Pair(existingUser.username, requestBody.newUsername)
 
         existingUser.updateUsername(newUsername)
-        taskAPIProxy.renameAvatar(AvatarRenameRequest(oldUsername, newUsername))
         articleRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
         seriesRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
         questionRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
@@ -67,7 +65,7 @@ class UserSelfService(
 
     @Transactional
     fun updateAvatar(file: MultipartFile, user: User) =
-        taskAPIProxy.uploadAvatar(file, user.username)
+        taskAPIProxy.uploadAvatar(file, user.id!!)
 
     @Transactional
     fun updateProfile(requestBody: UpdateUserProfileDTO, user: User) {
