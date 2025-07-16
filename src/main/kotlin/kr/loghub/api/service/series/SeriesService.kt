@@ -6,7 +6,6 @@ import kr.loghub.api.dto.series.SeriesDTO
 import kr.loghub.api.dto.series.SeriesDetailDTO
 import kr.loghub.api.dto.series.SeriesSort
 import kr.loghub.api.entity.series.Series
-import kr.loghub.api.entity.series.SeriesStats
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.series.SeriesMapper
@@ -18,7 +17,6 @@ import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -45,13 +43,9 @@ class SeriesService(
     }
 
     @Transactional(readOnly = true)
-    fun getTrendingSeries(): List<SeriesDTO> = seriesRepository.findAll(
-        PageRequest.of(
-            0,
-            PAGE_SIZE,
-            Sort.by("${Series::stats.name}.${SeriesStats::trendingScore.name}").descending(),
-        )
-    ).toList().map(SeriesMapper::map)
+    fun getTrendingSeries(): List<SeriesDTO> =
+        seriesRepository.findTop4OrderByTrendingScoreDesc()
+            .map(SeriesMapper::map)
 
     @Transactional(readOnly = true)
     fun getSeries(username: String, slug: String): SeriesDetailDTO =

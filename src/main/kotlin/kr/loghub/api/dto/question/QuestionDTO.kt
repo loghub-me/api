@@ -1,6 +1,7 @@
 package kr.loghub.api.dto.question
 
 import kr.loghub.api.dto.topic.TopicDTO
+import kr.loghub.api.dto.user.UserSimpleDTO
 import kr.loghub.api.entity.question.Question
 
 data class QuestionDTO(
@@ -9,7 +10,7 @@ data class QuestionDTO(
     val title: String,
     val status: Question.Status,
     val stats: QuestionStatsDTO,
-    val writerUsername: String,
+    val writer: UserSimpleDTO,
     val topics: List<TopicDTO>,
     val createdAt: String,
     val updatedAt: String,

@@ -23,6 +23,9 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     @EntityGraph(attributePaths = ["writer"])
     fun findWithWriterByCompositeKey(username: String, slug: String): Article?
 
+    @Query("$SELECT_ARTICLE ORDER BY a.stats.trendingScore DESC LIMIT 4")
+    fun findTop4OrderByTrendingScoreDesc(): List<Article>
+
     @Query("$EXISTS_ARTICLE WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 

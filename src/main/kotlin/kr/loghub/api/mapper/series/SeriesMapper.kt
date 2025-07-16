@@ -3,6 +3,7 @@ package kr.loghub.api.mapper.series
 import kr.loghub.api.dto.series.SeriesDTO
 import kr.loghub.api.dto.series.SeriesDetailDTO
 import kr.loghub.api.dto.series.SeriesStatsDTO
+import kr.loghub.api.dto.user.UserSimpleDTO
 import kr.loghub.api.entity.series.Series
 import kr.loghub.api.entity.series.SeriesStats
 import kr.loghub.api.mapper.user.UserMapper
@@ -14,7 +15,7 @@ object SeriesMapper {
         slug = series.slug,
         title = series.title,
         thumbnail = series.thumbnail,
-        writerUsername = series.writerUsername,
+        writer = UserSimpleDTO(series.writer.id!!, series.writerUsername),
         stats = mapStats(series.stats),
         topics = series.topicsFlat,
         createdAt = series.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),

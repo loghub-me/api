@@ -23,6 +23,9 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     @EntityGraph(attributePaths = ["writer", "chapters"])
     fun findWithGraphByCompositeKey(username: String, slug: String): Series?
 
+    @Query("$SELECT_SERIES ORDER BY b.stats.trendingScore DESC LIMIT 4")
+    fun findTop4OrderByTrendingScoreDesc(): List<Series>
+
     @Query("$EXISTS_SERIES WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 

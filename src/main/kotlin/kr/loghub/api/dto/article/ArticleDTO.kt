@@ -1,6 +1,7 @@
 package kr.loghub.api.dto.article
 
 import kr.loghub.api.dto.topic.TopicDTO
+import kr.loghub.api.dto.user.UserSimpleDTO
 
 data class ArticleDTO(
     val id: Long,
@@ -8,7 +9,7 @@ data class ArticleDTO(
     val title: String,
     val thumbnail: String,
     val stats: ArticleStatsDTO,
-    val writerUsername: String,
+    val writer: UserSimpleDTO,
     val topics: List<TopicDTO>,
     val createdAt: String,
     val updatedAt: String,

@@ -4,6 +4,7 @@ import kr.loghub.api.dto.article.ArticleDTO
 import kr.loghub.api.dto.article.ArticleDetailDTO
 import kr.loghub.api.dto.article.ArticleStatsDTO
 import kr.loghub.api.dto.common.ContentDTO
+import kr.loghub.api.dto.user.UserSimpleDTO
 import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.article.ArticleStats
 import kr.loghub.api.mapper.user.UserMapper
@@ -15,7 +16,7 @@ object ArticleMapper {
         slug = article.slug,
         title = article.title,
         thumbnail = article.thumbnail,
-        writerUsername = article.writerUsername,
+        writer = UserSimpleDTO(article.writer.id!!, article.writerUsername),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),

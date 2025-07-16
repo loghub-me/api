@@ -4,6 +4,7 @@ import kr.loghub.api.dto.common.ContentDTO
 import kr.loghub.api.dto.question.QuestionDTO
 import kr.loghub.api.dto.question.QuestionDetailDTO
 import kr.loghub.api.dto.question.QuestionStatsDTO
+import kr.loghub.api.dto.user.UserSimpleDTO
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.question.QuestionStats
 import kr.loghub.api.mapper.user.UserMapper
@@ -15,7 +16,7 @@ object QuestionMapper {
         slug = question.slug,
         title = question.title,
         status = question.status,
-        writerUsername = question.writerUsername,
+        writer = UserSimpleDTO(question.writer.id!!, question.writerUsername),
         stats = mapStats(question.stats),
         topics = question.topicsFlat,
         createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),

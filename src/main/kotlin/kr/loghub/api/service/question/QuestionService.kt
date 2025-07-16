@@ -4,7 +4,6 @@ import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.*
 import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
 import kr.loghub.api.entity.question.Question
-import kr.loghub.api.entity.question.QuestionStats
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.question.QuestionMapper
@@ -18,7 +17,6 @@ import kr.loghub.api.util.toSlug
 import kr.loghub.api.worker.AnswerGenerateWorker
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -48,13 +46,9 @@ class QuestionService(
     }
 
     @Transactional(readOnly = true)
-    fun getTrendingQuestions(): List<QuestionDTO> = questionRepository.findAll(
-        PageRequest.of(
-            0,
-            PAGE_SIZE,
-            Sort.by("${Question::stats.name}.${QuestionStats::trendingScore.name}").descending(),
-        )
-    ).toList().map(QuestionMapper::map)
+    fun getTrendingQuestions(): List<QuestionDTO> =
+        questionRepository.findTop4OrderByTrendingScoreDesc()
+            .map(QuestionMapper::map)
 
     @Transactional(readOnly = true)
     fun getQuestion(username: String, slug: String): QuestionDetailDTO {

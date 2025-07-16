@@ -23,6 +23,9 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @EntityGraph(attributePaths = ["writer", "answers"])
     fun findWithWriterAndAnswersByCompositeKey(username: String, slug: String): Question?
 
+    @Query("$SELECT_QUESTION ORDER BY q.stats.trendingScore DESC LIMIT 4")
+    fun findTop4OrderByTrendingScoreDesc(): List<Question>
+
     @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 

@@ -35,10 +35,6 @@ class Article(
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 
-    @OneToMany(mappedBy = "article", cascade = [CascadeType.REMOVE], orphanRemoval = true)
-    @OrderBy("createdAt ASC")
-    var comments: MutableList<ArticleComment> = mutableListOf(),
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "article_topics",
