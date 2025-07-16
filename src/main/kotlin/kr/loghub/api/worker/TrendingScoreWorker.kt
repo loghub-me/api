@@ -2,8 +2,8 @@ package kr.loghub.api.worker
 
 import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.repository.article.ArticleRepository
-import kr.loghub.api.repository.book.BookRepository
 import kr.loghub.api.repository.question.QuestionRepository
+import kr.loghub.api.repository.series.SeriesRepository
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ZSetOperations
 import org.springframework.scheduling.annotation.Scheduled
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class TrendingScoreWorker(
     private val articleRepository: ArticleRepository,
-    private val bookRepository: BookRepository,
+    private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
@@ -34,9 +34,9 @@ class TrendingScoreWorker(
             articleRepository::updateTrendingScoreById,
         )
         updateTrendingScore(
-            RedisKey.Book.TRENDING_SCORE,
-            bookRepository::clearTrendingScore,
-            bookRepository::updateTrendingScoreById
+            RedisKey.Series.TRENDING_SCORE,
+            seriesRepository::clearTrendingScore,
+            seriesRepository::updateTrendingScoreById
         )
         updateTrendingScore(
             RedisKey.Question.TRENDING_SCORE,
@@ -51,6 +51,10 @@ class TrendingScoreWorker(
         updateTrendingScoreById: (Double, Long) -> Int
     ) {
         clearTrendingScore()
+
+        if (!redisTemplate.hasKey(trendingScoreKey)) {
+            return
+        }
 
         val tempKey = "${trendingScoreKey}_temp"
         redisTemplate.rename(trendingScoreKey, tempKey)  // to avoid race condition

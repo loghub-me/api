@@ -2,8 +2,8 @@ package kr.loghub.api.entity.star
 
 import jakarta.persistence.*
 import kr.loghub.api.entity.article.Article
-import kr.loghub.api.entity.book.Book
 import kr.loghub.api.entity.question.Question
+import kr.loghub.api.entity.series.Series
 import kr.loghub.api.entity.user.User
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
@@ -34,12 +34,12 @@ class Star(
     val article: Article? = null,
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "book_id", nullable = true)
-    val book: Book? = null,
+    @JoinColumn(name = "series_id", nullable = true)
+    val series: Series? = null,
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "question_id", nullable = true)
     val question: Question? = null,
 ) {
-    enum class Target(val label: String) { ARTICLE("아티클"), BOOK("도서"), QUESTION("질문") }
+    enum class Target(val label: String) { ARTICLE("아티클"), SERIES("시리즈"), QUESTION("질문") }
 }

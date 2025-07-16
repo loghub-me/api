@@ -20,11 +20,11 @@ object StarMapper {
             )
         }
 
-        Star.Target.BOOK -> {
-            val target = star.book!!
+        Star.Target.SERIES -> {
+            val target = star.series!!
             StarDTO(
                 id = star.id!!,
-                path = "/@${target.writerUsername}/books/${target.slug}",
+                path = "/@${target.writerUsername}/series/${target.slug}",
                 title = target.title,
                 writerUsername = target.writerUsername,
                 topics = target.topicsFlat,

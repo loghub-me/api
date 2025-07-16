@@ -36,21 +36,21 @@ class TrendingScoreAspect(private val redisTemplate: RedisTemplate<String, Strin
     fun updateTrendingScoreAfterRemoveArticleStar(articleId: Long) =
         zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
 
-    @AfterReturning("execution(* kr.loghub.api.service.book.BookReviewService.postReview(..)) && args(bookId, ..))")
-    fun updateTrendingScoreAfterPostBookReview(bookId: Long) =
-        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, bookId.toString(), TrendingScoreDelta.REVIEW)
+    @AfterReturning("execution(* kr.loghub.api.service.series.SeriesReviewService.postReview(..)) && args(seriesId, ..))")
+    fun updateTrendingScoreAfterPostSeriesReview(seriesId: Long) =
+        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), TrendingScoreDelta.REVIEW)
 
-    @AfterReturning("execution(* kr.loghub.api.service.book.BookReviewService.removeReview(..)) && args(bookId, ..))")
-    fun updateTrendingScoreAfterRemoveBookReview(bookId: Long) =
-        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, bookId.toString(), -TrendingScoreDelta.REVIEW)
+    @AfterReturning("execution(* kr.loghub.api.service.series.SeriesReviewService.removeReview(..)) && args(seriesId, ..))")
+    fun updateTrendingScoreAfterRemoveSeriesReview(seriesId: Long) =
+        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), -TrendingScoreDelta.REVIEW)
 
-    @AfterReturning("execution(* kr.loghub.api.service.book.BookStarService.addStar(..)) && args(articleId, ..)")
-    fun updateTrendingScoreAfterAddBookStar(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.STAR)
+    @AfterReturning("execution(* kr.loghub.api.service.series.SeriesStarService.addStar(..)) && args(articleId, ..)")
+    fun updateTrendingScoreAfterAddSeriesStar(articleId: Long) =
+        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.STAR)
 
-    @AfterReturning("execution(* kr.loghub.api.service.book.BookStarService.removeStar(..)) && args(articleId, ..)")
-    fun updateTrendingScoreAfterRemoveBookStar(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Book.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
+    @AfterReturning("execution(* kr.loghub.api.service.series.SeriesStarService.removeStar(..)) && args(articleId, ..)")
+    fun updateTrendingScoreAfterRemoveSeriesStar(articleId: Long) =
+        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
 
     @AfterReturning("execution(* kr.loghub.api.service.question.answer.QuestionAnswerService.postAnswer(..)) && args(questionId, ..)")
     fun updateTrendingScoreAfterPostAnswer(questionId: Long) =

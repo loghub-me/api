@@ -13,13 +13,16 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class ArticleCustomRepository(private val entityManager: EntityManager) {
+    private companion object {
+        val article = QArticle.article
+    }
+
     fun search(
         query: String,
         sort: ArticleSort,
         pageable: Pageable,
         username: String? = null
     ): Page<Article> {
-        val article = QArticle.article
         val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
             "ecfts({0}, {1})",
             Expressions.constant(query),

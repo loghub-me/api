@@ -3,17 +3,17 @@ package kr.loghub.api.service.user
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.article.ArticleDTO
 import kr.loghub.api.dto.article.ArticleSort
-import kr.loghub.api.dto.book.BookDTO
-import kr.loghub.api.dto.book.BookSort
+import kr.loghub.api.dto.series.SeriesDTO
+import kr.loghub.api.dto.series.SeriesSort
 import kr.loghub.api.dto.question.QuestionDTO
 import kr.loghub.api.dto.question.QuestionFilter
 import kr.loghub.api.dto.question.QuestionSort
 import kr.loghub.api.mapper.article.ArticleMapper
-import kr.loghub.api.mapper.book.BookMapper
+import kr.loghub.api.mapper.series.SeriesMapper
 import kr.loghub.api.mapper.question.QuestionMapper
 import kr.loghub.api.mapper.user.UserMapper
 import kr.loghub.api.repository.article.ArticleCustomRepository
-import kr.loghub.api.repository.book.BookCustomRepository
+import kr.loghub.api.repository.series.SeriesCustomRepository
 import kr.loghub.api.repository.question.QuestionCustomRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkField
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
     private val userRepository: UserRepository,
     private val articleCustomRepository: ArticleCustomRepository,
-    private val bookCustomRepository: BookCustomRepository,
+    private val seriesCustomRepository: SeriesCustomRepository,
     private val questionCustomRepository: QuestionCustomRepository,
 ) {
     companion object {
@@ -51,15 +51,15 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun searchUserBooks(username: String, query: String, sort: BookSort, page: Int): Page<BookDTO> {
+    fun searchUserSeries(username: String, query: String, sort: SeriesSort, page: Int): Page<SeriesDTO> {
         checkField("page", page > 0) { ResponseMessage.Page.MUST_BE_POSITIVE }
 
-        return bookCustomRepository.search(
+        return seriesCustomRepository.search(
             username = username,
             query = query.trim(),
             sort = sort,
             pageable = PageRequest.of(page - 1, PAGE_SIZE)
-        ).map(BookMapper::map)
+        ).map(SeriesMapper::map)
     }
 
     @Transactional(readOnly = true)

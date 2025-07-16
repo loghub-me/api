@@ -9,7 +9,7 @@ import kr.loghub.api.entity.user.User
 import kr.loghub.api.mapper.user.UserMapper
 import kr.loghub.api.proxy.TaskAPIProxy
 import kr.loghub.api.repository.article.ArticleRepository
-import kr.loghub.api.repository.book.BookRepository
+import kr.loghub.api.repository.series.SeriesRepository
 import kr.loghub.api.repository.question.QuestionRepository
 import kr.loghub.api.repository.user.UserPostRepository
 import kr.loghub.api.repository.user.UserRepository
@@ -25,7 +25,7 @@ class UserSelfService(
     private val userRepository: UserRepository,
     private val userPostRepository: UserPostRepository,
     private val articleRepository: ArticleRepository,
-    private val bookRepository: BookRepository,
+    private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
@@ -61,7 +61,7 @@ class UserSelfService(
         existingUser.updateUsername(newUsername)
         taskAPIProxy.renameAvatar(AvatarRenameRequest(oldUsername, newUsername))
         articleRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
-        bookRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
+        seriesRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
         questionRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)
     }
 

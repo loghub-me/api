@@ -72,7 +72,7 @@ object ResponseMessage {
         }
     }
 
-    object Book {
+    object Series {
         const val NOT_FOUND = "책을 찾을 수 없습니다."
         const val POST_SUCCESS = "책이 성공적으로 등록되었습니다!"
         const val EDIT_SUCCESS = "책이 성공적으로 수정되었습니다!"
