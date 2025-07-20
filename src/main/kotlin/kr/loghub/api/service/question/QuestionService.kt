@@ -55,10 +55,8 @@ class QuestionService(
         val question = questionRepository.findWithWriterAndAnswersByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
         val questionHTML = cacheService.findOrGenerateMarkdownCache(question.content)
-        val answerMarkdowns = question.answers.map { it.content }
-        val answerHTMLs = cacheService.findOrGenerateMarkdownCache(answerMarkdowns)
-
-        return QuestionMapper.mapDetail(question, questionHTML, answerHTMLs)
+        
+        return QuestionMapper.mapDetail(question, questionHTML)
     }
 
     @Transactional

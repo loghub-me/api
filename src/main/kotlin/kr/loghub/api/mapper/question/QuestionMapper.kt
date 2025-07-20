@@ -23,7 +23,7 @@ object QuestionMapper {
         updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
-    fun mapDetail(question: Question, questionContentHTML: String, answerContentHTMLs: List<String>) =
+    fun mapDetail(question: Question, questionContentHTML: String) =
         QuestionDetailDTO(
             id = question.id!!,
             slug = question.slug,
@@ -36,9 +36,6 @@ object QuestionMapper {
             writer = UserMapper.map(question.writer),
             stats = mapStats(question.stats),
             topics = question.topicsFlat,
-            answers = question.answers.mapIndexed { i, answer ->
-                QuestionAnswerMapper.map(answer, answerContentHTMLs[i])
-            },
             createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
             updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
         )

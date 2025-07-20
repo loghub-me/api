@@ -3,6 +3,7 @@ package kr.loghub.api.controller.question
 import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
+import kr.loghub.api.dto.question.answer.QuestionAnswerDTO
 import kr.loghub.api.dto.response.MethodResponseBody
 import kr.loghub.api.dto.response.RedirectResponseBody
 import kr.loghub.api.dto.response.ResponseBody
@@ -16,6 +17,12 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/questions/{questionId}/answers")
 class QuestionAnswerController(private val questionAnswerService: QuestionAnswerService) {
+    @GetMapping
+    fun getAnswers(@PathVariable questionId: Long): ResponseEntity<List<QuestionAnswerDTO>> {
+        val answers = questionAnswerService.getAnswers(questionId)
+        return ResponseEntity.ok(answers)
+    }
+
     @PostMapping
     fun postAnswer(
         @PathVariable questionId: Long,

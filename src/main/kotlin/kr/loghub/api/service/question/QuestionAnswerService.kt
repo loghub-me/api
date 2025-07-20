@@ -2,12 +2,15 @@ package kr.loghub.api.service.question
 
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
+import kr.loghub.api.dto.question.answer.QuestionAnswerDTO
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.question.QuestionAnswer
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
+import kr.loghub.api.mapper.question.QuestionAnswerMapper
 import kr.loghub.api.repository.question.QuestionAnswerRepository
 import kr.loghub.api.repository.question.QuestionRepository
+import kr.loghub.api.service.cache.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import org.springframework.stereotype.Service
@@ -17,7 +20,17 @@ import org.springframework.transaction.annotation.Transactional
 class QuestionAnswerService(
     private val questionAnswerRepository: QuestionAnswerRepository,
     private val questionRepository: QuestionRepository,
+    private val cacheService: CacheService,
 ) {
+    @Transactional(readOnly = true)
+    fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
+        val answers = questionAnswerRepository.findAllWithWriterByQuestionIdOrderByCreatedAt(questionId)
+        val answerMarkdowns = answers.map { it.content }
+        val answerHTMLs = cacheService.findOrGenerateMarkdownCache(answerMarkdowns)
+
+        return answers.mapIndexed { i, answer -> QuestionAnswerMapper.map(answer, answerHTMLs[i]) }
+    }
+
     @Transactional
     fun postAnswer(questionId: Long, requestBody: PostQuestionAnswerDTO, writer: User): QuestionAnswer {
         val question = questionRepository.findWithWriterById(questionId)

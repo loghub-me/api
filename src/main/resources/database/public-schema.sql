@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS public.articles
     slug            varchar(50)  NOT NULL,
     title           text         NOT NULL,
     content         text         NOT NULL,
-    thumbnail       varchar(255) NOT NULL DEFAULT 'default/thumbnail.webp',
+    thumbnail       varchar(255) NOT NULL DEFAULT 'default/article-thumbnail.webp',
     star_count      integer      NOT NULL DEFAULT 0,
     comment_count   integer      NOT NULL DEFAULT 0,
     trending_score  integer      NOT NULL DEFAULT 0,
