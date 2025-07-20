@@ -1,6 +1,7 @@
 package kr.loghub.api.mapper.star
 
 import kr.loghub.api.dto.star.StarDTO
+import kr.loghub.api.dto.user.UserSimpleDTO
 import kr.loghub.api.entity.star.Star
 import java.time.format.DateTimeFormatter
 
@@ -12,7 +13,9 @@ object StarMapper {
                 id = star.id!!,
                 path = "/@${target.writerUsername}/articles/${target.slug}",
                 title = target.title,
-                writerUsername = target.writerUsername,
+                writer = UserSimpleDTO(
+                    target.writer.id!!, target.writer.username,
+                ),
                 topics = target.topicsFlat,
                 createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
                 target = star.target,
@@ -26,7 +29,9 @@ object StarMapper {
                 id = star.id!!,
                 path = "/@${target.writerUsername}/series/${target.slug}",
                 title = target.title,
-                writerUsername = target.writerUsername,
+                writer = UserSimpleDTO(
+                    target.writer.id!!, target.writer.username,
+                ),
                 topics = target.topicsFlat,
                 createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
                 target = star.target,
@@ -40,7 +45,9 @@ object StarMapper {
                 id = star.id!!,
                 path = "/@${target.writerUsername}/questions/${target.slug}",
                 title = target.title,
-                writerUsername = target.writerUsername,
+                writer = UserSimpleDTO(
+                    target.writer.id!!, target.writer.username,
+                ),
                 topics = target.topicsFlat,
                 createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
                 target = star.target,
