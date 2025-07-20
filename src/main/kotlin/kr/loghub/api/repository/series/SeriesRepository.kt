@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param
 
 interface SeriesRepository : JpaRepository<Series, Long> {
     companion object {
-        const val SELECT_SERIES = "SELECT b FROM Series b"
-        const val EXISTS_SERIES = "SELECT COUNT(b) > 0 FROM Series b"
-        const val BY_ID = "b.id = :id"
-        const val BY_COMPOSITE_KEY = "b.writerUsername = :username AND b.slug = :slug"
+        const val SELECT_SERIES = "SELECT s FROM Series s"
+        const val EXISTS_SERIES = "SELECT COUNT(s) > 0 FROM Series s"
+        const val BY_ID = "s.id = :id"
+        const val BY_COMPOSITE_KEY = "s.writerUsername = :username AND s.slug = :slug"
     }
 
     @Query("$SELECT_SERIES WHERE $BY_ID")
@@ -23,26 +23,29 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     @EntityGraph(attributePaths = ["writer", "chapters"])
     fun findWithGraphByCompositeKey(username: String, slug: String): Series?
 
-    @Query("$SELECT_SERIES ORDER BY b.stats.trendingScore DESC LIMIT 4")
+    @Query("$SELECT_SERIES ORDER BY s.stats.trendingScore DESC LIMIT 4")
     fun findTop4OrderByTrendingScoreDesc(): List<Series>
+
+    @Query("$SELECT_SERIES JOIN s.topics t WHERE t.slug = :topicSlug ORDER BY s.stats.trendingScore DESC LIMIT 10")
+    fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Series>
 
     @Query("$EXISTS_SERIES WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
     @Modifying
-    @Query("UPDATE Series a SET a.stats.starCount = a.stats.starCount - 1 WHERE a.id = :id")
+    @Query("UPDATE Series s SET s.stats.starCount = s.stats.starCount - 1 WHERE s.id = :id")
     fun decrementStarCount(id: Long)
 
     @Modifying
-    @Query("UPDATE Series a SET a.stats.trendingScore = :trendingScore WHERE a.id = :id")
+    @Query("UPDATE Series s SET s.stats.trendingScore = :trendingScore WHERE s.id = :id")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
 
     @Modifying
-    @Query("UPDATE Series a SET a.stats.trendingScore = 0")
+    @Query("UPDATE Series s SET s.stats.trendingScore = 0")
     fun clearTrendingScore(): Int
 
     @Modifying
-    @Query("UPDATE Series a SET a.writerUsername = :newUsername WHERE a.writerUsername = :oldUsername")
+    @Query("UPDATE Series s SET s.writerUsername = :newUsername WHERE s.writerUsername = :oldUsername")
     fun updateWriterUsernameByWriterUsername(
         @Param("oldUsername") oldUsername: String,
         @Param("newUsername") newUsername: String

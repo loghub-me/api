@@ -26,6 +26,9 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Query("$SELECT_QUESTION ORDER BY q.stats.trendingScore DESC LIMIT 4")
     fun findTop4OrderByTrendingScoreDesc(): List<Question>
 
+    @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
+    fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>
+
     @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 

@@ -13,6 +13,6 @@ object TopicMapper {
     fun mapDetail(topic: Topic) = TopicDetailDTO(
         slug = topic.slug,
         name = topic.name,
-        description = topic.description,
+        description = topic.description
     )
 }
