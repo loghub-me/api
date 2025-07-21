@@ -2,10 +2,11 @@ package kr.loghub.api.controller.series
 
 import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.dto.response.MessageResponseBody
+import kr.loghub.api.dto.response.RedirectResponseBody
+import kr.loghub.api.dto.response.ResponseBody
 import kr.loghub.api.dto.series.chapter.EditSeriesChapterDTO
 import kr.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
-import kr.loghub.api.dto.response.MessageResponseBody
-import kr.loghub.api.dto.response.ResponseBody
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.service.series.SeriesChapterService
 import org.springframework.http.HttpStatus
@@ -41,8 +42,9 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         @RequestBody @Valid requestBody: EditSeriesChapterDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        seriesChapterService.editChapter(seriesId, sequence, requestBody, writer)
-        return MessageResponseBody(
+        val updatedChapter = seriesChapterService.editChapter(seriesId, sequence, requestBody, writer)
+        return RedirectResponseBody(
+            pathname = "/@${writer.username}/series/${updatedChapter.series.slug}/edit",
             message = ResponseMessage.Series.Chapter.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
@@ -57,7 +59,7 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         seriesChapterService.deleteChapter(seriesId, sequence, writer)
         return MessageResponseBody(
             message = ResponseMessage.Series.Chapter.DELETE_SUCCESS,
-            status = HttpStatus.NO_CONTENT,
+            status = HttpStatus.OK,
         ).toResponseEntity()
     }
 

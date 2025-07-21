@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/users/images")
+@RequestMapping("/users/image")
 class UserImageController(private val userImageService: UserImageService) {
     @PostMapping("/upload")
     fun uploadImage(
