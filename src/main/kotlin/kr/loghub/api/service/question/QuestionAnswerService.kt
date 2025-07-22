@@ -10,7 +10,7 @@ import kr.loghub.api.exception.entity.EntityNotFoundException
 import kr.loghub.api.mapper.question.QuestionAnswerMapper
 import kr.loghub.api.repository.question.QuestionAnswerRepository
 import kr.loghub.api.repository.question.QuestionRepository
-import kr.loghub.api.service.cache.CacheService
+import kr.loghub.api.service.common.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import org.springframework.stereotype.Service

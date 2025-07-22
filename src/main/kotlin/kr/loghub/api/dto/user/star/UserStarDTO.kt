@@ -1,16 +1,15 @@
-package kr.loghub.api.dto.star
+package kr.loghub.api.dto.user.star
 
 import kr.loghub.api.dto.topic.TopicDTO
-import kr.loghub.api.dto.user.UserSimpleDTO
-import kr.loghub.api.entity.star.Star
+import kr.loghub.api.entity.user.UserStar
 
-data class StarDTO(
+data class UserStarDTO(
     val id: Long,
     val path: String,
     val title: String,
-    val writer: UserSimpleDTO,
+    val writerId: Long,
     val topics: List<TopicDTO>,
     val createdAt: String,
-    val target: Star.Target,
+    val target: UserStar.Target,
     val targetLabel: String,
 )

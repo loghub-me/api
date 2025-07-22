@@ -1,4 +1,4 @@
-package kr.loghub.api.service.cache
+package kr.loghub.api.service.common
 
 import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.task.markdown.MarkdownParseRequest

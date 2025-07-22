@@ -1,21 +1,18 @@
-package kr.loghub.api.mapper.star
+package kr.loghub.api.mapper.user
 
-import kr.loghub.api.dto.star.StarDTO
-import kr.loghub.api.dto.user.UserSimpleDTO
-import kr.loghub.api.entity.star.Star
+import kr.loghub.api.dto.user.star.UserStarDTO
+import kr.loghub.api.entity.user.UserStar
 import java.time.format.DateTimeFormatter
 
-object StarMapper {
-    fun map(star: Star): StarDTO = when (star.target) {
-        Star.Target.ARTICLE -> {
+object UserStarMapper {
+    fun map(star: UserStar): UserStarDTO = when (star.target) {
+        UserStar.Target.ARTICLE -> {
             val target = star.article!!
-            StarDTO(
+            UserStarDTO(
                 id = star.id!!,
                 path = "/@${target.writerUsername}/articles/${target.slug}",
                 title = target.title,
-                writer = UserSimpleDTO(
-                    target.writer.id!!, target.writer.username,
-                ),
+                writerId = target.writer.id!!,
                 topics = target.topicsFlat,
                 createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
                 target = star.target,
@@ -23,15 +20,13 @@ object StarMapper {
             )
         }
 
-        Star.Target.SERIES -> {
+        UserStar.Target.SERIES -> {
             val target = star.series!!
-            StarDTO(
+            UserStarDTO(
                 id = star.id!!,
                 path = "/@${target.writerUsername}/series/${target.slug}",
                 title = target.title,
-                writer = UserSimpleDTO(
-                    target.writer.id!!, target.writer.username,
-                ),
+                writerId = target.writer.id!!,
                 topics = target.topicsFlat,
                 createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
                 target = star.target,
@@ -39,15 +34,13 @@ object StarMapper {
             )
         }
 
-        Star.Target.QUESTION -> {
+        UserStar.Target.QUESTION -> {
             val target = star.question!!
-            StarDTO(
+            UserStarDTO(
                 id = star.id!!,
                 path = "/@${target.writerUsername}/questions/${target.slug}",
                 title = target.title,
-                writer = UserSimpleDTO(
-                    target.writer.id!!, target.writer.username,
-                ),
+                writerId = target.writer.id!!,
                 topics = target.topicsFlat,
                 createdAt = target.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
                 target = star.target,

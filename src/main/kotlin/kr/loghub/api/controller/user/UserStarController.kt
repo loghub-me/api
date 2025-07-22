@@ -1,6 +1,6 @@
 package kr.loghub.api.controller.user
 
-import kr.loghub.api.dto.star.StarDTO
+import kr.loghub.api.dto.user.star.UserStarDTO
 import kr.loghub.api.service.user.UserStarService
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
@@ -13,7 +13,7 @@ class UserStarController(private val userStarService: UserStarService) {
     fun getStars(
         @PathVariable username: String,
         @RequestParam(defaultValue = "1") page: Int,
-    ): ResponseEntity<Page<StarDTO>> {
+    ): ResponseEntity<Page<UserStarDTO>> {
         val stars = userStarService.getStars(username, page)
         return ResponseEntity.ok(stars)
     }

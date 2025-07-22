@@ -1,18 +1,17 @@
-package kr.loghub.api.entity.star
+package kr.loghub.api.entity.user
 
 import jakarta.persistence.*
 import kr.loghub.api.entity.article.Article
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.series.Series
-import kr.loghub.api.entity.user.User
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "stars")
-class Star(
+@Table(name = "user_stars")
+class UserStar(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 

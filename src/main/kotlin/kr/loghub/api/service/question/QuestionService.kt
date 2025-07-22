@@ -10,7 +10,7 @@ import kr.loghub.api.mapper.question.QuestionMapper
 import kr.loghub.api.repository.question.QuestionCustomRepository
 import kr.loghub.api.repository.question.QuestionRepository
 import kr.loghub.api.repository.topic.TopicRepository
-import kr.loghub.api.service.cache.CacheService
+import kr.loghub.api.service.common.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
@@ -55,7 +55,7 @@ class QuestionService(
         val question = questionRepository.findWithWriterAndAnswersByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
         val questionHTML = cacheService.findOrGenerateMarkdownCache(question.content)
-        
+
         return QuestionMapper.mapDetail(question, questionHTML)
     }
 

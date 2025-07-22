@@ -12,7 +12,7 @@ import kr.loghub.api.mapper.article.ArticleMapper
 import kr.loghub.api.repository.article.ArticleCustomRepository
 import kr.loghub.api.repository.article.ArticleRepository
 import kr.loghub.api.repository.topic.TopicRepository
-import kr.loghub.api.service.cache.CacheService
+import kr.loghub.api.service.common.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug

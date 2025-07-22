@@ -1,18 +1,18 @@
-package kr.loghub.api.repository.star
+package kr.loghub.api.repository.user
 
 import kr.loghub.api.entity.article.Article
-import kr.loghub.api.entity.series.Series
 import kr.loghub.api.entity.question.Question
-import kr.loghub.api.entity.star.Star
+import kr.loghub.api.entity.series.Series
 import kr.loghub.api.entity.user.User
+import kr.loghub.api.entity.user.UserStar
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface StarRepository : JpaRepository<Star, Long> {
-    @EntityGraph(attributePaths = ["article", "series", "question", "user"])
-    fun findAllByUser(user: User, pageable: Pageable): Page<Star>
+interface UserStarRepository : JpaRepository<UserStar, Long> {
+    @EntityGraph(attributePaths = ["article", "series", "question"])
+    fun findAllByUser(user: User, pageable: Pageable): Page<UserStar>
 
     // -----------[Article]-----------
     fun existsByArticleIdAndUser(articleId: Long, user: User): Boolean
