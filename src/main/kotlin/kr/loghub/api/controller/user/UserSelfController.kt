@@ -16,12 +16,6 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/users/self")
 class UserSelfController(private val userSelfService: UserSelfService) {
-    @GetMapping("/recent/posts")
-    fun getRecentPosts(@AuthenticationPrincipal user: User): ResponseEntity<List<UserPostDTO>> {
-        val posts = userSelfService.getRecentPosts(user)
-        return ResponseEntity.ok(posts)
-    }
-
     @GetMapping("/profile")
     fun getProfile(@AuthenticationPrincipal user: User): ResponseEntity<UserProfileDTO> {
         val profile = userSelfService.getProfile(user)

@@ -222,31 +222,6 @@ CREATE TABLE IF NOT EXISTS public.search_synonyms
     synonyms TEXT[]
 );
 
-CREATE OR REPLACE VIEW user_posts AS
-SELECT ('@' || writer_username || '/articles/' || slug) AS path,
-       title,
-       NULL::question_status_enum                       AS question_status,
-       updated_at,
-       writer_id
-FROM articles
-UNION ALL
-SELECT ('@' || writer_username || '/series/' || slug) AS path,
-       title,
-       NULL::question_status_enum                     AS question_status,
-       updated_at,
-       writer_id
-FROM series
-UNION ALL
-SELECT ('@' || writer_username || '/questions/' || slug) AS path,
-       title,
-       status                                            AS question_status,
-       updated_at,
-       writer_id
-FROM questions;
-CREATE INDEX IF NOT EXISTS articles_writer_updated_idx ON articles (writer_id, updated_at DESC) INCLUDE (slug, title, writer_username);
-CREATE INDEX IF NOT EXISTS series_writer_updated_idx ON series (writer_id, updated_at DESC) INCLUDE (slug, title, writer_username);
-CREATE INDEX IF NOT EXISTS questions_writer_updated_idx ON questions (writer_id, updated_at DESC) INCLUDE (slug, title, status, writer_username);
-
 CREATE OR REPLACE FUNCTION public.update_topics_trending_score() RETURNS void
     LANGUAGE plpgsql AS
 '

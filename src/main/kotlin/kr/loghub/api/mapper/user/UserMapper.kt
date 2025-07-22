@@ -1,9 +1,10 @@
 package kr.loghub.api.mapper.user
 
-import kr.loghub.api.dto.user.*
+import kr.loghub.api.dto.user.UserDTO
+import kr.loghub.api.dto.user.UserDetailDTO
+import kr.loghub.api.dto.user.UserPrivacyDTO
+import kr.loghub.api.dto.user.UserProfileDTO
 import kr.loghub.api.entity.user.User
-import kr.loghub.api.entity.user.UserPost
-import java.time.format.DateTimeFormatter
 
 object UserMapper {
     fun map(user: User) = UserDTO(
@@ -29,12 +30,5 @@ object UserMapper {
     fun mapPrivacy(user: User) = UserPrivacyDTO(
         emailVisible = user.privacy.emailVisible,
         starVisible = user.privacy.starVisible,
-    )
-
-    fun mapPost(post: UserPost) = UserPostDTO(
-        path = post.path,
-        title = post.title,
-        questionStatus = post.questionStatus,
-        updatedAt = post.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 }

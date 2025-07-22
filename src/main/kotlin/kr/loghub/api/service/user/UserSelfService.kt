@@ -10,7 +10,6 @@ import kr.loghub.api.proxy.TaskAPIProxy
 import kr.loghub.api.repository.article.ArticleRepository
 import kr.loghub.api.repository.question.QuestionRepository
 import kr.loghub.api.repository.series.SeriesRepository
-import kr.loghub.api.repository.user.UserPostRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkAlreadyExists
 import kr.loghub.api.util.requireNotEquals
@@ -22,16 +21,11 @@ import org.springframework.web.multipart.MultipartFile
 @Service
 class UserSelfService(
     private val userRepository: UserRepository,
-    private val userPostRepository: UserPostRepository,
     private val articleRepository: ArticleRepository,
     private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
-    @Transactional(readOnly = true)
-    fun getRecentPosts(user: User) = userPostRepository.findTop20ByUserOrderByUpdatedAtDesc(user)
-        .map { UserMapper.mapPost(it) }
-
     @Transactional(readOnly = true)
     fun getProfile(user: User) = userRepository.findByUsername(user.username)
         ?.let { UserMapper.mapProfile(it) }
