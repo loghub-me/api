@@ -3,8 +3,15 @@ spring:
     init:
       mode: always
       schema-locations:
-        - classpath:database/public-schema.sql
-        - classpath:database/archive-schema.sql
-      data-locations: classpath:database/dummy-data.sql
+        - classpath:database/schemas.sql
+        - classpath:database/extensions.sql
+        - classpath:database/types.sql
+        - classpath:database/public/tables.sql
+        - classpath:database/public/views.sql
+        - classpath:database/public/indexes.sql
+        - classpath:database/public/functions.sql
+        - classpath:database/public/triggers.sql
+        - classpath:database/cron/schedules.sql
+      data-locations: classpath:database/public/test-data.sql
   jpa:
     show-sql: true
