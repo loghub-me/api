@@ -9,7 +9,5 @@ data class UserStarDTO(
     val title: String,
     val writerId: Long,
     val topics: List<TopicDTO>,
-    val createdAt: String,
     val target: UserStar.Target,
-    val targetLabel: String,
 )

@@ -40,5 +40,5 @@ class UserStar(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 ) {
-    enum class Target(val label: String) { ARTICLE("아티클"), SERIES("시리즈"), QUESTION("질문") }
+    enum class Target { ARTICLE, SERIES, QUESTION }
 }
