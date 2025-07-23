@@ -15,13 +15,13 @@ class UserActivityService(private val userActivityRepository: UserActivityReposi
     fun getActivities(userId: Long, from: LocalDate, to: LocalDate): List<UserActivityDTO> {
         checkField("to", !to.isAfter(LocalDate.now())) { ResponseMessage.User.INVALID_DATE_RANGE }
 
-        return userActivityRepository.findDTOs(userId, from, to)
+        return userActivityRepository.findDTOsByCreatedDateBetween(userId, from, to)
     }
 
     @Transactional(readOnly = true)
     fun getActivity(userId: Long, date: LocalDate): List<UserActivityDetailDTO> {
         checkField("date", !date.isAfter(LocalDate.now())) { ResponseMessage.User.INVALID_DATE_RANGE }
 
-        return userActivityRepository.findByUserIdAndCreatedDate(userId, date)
+        return userActivityRepository.findDetailDTOByUserIdAndCreatedDate(userId, date)
     }
 }

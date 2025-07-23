@@ -15,13 +15,7 @@ interface UserActivityRepository : JpaRepository<UserActivity, Long> {
         SELECT new kr.loghub.api.dto.user.activity.UserActivityDetailDTO(
             ua.id,
             CASE
-                WHEN ua.action = 'JOIN' THEN CONCAT('/@', ua.user.username)
-                WHEN ua.action = 'POST_ARTICLE' THEN CONCAT('/@', ua.article.writerUsername, '/articles/', ua.article.slug)
-                WHEN ua.action = 'POST_SERIES' THEN CONCAT('/@', ua.series.writerUsername, '/series/', ua.series.slug)
-                WHEN ua.action = 'POST_QUESTION' THEN CONCAT('/@', ua.question.writerUsername, '/questions/', ua.question.slug)
-            END,
-            CASE
-                WHEN ua.action = 'JOIN' THEN '회원가입'
+                WHEN ua.action = 'JOIN' THEN NULL
                 WHEN ua.action = 'POST_ARTICLE' THEN ua.article.title
                 WHEN ua.action = 'POST_SERIES' THEN ua.series.title
                 WHEN ua.action = 'POST_QUESTION' THEN ua.question.title
@@ -36,20 +30,20 @@ interface UserActivityRepository : JpaRepository<UserActivity, Long> {
         LEFT JOIN ua.question
         """
         const val BY_USER_ID = "ua.user.id = :userId"
-        const val BY_RANGE = "ua.createdDate >= :from AND ua.createdDate <= :to"
+        const val BY_CREATED_DATE_BETWEEN = "ua.createdDate BETWEEN :from AND :to"
         const val BY_CREATED_DATE = "ua.createdDate = :createdDate"
         const val GROUP_BY_CREATED_DATE = "GROUP BY ua.createdDate"
         const val ORDER_BY_CREATED_DATE_ASC = "ORDER BY ua.createdDate ASC"
         const val ORDER_BY_CREATED_AT_DESC = "ORDER BY ua.createdAt DESC"
     }
 
-    @Query("$SELECT_DTO WHERE $BY_USER_ID AND $BY_RANGE $GROUP_BY_CREATED_DATE $ORDER_BY_CREATED_DATE_ASC")
-    fun findDTOs(
+    @Query("$SELECT_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE_BETWEEN $GROUP_BY_CREATED_DATE $ORDER_BY_CREATED_DATE_ASC")
+    fun findDTOsByCreatedDateBetween(
         userId: Long,
         from: LocalDate,
         to: LocalDate,
     ): List<UserActivityDTO>
 
     @Query("$SELECT_DETAIL_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE $ORDER_BY_CREATED_AT_DESC")
-    fun findByUserIdAndCreatedDate(userId: Long, createdDate: LocalDate): List<UserActivityDetailDTO>
+    fun findDetailDTOByUserIdAndCreatedDate(userId: Long, createdDate: LocalDate): List<UserActivityDetailDTO>
 }

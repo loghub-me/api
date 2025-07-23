@@ -5,7 +5,6 @@ import java.time.LocalDate
 
 data class UserActivityDetailDTO(
     val id: Long,
-    val path: String,
     val title: String,
     val createdDate: LocalDate,
     val action: UserActivity.Action,

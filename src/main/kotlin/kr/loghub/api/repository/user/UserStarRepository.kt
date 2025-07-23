@@ -18,11 +18,6 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
             SELECT new kr.loghub.api.dto.user.star.UserStarDTO(
                 us.id,
                 CASE
-                    WHEN us.target = 'ARTICLE' THEN CONCAT('/@', us.article.writerUsername, '/articles/', us.article.slug)
-                    WHEN us.target = 'SERIES' THEN CONCAT('/@', us.series.writerUsername, '/series/', us.series.slug)
-                    WHEN us.target = 'QUESTION' THEN CONCAT('/@', us.question.writerUsername, '/questions/', us.question.slug)
-                END,
-                CASE
                     WHEN us.target = 'ARTICLE' THEN us.article.title
                     WHEN us.target = 'SERIES' THEN us.series.title
                     WHEN us.target = 'QUESTION' THEN us.question.title
@@ -49,7 +44,7 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
     }
 
     @Query("$SELECT_DTO WHERE $BY_USER_ID ORDER BY $CREATED_AT_DESC")
-    fun findAllByUserId(userId: Long, pageable: Pageable): Page<UserStarDTO>
+    fun findDTOsByUserId(userId: Long, pageable: Pageable): Page<UserStarDTO>
 
     // -----------[Article]-----------
     fun existsByArticleIdAndUser(articleId: Long, user: User): Boolean

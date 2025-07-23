@@ -5,7 +5,6 @@ import kr.loghub.api.entity.user.UserStar
 
 data class UserStarDTO(
     val id: Long,
-    val path: String,
     val title: String,
     val writerId: Long,
     val topics: List<TopicDTO>,
