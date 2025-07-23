@@ -2,13 +2,13 @@ package kr.loghub.api.controller.series
 
 import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.dto.response.MessageResponseBody
+import kr.loghub.api.dto.response.RedirectResponseBody
+import kr.loghub.api.dto.response.ResponseBody
 import kr.loghub.api.dto.series.PostSeriesDTO
 import kr.loghub.api.dto.series.SeriesDTO
 import kr.loghub.api.dto.series.SeriesDetailDTO
 import kr.loghub.api.dto.series.SeriesSort
-import kr.loghub.api.dto.response.MessageResponseBody
-import kr.loghub.api.dto.response.RedirectResponseBody
-import kr.loghub.api.dto.response.ResponseBody
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.service.series.SeriesService
 import org.springframework.data.domain.Page
@@ -28,12 +28,6 @@ class SeriesController(private val seriesService: SeriesService) {
     ): ResponseEntity<Page<SeriesDTO>> {
         val foundSeries = seriesService.searchSeries(query, sort, page)
         return ResponseEntity.ok(foundSeries)
-    }
-
-    @GetMapping("/trending")
-    fun getTrendingSeries(): ResponseEntity<List<SeriesDTO>> {
-        val series = seriesService.getTrendingSeries()
-        return ResponseEntity.ok(series)
     }
 
     @GetMapping("/@{username}/{slug}")

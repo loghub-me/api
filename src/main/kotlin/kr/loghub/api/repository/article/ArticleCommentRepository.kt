@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface ArticleCommentRepository : JpaRepository<ArticleComment, Long> {
-    companion object {
+    private companion object {
         const val SELECT_COMMENT = "SELECT ac FROM ArticleComment ac"
         const val BY_ARTICLE_ID = "ac.article.id = :articleId"
         const val BY_PARENT_ID = "ac.parent.id = :parentId"

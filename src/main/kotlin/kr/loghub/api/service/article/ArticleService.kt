@@ -45,11 +45,6 @@ class ArticleService(
     }
 
     @Transactional(readOnly = true)
-    fun getTrendingArticles(): List<ArticleDTO> =
-        articleRepository.findTop4OrderByTrendingScoreDesc()
-            .map(ArticleMapper::map)
-
-    @Transactional(readOnly = true)
     fun getArticle(username: String, slug: String): ArticleDetailDTO {
         val article = articleRepository.findWithWriterByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)

@@ -30,12 +30,6 @@ class ArticleController(private val articleService: ArticleService) {
         return ResponseEntity.ok(foundArticles)
     }
 
-    @GetMapping("/trending")
-    fun getTrendingArticles(): ResponseEntity<List<ArticleDTO>> {
-        val articles = articleService.getTrendingArticles()
-        return ResponseEntity.ok(articles)
-    }
-
     @GetMapping("/@{username}/{slug}")
     fun getArticle(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<ArticleDetailDTO> {
         val foundArticle = articleService.getArticle(username, slug)

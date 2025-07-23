@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface SeriesRepository : JpaRepository<Series, Long> {
-    companion object {
+    private companion object {
         const val SELECT_SERIES = "SELECT s FROM Series s"
         const val EXISTS_SERIES = "SELECT COUNT(s) > 0 FROM Series s"
         const val BY_ID = "s.id = :id"
@@ -22,9 +22,6 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     @Query("$SELECT_SERIES WHERE $BY_COMPOSITE_KEY")
     @EntityGraph(attributePaths = ["writer", "chapters"])
     fun findWithGraphByCompositeKey(username: String, slug: String): Series?
-
-    @Query("$SELECT_SERIES ORDER BY s.stats.trendingScore DESC LIMIT 4")
-    fun findTop4OrderByTrendingScoreDesc(): List<Series>
 
     @Query("$SELECT_SERIES JOIN s.topics t WHERE t.slug = :topicSlug ORDER BY s.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Series>

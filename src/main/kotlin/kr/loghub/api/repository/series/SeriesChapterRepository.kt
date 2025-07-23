@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface SeriesChapterRepository : JpaRepository<SeriesChapter, Long> {
-    companion object {
+    private companion object {
         const val SELECT_CHAPTER = "SELECT bc FROM SeriesChapter bc"
         const val BY_SERIES_ID = "bc.series.id = :seriesId"
     }

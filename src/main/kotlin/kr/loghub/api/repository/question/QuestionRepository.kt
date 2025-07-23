@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface QuestionRepository : JpaRepository<Question, Long> {
-    companion object {
+    private companion object {
         const val SELECT_QUESTION = "SELECT q FROM Question q"
         const val EXISTS_QUESTION = "SELECT COUNT(q) > 0 FROM Question q"
         const val BY_ID = "q.id = :id"
@@ -22,9 +22,6 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Query("$SELECT_QUESTION WHERE $BY_COMPOSITE_KEY")
     @EntityGraph(attributePaths = ["writer", "answers"])
     fun findWithWriterAndAnswersByCompositeKey(username: String, slug: String): Question?
-
-    @Query("$SELECT_QUESTION ORDER BY q.stats.trendingScore DESC LIMIT 4")
-    fun findTop4OrderByTrendingScoreDesc(): List<Question>
 
     @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>

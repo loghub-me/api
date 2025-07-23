@@ -46,11 +46,6 @@ class QuestionService(
     }
 
     @Transactional(readOnly = true)
-    fun getTrendingQuestions(): List<QuestionDTO> =
-        questionRepository.findTop4OrderByTrendingScoreDesc()
-            .map(QuestionMapper::map)
-
-    @Transactional(readOnly = true)
     fun getQuestion(username: String, slug: String): QuestionDetailDTO {
         val question = questionRepository.findWithWriterAndAnswersByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)

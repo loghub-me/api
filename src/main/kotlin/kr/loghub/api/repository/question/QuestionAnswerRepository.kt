@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface QuestionAnswerRepository : JpaRepository<QuestionAnswer, Long> {
-    companion object {
+    private companion object {
         const val SELECT_ANSWER = "SELECT qa FROM QuestionAnswer qa"
         const val BY_ID = "qa.id = :id"
         const val BY_QUESTION_ID = "qa.question.id = :questionId"

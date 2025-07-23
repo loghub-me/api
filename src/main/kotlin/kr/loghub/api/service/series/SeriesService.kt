@@ -43,11 +43,6 @@ class SeriesService(
     }
 
     @Transactional(readOnly = true)
-    fun getTrendingSeries(): List<SeriesDTO> =
-        seriesRepository.findTop4OrderByTrendingScoreDesc()
-            .map(SeriesMapper::map)
-
-    @Transactional(readOnly = true)
     fun getSeries(username: String, slug: String): SeriesDetailDTO =
         seriesRepository.findWithGraphByCompositeKey(username, slug)
             ?.let { SeriesMapper.mapDetail(it) }

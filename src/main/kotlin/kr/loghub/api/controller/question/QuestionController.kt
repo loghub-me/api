@@ -28,12 +28,6 @@ class QuestionController(private val questionService: QuestionService) {
         return ResponseEntity.ok(foundQuestions)
     }
 
-    @GetMapping("/trending")
-    fun getTrendingQuestions(): ResponseEntity<List<QuestionDTO>> {
-        val questions = questionService.getTrendingQuestions()
-        return ResponseEntity.ok(questions)
-    }
-
     @GetMapping("/@{username}/{slug}")
     fun getQuestion(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<QuestionDetailDTO> {
         val foundQuestion = questionService.getQuestion(username, slug)
