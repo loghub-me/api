@@ -45,7 +45,6 @@ class UserActivity(
     val user: User,
 ) {
     enum class Action {
-        JOIN,
         POST_ARTICLE,
         POST_SERIES,
         POST_QUESTION

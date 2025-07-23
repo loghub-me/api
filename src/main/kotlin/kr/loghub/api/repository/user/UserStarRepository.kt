@@ -18,15 +18,27 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
             SELECT new kr.loghub.api.dto.user.star.UserStarDTO(
                 us.id,
                 CASE
+                    WHEN us.target = 'ARTICLE' THEN us.article.slug
+                    WHEN us.target = 'SERIES' THEN us.series.slug
+                    WHEN us.target = 'QUESTION' THEN us.question.slug
+                END,
+                CASE
                     WHEN us.target = 'ARTICLE' THEN us.article.title
                     WHEN us.target = 'SERIES' THEN us.series.title
                     WHEN us.target = 'QUESTION' THEN us.question.title
                 END,
-                CASE
-                    WHEN us.target = 'ARTICLE' THEN us.article.writer.id
-                    WHEN us.target = 'SERIES' THEN us.series.writer.id
-                    WHEN us.target = 'QUESTION' THEN us.question.writer.id
-                END,
+                new kr.loghub.api.dto.user.UserSimpleDTO(
+                    CASE
+                        WHEN us.target = 'ARTICLE' THEN us.article.writer.id
+                        WHEN us.target = 'SERIES' THEN us.series.writer.id
+                        WHEN us.target = 'QUESTION' THEN us.question.writer.id
+                    END,
+                    CASE
+                        WHEN us.target = 'ARTICLE' THEN us.article.writerUsername
+                        WHEN us.target = 'SERIES' THEN us.series.writerUsername
+                        WHEN us.target = 'QUESTION' THEN us.question.writerUsername
+                    END
+                ),
                 CASE
                     WHEN us.target = 'ARTICLE' THEN us.article.topicsFlat
                     WHEN us.target = 'SERIES' THEN us.series.topicsFlat

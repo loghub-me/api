@@ -1,8 +1,10 @@
 package kr.loghub.api.dto.user.activity
 
-import java.time.LocalDate
+import kr.loghub.api.entity.user.UserActivity
 
 data class UserActivityDTO(
-    val createdDate: LocalDate,
-    val count: Long,
+    val id: Long,
+    val slug: String,
+    val title: String,
+    val action: UserActivity.Action,
 )

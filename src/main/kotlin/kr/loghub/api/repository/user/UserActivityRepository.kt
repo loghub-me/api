@@ -1,7 +1,7 @@
 package kr.loghub.api.repository.user
 
 import kr.loghub.api.dto.user.activity.UserActivityDTO
-import kr.loghub.api.dto.user.activity.UserActivityDetailDTO
+import kr.loghub.api.dto.user.activity.UserActivitySummaryDTO
 import kr.loghub.api.entity.user.UserActivity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -9,20 +9,22 @@ import java.time.LocalDate
 
 interface UserActivityRepository : JpaRepository<UserActivity, Long> {
     private companion object {
-        const val SELECT_DTO =
-            "SELECT new kr.loghub.api.dto.user.activity.UserActivityDTO(ua.createdDate, COUNT(ua)) FROM UserActivity ua"
-        const val SELECT_DETAIL_DTO = """
-        SELECT new kr.loghub.api.dto.user.activity.UserActivityDetailDTO(
+        const val SELECT_SUMMARY_DTO =
+            "SELECT new kr.loghub.api.dto.user.activity.UserActivitySummaryDTO(ua.createdDate, COUNT(ua)) FROM UserActivity ua"
+        const val SELECT_DTO = """
+        SELECT new kr.loghub.api.dto.user.activity.UserActivityDTO(
             ua.id,
             CASE
-                WHEN ua.action = 'JOIN' THEN NULL
+                WHEN ua.action = 'POST_ARTICLE' THEN ua.article.slug
+                WHEN ua.action = 'POST_SERIES' THEN ua.series.slug
+                WHEN ua.action = 'POST_QUESTION' THEN ua.question.slug
+            END,
+            CASE
                 WHEN ua.action = 'POST_ARTICLE' THEN ua.article.title
                 WHEN ua.action = 'POST_SERIES' THEN ua.series.title
                 WHEN ua.action = 'POST_QUESTION' THEN ua.question.title
             END,
-            ua.createdDate,
-            ua.action,
-            ua.user.id
+            ua.action
         )
         FROM UserActivity ua
         LEFT JOIN ua.article
@@ -37,13 +39,13 @@ interface UserActivityRepository : JpaRepository<UserActivity, Long> {
         const val ORDER_BY_CREATED_AT_DESC = "ORDER BY ua.createdAt DESC"
     }
 
-    @Query("$SELECT_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE_BETWEEN $GROUP_BY_CREATED_DATE $ORDER_BY_CREATED_DATE_ASC")
-    fun findDTOsByCreatedDateBetween(
+    @Query("$SELECT_SUMMARY_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE_BETWEEN $GROUP_BY_CREATED_DATE $ORDER_BY_CREATED_DATE_ASC")
+    fun findSummaryDTOsByCreatedDateBetween(
         userId: Long,
         from: LocalDate,
         to: LocalDate,
-    ): List<UserActivityDTO>
+    ): List<UserActivitySummaryDTO>
 
-    @Query("$SELECT_DETAIL_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE $ORDER_BY_CREATED_AT_DESC")
-    fun findDetailDTOByUserIdAndCreatedDate(userId: Long, createdDate: LocalDate): List<UserActivityDetailDTO>
+    @Query("$SELECT_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE $ORDER_BY_CREATED_AT_DESC")
+    fun findDTOByUserIdAndCreatedDate(userId: Long, createdDate: LocalDate): List<UserActivityDTO>
 }
