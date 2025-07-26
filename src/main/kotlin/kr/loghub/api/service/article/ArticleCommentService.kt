@@ -21,7 +21,7 @@ class ArticleCommentService(
     private val articleRepository: ArticleRepository,
     private val articleCommentRepository: ArticleCommentRepository,
 ) {
-    companion object {
+    private companion object {
         const val DEFAULT_PAGE_SIZE = 10
     }
 
@@ -38,7 +38,7 @@ class ArticleCommentService(
 
     @Transactional(readOnly = true)
     fun getReplies(articleId: Long, parentId: Long): List<ArticleCommentDTO> =
-        articleCommentRepository.findAllByArticleIdAndParentId(articleId, parentId)
+        articleCommentRepository.findLeafsByArticleIdAndParentId(articleId, parentId)
             .map(ArticleCommentMapper::map)
 
     @Transactional

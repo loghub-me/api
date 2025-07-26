@@ -22,7 +22,7 @@ interface ArticleCommentRepository : JpaRepository<ArticleComment, Long> {
 
     @EntityGraph(attributePaths = ["writer", "mention"])
     @Query("$SELECT_COMMENT WHERE $BY_ARTICLE_ID AND $BY_PARENT_ID")
-    fun findAllByArticleIdAndParentId(articleId: Long, parentId: Long): List<ArticleComment>
+    fun findLeafsByArticleIdAndParentId(articleId: Long, parentId: Long): List<ArticleComment>
 
     @EntityGraph(attributePaths = ["writer", "parent", "article"])
     fun findWithGraphByArticleIdAndId(articleId: Long, commentId: Long): ArticleComment?
