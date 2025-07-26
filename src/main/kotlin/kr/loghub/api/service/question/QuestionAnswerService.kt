@@ -3,6 +3,7 @@ package kr.loghub.api.service.question
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import kr.loghub.api.dto.question.answer.QuestionAnswerDTO
+import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.question.QuestionAnswer
 import kr.loghub.api.entity.user.User
@@ -13,6 +14,7 @@ import kr.loghub.api.repository.question.QuestionRepository
 import kr.loghub.api.service.common.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
+import kr.loghub.api.worker.AnswerGenerateWorker
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,6 +23,7 @@ class QuestionAnswerService(
     private val questionAnswerRepository: QuestionAnswerRepository,
     private val questionRepository: QuestionRepository,
     private val cacheService: CacheService,
+    private val answerGenerateWorker: AnswerGenerateWorker,
 ) {
     @Transactional(readOnly = true)
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
@@ -61,6 +64,18 @@ class QuestionAnswerService(
         answer.accept()
         answer.question.solved()
         return answer
+    }
+
+    @Transactional
+    fun requestGenerateAnswer(questionId: Long, writer: User) {
+        val question = questionRepository.findWithWriterById(questionId)
+            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+
+        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
+        checkPermission(question.status === Question.Status.OPEN) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
+
+        val request = AnswerGenerateRequest(question.id!!, question.title, question.content)
+        answerGenerateWorker.addToQueue(request)
     }
 
     private fun findUpdatableAnswer(questionId: Long, answerId: Long, writer: User): QuestionAnswer {

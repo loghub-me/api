@@ -55,7 +55,7 @@ class QuestionController(private val questionService: QuestionService) {
     ): ResponseEntity<ResponseBody> {
         val updatedQuestion = questionService.editQuestion(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/questions/@${writer.username}/${updatedQuestion.slug}",
+            pathname = "/@${writer.username}/questions/${updatedQuestion.slug}",
             message = ResponseMessage.Question.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

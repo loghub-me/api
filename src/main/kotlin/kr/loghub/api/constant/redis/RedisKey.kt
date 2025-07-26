@@ -16,5 +16,9 @@ object RedisKey {
 
     object Question {
         const val TRENDING_SCORE = "questions:trending_score"
+
+        object Answer {
+            const val GENERATE_COOLDOWN = "questions:answer:generate_cooldown"
+        }
     }
 }

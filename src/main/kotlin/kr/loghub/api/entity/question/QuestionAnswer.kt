@@ -13,6 +13,9 @@ import java.time.LocalDateTime
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
 class QuestionAnswer(
+    @Column(name = "title", nullable = false)
+    var title: String,
+
     @Column(name = "content", nullable = false)
     var content: String,
 
@@ -31,6 +34,7 @@ class QuestionAnswer(
     val writer: User,
 ) : PublicEntity() {
     fun update(requestBody: PostQuestionAnswerDTO) {
+        this.title = requestBody.title
         this.content = requestBody.content
     }
 

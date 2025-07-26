@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import kr.loghub.api.dto.question.answer.QuestionAnswerDTO
+import kr.loghub.api.dto.response.MessageResponseBody
 import kr.loghub.api.dto.response.MethodResponseBody
 import kr.loghub.api.dto.response.RedirectResponseBody
 import kr.loghub.api.dto.response.ResponseBody
@@ -78,6 +79,19 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         return MethodResponseBody(
             id = acceptedAnswer.id!!,
             message = ResponseMessage.Question.Answer.ACCEPT_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
+
+    @PostMapping("/generate")
+    fun requestGenerateAnswer(
+        @PathVariable questionId: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        questionAnswerService.requestGenerateAnswer(questionId, writer)
+
+        return MessageResponseBody(
+            message = ResponseMessage.Question.Answer.REQUEST_GENERATE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }

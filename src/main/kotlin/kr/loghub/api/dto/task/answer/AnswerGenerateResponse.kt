@@ -1,8 +1,9 @@
 package kr.loghub.api.dto.task.answer
 
 data class AnswerGenerateResponse(
-    val answerContent: String,
-    val rejectionReason: RejectionReason,
+    val title: String,
+    val content: String,
+    val rejectionReason: RejectionReason?,
 ) {
     private object RejectionMessage {
         const val OFF_TOPIC = "질문이 주제와 관련이 없거나 질문이 아닙니다."
@@ -10,7 +11,6 @@ data class AnswerGenerateResponse(
     }
 
     enum class RejectionReason(val message: String) {
-        NONE(""),
         OFF_TOPIC(RejectionMessage.OFF_TOPIC),
         NOT_ENOUGH_INFO(RejectionMessage.NOT_ENOUGH_INFO),
     }

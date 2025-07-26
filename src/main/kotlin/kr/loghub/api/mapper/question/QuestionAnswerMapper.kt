@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter
 object QuestionAnswerMapper {
     fun map(answer: QuestionAnswer, contentHTML: String) = QuestionAnswerDTO(
         id = answer.id!!,
+        title = answer.title,
         content = ContentDTO(
             markdown = answer.content,
             html = contentHTML,

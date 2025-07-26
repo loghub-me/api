@@ -5,6 +5,7 @@ import kr.loghub.api.dto.user.UserDTO
 
 data class QuestionAnswerDTO(
     val id: Long,
+    val title: String,
     val content: ContentDTO,
     val accepted: Boolean,
     val writer: UserDTO,
