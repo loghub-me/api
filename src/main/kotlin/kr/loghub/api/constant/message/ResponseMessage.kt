@@ -116,7 +116,7 @@ object ResponseMessage {
             const val CANNOT_POST_SELF = "자신의 질문에 답변을 작성할 수 없습니다."
             const val ALREADY_ACCEPTED = "이미 채택된 답변입니다!"
             const val REQUEST_GENERATE_SUCCESS = "답변 생성 요청이 성공적으로 처리되었습니다!"
-            const val GENERATE_COOLDOWN = "답변 생성 요청은 1분에 한 번만 가능합니다!"
+            const val GENERATE_COOLDOWN = "답변 생성 요청은 10분에 한 번만 가능합니다!"
         }
     }
 

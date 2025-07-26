@@ -14,6 +14,6 @@ data class JoinTokenDTO(
         email = email,
         username = username,
         profile = UserProfile(nickname = nickname),
-        privacy = UserPrivacy()
+        privacy = UserPrivacy(),
     )
 }

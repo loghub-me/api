@@ -79,7 +79,7 @@ class SecurityConfig {
         }
         .authorizeHttpRequests {
             it.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-            it.requestMatchers(HttpMethod.GET, "/articles/star/**").hasRole(User.Role.MEMBER.name)
+            it.requestMatchers(HttpMethod.GET, "/*/star/*").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.GET, "/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/**").hasRole(User.Role.MEMBER.name)

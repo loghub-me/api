@@ -1,6 +1,7 @@
 package kr.loghub.api.service.question
 
 import kr.loghub.api.constant.message.ResponseMessage
+import kr.loghub.api.constant.redis.RedisKey
 import kr.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import kr.loghub.api.dto.question.answer.QuestionAnswerDTO
 import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
@@ -12,9 +13,11 @@ import kr.loghub.api.mapper.question.QuestionAnswerMapper
 import kr.loghub.api.repository.question.QuestionAnswerRepository
 import kr.loghub.api.repository.question.QuestionRepository
 import kr.loghub.api.service.common.CacheService
+import kr.loghub.api.util.checkAlreadyExists
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.worker.AnswerGenerateWorker
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,6 +27,7 @@ class QuestionAnswerService(
     private val questionRepository: QuestionRepository,
     private val cacheService: CacheService,
     private val answerGenerateWorker: AnswerGenerateWorker,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     @Transactional(readOnly = true)
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
@@ -73,9 +77,15 @@ class QuestionAnswerService(
 
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         checkPermission(question.status === Question.Status.OPEN) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
+        checkAlreadyExists(redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATE_COOLDOWN}:${question.id}")) {
+            ResponseMessage.Question.Answer.GENERATE_COOLDOWN
+        }
 
         val request = AnswerGenerateRequest(question.id!!, question.title, question.content)
         answerGenerateWorker.addToQueue(request)
+
+        val redisKey = "${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}"
+        redisTemplate.opsForValue().set(redisKey, "true", RedisKey.Question.Answer.GENERATE_COOLDOWN.ttl)
     }
 
     private fun findUpdatableAnswer(questionId: Long, answerId: Long, writer: User): QuestionAnswer {

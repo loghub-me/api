@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 
 class AccessTokenAuthenticationFilter(private val accessTokenService: AccessTokenService) : OncePerRequestFilter() {
-    companion object {
+    private companion object {
         private const val TOKEN_PREFIX = "Bearer "
     }
 

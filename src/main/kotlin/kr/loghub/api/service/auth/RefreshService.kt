@@ -23,13 +23,9 @@ class RefreshService(
     fun refreshToken(token: UUID?): TokenDTO {
         requireNotNull(token) { ResponseMessage.Auth.INVALID_TOKEN }
 
-        val userId = redisTemplate.opsForValue().get("${RedisKey.REFRESH_TOKEN}:$token")
-            ?.also {
-                redisTemplate.expire(
-                    "${RedisKey.REFRESH_TOKEN}:$token",
-                    10.seconds.toJavaDuration()
-                )
-            }  // Grace period
+        val key = "${RedisKey.REFRESH_TOKEN.prefix}:$token"
+        val userId = redisTemplate.opsForValue().get(key)
+            ?.also { redisTemplate.expire(key, 10.seconds.toJavaDuration()) }  /* Grace period */
             ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_TOKEN)
         val user = userRepository.findById(userId.toLong())
             .orElseThrow { BadCredentialsException(ResponseMessage.Auth.INVALID_TOKEN) }

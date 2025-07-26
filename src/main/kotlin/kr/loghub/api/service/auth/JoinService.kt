@@ -17,8 +17,6 @@ import kr.loghub.api.worker.MailSendWorker
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.toJavaDuration
 
 @Service
 class JoinService(
@@ -27,11 +25,6 @@ class JoinService(
     private val mailSendWorker: MailSendWorker,
     private val tokenService: TokenService,
 ) {
-    companion object {
-        private const val OTP_LENGTH = 6
-        private val OTP_EXPIRE_MINUTES = 3.minutes.toJavaDuration()
-    }
-
     @Transactional
     fun requestJoin(requestBody: JoinRequestDTO) {
         checkJoinable(requestBody.email, requestBody.username)
@@ -43,12 +36,12 @@ class JoinService(
 
     @Transactional
     fun confirmJoin(requestBody: JoinConfirmDTO): TokenDTO {
-        val otp = redisTemplate.opsForValue().get("${RedisKey.JOIN_OTP}:${requestBody.email}")
+        val otp = redisTemplate.opsForValue().get("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
             ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
             requestBody.otp != otp.otp -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
-            else -> redisTemplate.delete("${RedisKey.JOIN_OTP}:${requestBody.email}")
+            else -> redisTemplate.delete("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
         }
 
         val joinedUser = userRepository.save(otp.toUserEntity())
@@ -66,11 +59,11 @@ class JoinService(
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
     }
 
-
     private fun issueOTP(requestBody: JoinRequestDTO): String {
-        val otp = OTPBuilder.generateOTP(OTP_LENGTH)
+        val otp = OTPBuilder.generateOTP()
+        val key = "${RedisKey.JOIN_OTP.prefix}:${requestBody.email}"
         val dto = JoinTokenDTO(otp, requestBody.email, requestBody.username, requestBody.nickname)
-        redisTemplate.opsForValue().set("${RedisKey.JOIN_OTP}:${requestBody.email}", dto, OTP_EXPIRE_MINUTES)
+        redisTemplate.opsForValue().set(key, dto, RedisKey.JOIN_OTP.ttl)
         return otp
     }
 }

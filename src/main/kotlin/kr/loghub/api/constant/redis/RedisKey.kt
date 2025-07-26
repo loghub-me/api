@@ -1,10 +1,15 @@
 package kr.loghub.api.constant.redis
 
+import java.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
+
 object RedisKey {
-    const val JOIN_OTP = "join_otp"
-    const val LOGIN_OTP = "login_otp"
-    const val REFRESH_TOKEN = "refresh_token"
-    const val MARKDOWN = "markdown"
+    val JOIN_OTP = ExpiringRedisKey("join_otp", 3.minutes.toJavaDuration())
+    val LOGIN_OTP = ExpiringRedisKey("login_otp", 3.minutes.toJavaDuration())
+    val REFRESH_TOKEN = ExpiringRedisKey("refresh_token", 30.days.toJavaDuration())
+    val MARKDOWN = ExpiringRedisKey("markdown", 1.days.toJavaDuration())
 
     object Article {
         const val TRENDING_SCORE = "articles:trending_score"
@@ -18,7 +23,12 @@ object RedisKey {
         const val TRENDING_SCORE = "questions:trending_score"
 
         object Answer {
-            const val GENERATE_COOLDOWN = "questions:answer:generate_cooldown"
+            val GENERATE_COOLDOWN = ExpiringRedisKey("questions:answer:generate_cooldown", 10.minutes.toJavaDuration())
         }
     }
+
+    data class ExpiringRedisKey(
+        val prefix: String,
+        val ttl: Duration,
+    )
 }

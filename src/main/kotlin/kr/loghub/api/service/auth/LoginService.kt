@@ -17,8 +17,6 @@ import kr.loghub.api.worker.MailSendWorker
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.toJavaDuration
 
 @Service
 class LoginService(
@@ -27,11 +25,6 @@ class LoginService(
     private val mailSendWorker: MailSendWorker,
     private val tokenService: TokenService,
 ) {
-    companion object {
-        private const val OTP_LENGTH = 6
-        private val OTP_EXPIRE_MINUTES = 3.minutes.toJavaDuration()
-    }
-
     @Transactional
     fun requestLogin(requestBody: LoginRequestDTO) {
         checkExists(
@@ -46,12 +39,12 @@ class LoginService(
 
     @Transactional
     fun confirmLogin(requestBody: LoginConfirmDTO): TokenDTO {
-        val otp = redisTemplate.opsForValue().get("${RedisKey.LOGIN_OTP}:${requestBody.email}")
+        val otp = redisTemplate.opsForValue().get("${RedisKey.LOGIN_OTP.prefix}:${requestBody.email}")
             ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
             requestBody.otp != otp -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
-            else -> redisTemplate.delete("${RedisKey.LOGIN_OTP}:${requestBody.email}")
+            else -> redisTemplate.delete("${RedisKey.LOGIN_OTP.prefix}:${requestBody.email}")
         }
 
         val user = userRepository.findByEmail(requestBody.email)
@@ -59,10 +52,10 @@ class LoginService(
         return tokenService.generateToken(user)
     }
 
-    @Transactional
     fun issueOTP(email: String): String {
-        val otp = OTPBuilder.generateOTP(OTP_LENGTH)
-        redisTemplate.opsForValue().set("${RedisKey.LOGIN_OTP}:${email}", otp, OTP_EXPIRE_MINUTES)
+        val otp = OTPBuilder.generateOTP()
+        val key = "${RedisKey.LOGIN_OTP.prefix}:${email}"
+        redisTemplate.opsForValue().set(key, otp, RedisKey.LOGIN_OTP.ttl)
         return otp
     }
 }
