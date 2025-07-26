@@ -2,7 +2,6 @@ package kr.loghub.api.service.question
 
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.question.*
-import kr.loghub.api.dto.task.answer.AnswerGenerateRequest
 import kr.loghub.api.entity.question.Question
 import kr.loghub.api.entity.user.User
 import kr.loghub.api.exception.entity.EntityNotFoundException
@@ -14,7 +13,6 @@ import kr.loghub.api.service.common.CacheService
 import kr.loghub.api.util.checkField
 import kr.loghub.api.util.checkPermission
 import kr.loghub.api.util.toSlug
-import kr.loghub.api.worker.AnswerGenerateWorker
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -27,9 +25,8 @@ class QuestionService(
     private val questionCustomRepository: QuestionCustomRepository,
     private val topicRepository: TopicRepository,
     private val cacheService: CacheService,
-    private val answerGenerateWorker: AnswerGenerateWorker,
 ) {
-    companion object {
+    private companion object {
         private const val PAGE_SIZE = 20
     }
 
@@ -47,7 +44,7 @@ class QuestionService(
 
     @Transactional(readOnly = true)
     fun getQuestion(username: String, slug: String): QuestionDetailDTO {
-        val question = questionRepository.findWithWriterAndAnswersByCompositeKey(username, slug)
+        val question = questionRepository.findWithWriterByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
         val questionHTML = cacheService.findOrGenerateMarkdownCache(question.content)
 
@@ -61,15 +58,6 @@ class QuestionService(
 
         val question = requestBody.toEntity(slug, writer, topics)
         val savedQuestion = questionRepository.save(question)
-
-        if (requestBody.requestBotAnswer) {
-            answerGenerateWorker.addToQueue(
-                AnswerGenerateRequest(
-                    questionId = savedQuestion.id!!,
-                    questionContent = "${savedQuestion.title}\n\n${savedQuestion.content}",
-                )
-            )
-        }
 
         return savedQuestion
     }

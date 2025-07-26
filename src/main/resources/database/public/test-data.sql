@@ -1,16 +1,35 @@
 TRUNCATE TABLE public.articles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.article_topics RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.article_comments RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.series RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.series_chapters RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.series_topics RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.series_reviews RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.questions RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.question_topics RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.question_answers RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.user_stars RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.user_activities RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.topics RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.users RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.search_synonyms RESTART IDENTITY CASCADE;
+
+INSERT INTO public.users(email, username, nickname, role)
+VALUES ('admin@loghub.kr', 'admin', '관리자', 'ADMIN'),
+       ('bot@loghub.kr', 'bot', '봇', 'BOT'),
+       ('test1@test.com', 'test1', '테스트계정1', 'MEMBER'),
+       ('test2@test.com', 'test2', '테스트계정2', 'MEMBER');
+
+INSERT INTO public.topics(slug, name)
+VALUES ('c', 'C'),
+       ('cpp', 'C++'),
+       ('csharp', 'C#'),
+       ('deno', 'Deno'),
+       ('docker', 'Docker'),
+       ('github', 'GitHub'),
+       ('google', 'Google'),
+       ('java', 'Java'),
+       ('javascript', 'JavaScript'),
+       ('kubernetes', 'Kubernetes'),
+       ('nextjs', 'Next.js'),
+       ('nodejs', 'Node.js'),
+       ('prettier', 'Prettier'),
+       ('python', 'Python'),
+       ('react', 'React'),
+       ('spring', 'Spring'),
+       ('typescript', 'TypeScript');
 
 INSERT INTO public.articles (slug, title, content, writer_id, writer_username, topics_flat, trending_score, star_count,
                              created_at)
@@ -103,7 +122,7 @@ VALUES ('async-await-js', 'JavaScript에서 async/await가 성능에 미치는 �
         NOW() - INTERVAL '21 hour'),
 
        ('k8s-ingress', 'Ingress Controller 선택 기준은 무엇인가요?',
-        E'# Ingress Controller 선택\n\nNginx, Traefik, Kong 중 어떤 기준으로 선택하시나요?', 'OPEN', NULL, NULL, 2, 0, 4, 4, 'test2',
+        E'# Ingress Controller 선택\n\nNginx, Traefik, Kong 중 어떤 기준으로 선택하시나요?', 'OPEN', NULL, NULL, 2, 0, 4, 3, 'test1',
         'kubernetes:Kubernetes', NOW() - INTERVAL '18 hour'),
 
        ('docker-compose-scale', 'docker-compose scale 사용 시 주의 사항',

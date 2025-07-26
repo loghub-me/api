@@ -20,8 +20,8 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     fun findWithWriterById(id: Long): Question?
 
     @Query("$SELECT_QUESTION WHERE $BY_COMPOSITE_KEY")
-    @EntityGraph(attributePaths = ["writer", "answers"])
-    fun findWithWriterAndAnswersByCompositeKey(username: String, slug: String): Question?
+    @EntityGraph(attributePaths = ["writer"])
+    fun findWithWriterByCompositeKey(username: String, slug: String): Question?
 
     @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>
@@ -30,11 +30,11 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount - 1 WHERE a.id = :id")
+    @Query("UPDATE Question q SET q.stats.starCount = q.stats.starCount - 1 WHERE $BY_ID")
     fun decrementStarCount(id: Long)
 
     @Modifying
-    @Query("UPDATE Question q SET q.stats.trendingScore = :trendingScore WHERE q.id = :id")
+    @Query("UPDATE Question q SET q.stats.trendingScore = :trendingScore WHERE $BY_ID")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
 
     @Modifying

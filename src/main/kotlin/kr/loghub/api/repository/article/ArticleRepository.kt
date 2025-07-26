@@ -30,11 +30,11 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount - 1 WHERE a.id = :id")
+    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount - 1 WHERE $BY_ID")
     fun decrementStarCount(id: Long)
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.trendingScore = :trendingScore WHERE a.id = :id")
+    @Query("UPDATE Article a SET a.stats.trendingScore = :trendingScore WHERE $BY_ID")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
 
     @Modifying
