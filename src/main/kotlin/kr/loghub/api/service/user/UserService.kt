@@ -3,18 +3,18 @@ package kr.loghub.api.service.user
 import kr.loghub.api.constant.message.ResponseMessage
 import kr.loghub.api.dto.article.ArticleDTO
 import kr.loghub.api.dto.article.ArticleSort
-import kr.loghub.api.dto.series.SeriesDTO
-import kr.loghub.api.dto.series.SeriesSort
 import kr.loghub.api.dto.question.QuestionDTO
 import kr.loghub.api.dto.question.QuestionFilter
 import kr.loghub.api.dto.question.QuestionSort
+import kr.loghub.api.dto.series.SeriesDTO
+import kr.loghub.api.dto.series.SeriesSort
 import kr.loghub.api.mapper.article.ArticleMapper
-import kr.loghub.api.mapper.series.SeriesMapper
 import kr.loghub.api.mapper.question.QuestionMapper
+import kr.loghub.api.mapper.series.SeriesMapper
 import kr.loghub.api.mapper.user.UserMapper
 import kr.loghub.api.repository.article.ArticleCustomRepository
-import kr.loghub.api.repository.series.SeriesCustomRepository
 import kr.loghub.api.repository.question.QuestionCustomRepository
+import kr.loghub.api.repository.series.SeriesCustomRepository
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.util.checkField
 import org.springframework.data.domain.Page
@@ -30,7 +30,7 @@ class UserService(
     private val seriesCustomRepository: SeriesCustomRepository,
     private val questionCustomRepository: QuestionCustomRepository,
 ) {
-    companion object {
+    private companion object {
         private const val PAGE_SIZE = 20
     }
 

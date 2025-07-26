@@ -29,7 +29,7 @@ class ArticleService(
     private val topicRepository: TopicRepository,
     private val cacheService: CacheService,
 ) {
-    companion object {
+    private companion object {
         private const val PAGE_SIZE = 20
     }
 

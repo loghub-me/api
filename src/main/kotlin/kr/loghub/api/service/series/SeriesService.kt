@@ -27,7 +27,7 @@ class SeriesService(
     private val seriesCustomRepository: SeriesCustomRepository,
     private val topicRepository: TopicRepository,
 ) {
-    companion object {
+    private companion object {
         private const val PAGE_SIZE = 20
     }
 

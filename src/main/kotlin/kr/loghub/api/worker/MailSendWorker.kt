@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 @Component
 class MailSendWorker(private val taskAPIProxy: TaskAPIProxy) {
-    companion object {
+    private companion object {
         private val queue = ConcurrentLinkedQueue<MailSendRequest>()
     }
 

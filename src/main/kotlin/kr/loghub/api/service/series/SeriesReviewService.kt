@@ -22,7 +22,7 @@ class SeriesReviewService(
     private val seriesRepository: SeriesRepository,
     private val seriesReviewRepository: SeriesReviewRepository,
 ) {
-    companion object {
+    private companion object {
         const val DEFAULT_PAGE_SIZE = 10
     }
 

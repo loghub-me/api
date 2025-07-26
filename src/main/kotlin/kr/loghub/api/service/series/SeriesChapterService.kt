@@ -21,7 +21,7 @@ class SeriesChapterService(
     private val seriesChapterRepository: SeriesChapterRepository,
     private val cacheService: CacheService,
 ) {
-    companion object {
+    private companion object {
         private const val DEFAULT_CHAPTER_TITLE = "새 챕터"
     }
 

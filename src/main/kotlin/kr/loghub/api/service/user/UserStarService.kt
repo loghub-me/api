@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserStarService(private val userStarRepository: UserStarRepository) {
-    companion object {
+    private companion object {
         private const val PAGE_SIZE = 20
     }
 
