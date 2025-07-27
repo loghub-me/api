@@ -12,6 +12,11 @@ spring:
         - classpath:database/public/functions.sql
         - classpath:database/public/triggers.sql
         - classpath:database/cron/schedules.sql
-      data-locations: classpath:database/public/test-data.sql
+        - classpath:database/archive/tables.sql
+        - classpath:database/archive/functions.sql
+        - classpath:database/archive/triggers.sql
+      data-locations:
+        - classpath:database/public/test-data.sql
+        - classpath:database/archive/test-data.sql
   jpa:
     show-sql: true
