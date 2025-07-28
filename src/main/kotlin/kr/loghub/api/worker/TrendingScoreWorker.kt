@@ -64,6 +64,6 @@ class TrendingScoreWorker(
             updateTrendingScoreById(score, articleId)
         }
 
-        redisTemplate.delete(trendingScoreKey)
+        redisTemplate.delete(tempKey)
     }
 }
