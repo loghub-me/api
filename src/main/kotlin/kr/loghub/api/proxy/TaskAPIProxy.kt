@@ -2,7 +2,6 @@ package kr.loghub.api.proxy
 
 import kr.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import kr.loghub.api.dto.task.image.ImageUploadResponse
-import kr.loghub.api.dto.task.mail.MailSendRequest
 import kr.loghub.api.dto.task.markdown.MarkdownParseRequest
 import kr.loghub.api.dto.task.markdown.MarkdownParseResponse
 import kr.loghub.api.dto.task.markdown.MarkdownsParseRequest
@@ -46,7 +45,4 @@ interface TaskAPIProxy {
         @RequestPart("file") file: MultipartFile,
         @RequestPart("userId") userId: Long,
     )
-
-    @PostMapping("/mail/send")
-    fun sendMail(@RequestBody request: MailSendRequest)
 }
