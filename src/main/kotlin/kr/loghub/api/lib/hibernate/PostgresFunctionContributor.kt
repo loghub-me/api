@@ -18,7 +18,7 @@ class PostgresFunctionContributor : FunctionContributor {
             "ecfts",
             """
                 ARRAY[title, content, writer_username, topics_flat] &@~ pgroonga_condition(
-                    ?1,
+                    pgroonga_query_expand('search_synonyms', 'term', 'synonyms', ?1),
                     weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.CONTENT}, ${WEIGHTS.WRITER_USERNAME}, ${WEIGHTS.TOPICS_FLAT}],
                     index_name => ?2
                 ) 
