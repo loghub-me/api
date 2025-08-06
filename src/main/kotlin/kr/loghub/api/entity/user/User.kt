@@ -19,7 +19,7 @@ class User(
     @Column(name = "email", unique = true, nullable = false, length = 255)
     var email: String,
 
-    @Column(name = "username", unique = true, nullable = false, length = 16)
+    @Column(name = "username", unique = true, nullable = false, length = 14)
     @get:JvmName("getUsernameProp")  // to prevent JVM signature conflict
     var username: String,
 

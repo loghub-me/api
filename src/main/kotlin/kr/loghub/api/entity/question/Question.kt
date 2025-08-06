@@ -21,10 +21,10 @@ import java.time.LocalDateTime
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
 class Question(
-    @Column(name = "slug", nullable = false, length = 100)
+    @Column(name = "slug", nullable = false, length = 128)
     var slug: String,
 
-    @Column(name = "title", nullable = false, length = 100)
+    @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
     @Column(name = "content", nullable = false)

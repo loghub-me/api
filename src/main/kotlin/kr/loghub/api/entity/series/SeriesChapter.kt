@@ -12,10 +12,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
 class SeriesChapter(
-    @Column(name = "title", nullable = false, length = 100)
+    @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 8192)
     var content: String = "",
 
     @Column(name = "sequence", nullable = false)
