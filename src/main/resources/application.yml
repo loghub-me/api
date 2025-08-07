@@ -43,3 +43,6 @@ jwt:
 resend:
   api-key: ${RESEND_API_KEY}
   from: ${RESEND_FROM_EMAIL}
+management:
+  server:
+    port: ${MANAGEMENT_PORT}
