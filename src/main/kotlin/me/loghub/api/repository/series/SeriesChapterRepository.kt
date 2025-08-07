@@ -1,0 +1,22 @@
+package me.loghub.api.repository.series
+
+import me.loghub.api.entity.series.Series
+import me.loghub.api.entity.series.SeriesChapter
+import org.springframework.data.jpa.repository.EntityGraph
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+
+interface SeriesChapterRepository : JpaRepository<SeriesChapter, Long> {
+    private companion object {
+        const val SELECT_CHAPTER = "SELECT bc FROM SeriesChapter bc"
+        const val BY_SERIES_ID = "bc.series.id = :seriesId"
+    }
+
+    @Query("$SELECT_CHAPTER WHERE $BY_SERIES_ID AND bc.sequence = :sequence")
+    @EntityGraph(attributePaths = ["writer"])
+    fun findBySeriesIdAndSequence(seriesId: Long, sequence: Int): SeriesChapter?
+
+    fun findAllBySeriesIdAndSequenceGreaterThanOrderBySequenceAsc(seriesId: Long, sequence: Int): List<SeriesChapter>
+
+    fun countBySeries(series: Series): Int
+}

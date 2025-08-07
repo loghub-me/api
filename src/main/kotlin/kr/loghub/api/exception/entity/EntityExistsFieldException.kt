@@ -1,9 +1,0 @@
-package kr.loghub.api.exception.entity
-
-import kr.loghub.api.constant.message.ResponseMessage
-import kr.loghub.api.exception.FieldException
-
-class EntityExistsFieldException(
-    field: String,
-    message: String = ResponseMessage.Default.ALREADY_EXISTS
-) : FieldException(field, message)

@@ -7,8 +7,8 @@ TRUNCATE TABLE public.users RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.search_synonyms RESTART IDENTITY CASCADE;
 
 INSERT INTO public.users(email, username, nickname, role)
-VALUES ('admin@loghub.kr', 'admin', '관리자', 'ADMIN'),
-       ('bot@loghub.kr', 'bot', '봇', 'BOT'),
+VALUES ('admin@loghub.me', 'admin', '관리자', 'ADMIN'),
+       ('bot@loghub.me', 'bot', '봇', 'BOT'),
        ('test1@test.com', 'test1', '테스트계정1', 'MEMBER'),
        ('test2@test.com', 'test2', '테스트계정2', 'MEMBER');
 

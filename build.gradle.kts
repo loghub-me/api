@@ -8,7 +8,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
 }
 
-group = "kr.loghub"
+group = "me.loghub"
 version = "0.0.1-SNAPSHOT"
 
 java {
