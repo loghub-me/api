@@ -37,6 +37,7 @@ dependencies {
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.9.10")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.auth0:java-jwt:4.5.0")
+    implementation("com.resend:resend-java:3.1.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

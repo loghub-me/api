@@ -7,8 +7,10 @@ import kr.loghub.api.dto.auth.JoinConfirmDTO
 import kr.loghub.api.dto.auth.JoinRequestDTO
 import kr.loghub.api.dto.auth.token.JoinTokenDTO
 import kr.loghub.api.dto.auth.token.TokenDTO
+import kr.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import kr.loghub.api.dto.task.mail.JoinMailSendRequest
 import kr.loghub.api.entity.user.User
+import kr.loghub.api.proxy.TaskAPIProxy
 import kr.loghub.api.repository.user.UserRepository
 import kr.loghub.api.service.auth.token.TokenService
 import kr.loghub.api.util.OTPBuilder
@@ -24,6 +26,7 @@ class JoinService(
     private val userRepository: UserRepository,
     private val mailSendWorker: MailSendWorker,
     private val tokenService: TokenService,
+    private val taskAPIProxy: TaskAPIProxy,
 ) {
     @Transactional
     fun requestJoin(requestBody: JoinRequestDTO) {
@@ -45,6 +48,7 @@ class JoinService(
         }
 
         val joinedUser = userRepository.save(otp.toUserEntity())
+        taskAPIProxy.generateAvatar(AvatarGenerateRequest(joinedUser.id!!))
         return tokenService.generateToken(joinedUser)
     }
 

@@ -28,19 +28,19 @@ class TopicController(private val topicService: TopicService) {
     }
 
     @GetMapping("/{slug}/articles/trending")
-    fun getTopicArticles(@PathVariable slug: String): ResponseEntity<List<ArticleDTO>> {
+    fun getTrendingArticles(@PathVariable slug: String): ResponseEntity<List<ArticleDTO>> {
         val articles = topicService.getTrendingArticles(slug)
         return ResponseEntity.ok(articles)
     }
 
     @GetMapping("/{slug}/series/trending")
-    fun getTopicSeries(@PathVariable slug: String): ResponseEntity<List<SeriesDTO>> {
+    fun getTrendingSeries(@PathVariable slug: String): ResponseEntity<List<SeriesDTO>> {
         val series = topicService.getTrendingSeries(slug)
         return ResponseEntity.ok(series)
     }
 
     @GetMapping("/{slug}/questions/trending")
-    fun getTopicQuestions(@PathVariable slug: String): ResponseEntity<List<QuestionDTO>> {
+    fun getTrendingQuestions(@PathVariable slug: String): ResponseEntity<List<QuestionDTO>> {
         val questions = topicService.getTrendingQuestions(slug)
         return ResponseEntity.ok(questions)
     }

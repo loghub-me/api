@@ -126,8 +126,8 @@ VALUES ('async-await-js', 'JavaScript에서 async/await가 성능에 미치는 �
         'kubernetes:Kubernetes', NOW() - INTERVAL '18 hour'),
 
        ('docker-compose-scale', 'docker-compose scale 사용 시 주의 사항',
-        E'# docker-compose scale 관련 질문\n\ndocker-compose v2 환경에서 `compose up --scale` 시 환경변수 충돌 문제가 발생합니다.', 'CLOSED',
-        NULL, NOW() - INTERVAL '5 hour', 1, 1, 2, 3, 'test1', 'docker:Docker', NOW() - INTERVAL '6 hour');
+        E'# docker-compose scale 관련 질문\n\ndocker-compose v2 환경에서 `compose up --scale` 시 환경변수 충돌 문제가 발생합니다.', 'OPEN',
+        NULL, NULL, 1, 1, 2, 3, 'test1', 'docker:Docker', NOW() - INTERVAL '6 hour');
 INSERT INTO public.question_topics (question_id, topic_id)
 SELECT q.id, t.id
 FROM public.questions q
