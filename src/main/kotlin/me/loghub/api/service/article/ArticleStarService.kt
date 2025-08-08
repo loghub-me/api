@@ -18,12 +18,12 @@ class ArticleStarService(
     private val articleRepository: ArticleRepository,
 ) : IStarService {
     @Transactional(readOnly = true)
-    override fun existsStar(articleId: Long, user: User): Boolean =
-        userStarRepository.existsByArticleIdAndUser(articleId, user)
+    override fun existsStar(id: Long, user: User): Boolean =
+        userStarRepository.existsByArticleIdAndUser(id, user)
 
     @Transactional
-    override fun addStar(articleId: Long, user: User): UserStar {
-        val article = articleRepository.findById(articleId)
+    override fun addStar(id: Long, user: User): UserStar {
+        val article = articleRepository.findById(id)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
 
         checkAlreadyExists(userStarRepository.existsByArticleAndUser(article, user)) {
@@ -35,11 +35,11 @@ class ArticleStarService(
     }
 
     @Transactional
-    override fun removeStar(articleId: Long, user: User) {
-        val affectedRows = userStarRepository.deleteByArticleIdAndUser(articleId, user)
+    override fun removeStar(id: Long, user: User) {
+        val affectedRows = userStarRepository.deleteByArticleIdAndUser(id, user)
 
         checkExists(affectedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 
-        articleRepository.decrementStarCount(articleId)
+        articleRepository.decrementStarCount(id)
     }
 }

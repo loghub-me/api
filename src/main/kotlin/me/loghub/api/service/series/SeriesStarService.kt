@@ -18,12 +18,12 @@ class SeriesStarService(
     private val seriesRepository: SeriesRepository,
 ) : IStarService {
     @Transactional(readOnly = true)
-    override fun existsStar(seriesId: Long, user: User): Boolean =
-        userStarRepository.existsBySeriesIdAndUser(seriesId, user)
+    override fun existsStar(id: Long, user: User): Boolean =
+        userStarRepository.existsBySeriesIdAndUser(id, user)
 
     @Transactional
-    override fun addStar(seriesId: Long, user: User): UserStar {
-        val series = seriesRepository.findById(seriesId)
+    override fun addStar(id: Long, user: User): UserStar {
+        val series = seriesRepository.findById(id)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Series.NOT_FOUND) }
 
         checkAlreadyExists(userStarRepository.existsBySeriesAndUser(series, user)) {
@@ -35,11 +35,11 @@ class SeriesStarService(
     }
 
     @Transactional
-    override fun removeStar(seriesId: Long, user: User) {
-        val affectedRows = userStarRepository.deleteBySeriesIdAndUser(seriesId, user)
+    override fun removeStar(id: Long, user: User) {
+        val affectedRows = userStarRepository.deleteBySeriesIdAndUser(id, user)
 
         checkExists(affectedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 
-        seriesRepository.decrementStarCount(seriesId)
+        seriesRepository.decrementStarCount(id)
     }
 }
