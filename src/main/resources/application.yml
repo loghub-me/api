@@ -37,11 +37,6 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-client:
-  host: ${CLIENT_HOST}
-task-api:
-  host: ${TASK_API_HOST}
-  interval-token: ${TASK_API_INTERVAL_TOKEN}
 jwt:
   issuer: ${APP_NAME}
   secret: ${ACCESS_TOKEN_SECRET}
@@ -49,6 +44,13 @@ jwt:
 resend:
   api-key: ${RESEND_API_KEY}
   from: ${RESEND_FROM_EMAIL}
+client:
+  host: ${CLIENT_HOST}
+server:
+  port: ${SERVER_PORT:8080}
+task-api:
+  host: ${TASK_API_HOST}
+  interval-token: ${TASK_API_INTERVAL_TOKEN}
 management:
   server:
-    port: ${MANAGEMENT_PORT}
+    port: ${MANAGEMENT_PORT:8081}
