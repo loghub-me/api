@@ -1,9 +1,11 @@
 package me.loghub.api.service.auth
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserPrivacy
 import me.loghub.api.entity.user.UserProfile
+import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
@@ -14,7 +16,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class CustomOAuth2UserService(private val userRepository: UserRepository) : DefaultOAuth2UserService() {
+class CustomOAuth2UserService(
+    private val userRepository: UserRepository,
+    private val taskAPIProxy: TaskAPIProxy,
+) : DefaultOAuth2UserService() {
     private object RegistrationId {
         const val GOOGLE = "google"
         const val GITHUB = "github"
@@ -52,17 +57,20 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) : Defa
 
     fun findOrCreateUser(authentication: Authentication): User {
         val oAuth2User = authentication.principal as OAuth2User
-        return userRepository.findByUsername(oAuth2User.name)
+        return userRepository.findByEmail(oAuth2User.name)
             ?: createUser(oAuth2User)
     }
 
-    private fun createUser(oAuth2User: OAuth2User) = userRepository.save(
-        User(
+    private fun createUser(oAuth2User: OAuth2User): User {
+        val newUser = User(
             email = oAuth2User.attributes[OAuth2Attribute.EMAIL].toString(),
             username = oAuth2User.attributes[OAuth2Attribute.USERNAME].toString(),
             provider = oAuth2User.attributes[OAuth2Attribute.PROVIDER] as User.Provider,
             profile = UserProfile(nickname = oAuth2User.attributes["username"].toString()),
             privacy = UserPrivacy(),
         )
-    )
+        val createdUser = userRepository.save(newUser)
+        taskAPIProxy.generateAvatar(AvatarGenerateRequest(createdUser.id!!))
+        return createdUser
+    }
 }
