@@ -77,7 +77,7 @@ class QuestionAnswerService(
 
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         checkPermission(question.status === Question.Status.OPEN) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
-        checkAlreadyExists(redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATE_COOLDOWN}:${question.id}")) {
+        checkAlreadyExists(redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}")) {
             ResponseMessage.Question.Answer.GENERATE_COOLDOWN
         }
 

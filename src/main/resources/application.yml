@@ -33,6 +33,7 @@ spring:
       chat:
         options:
           model: gpt-4.1-nano
+          temperature: 0.7
   servlet:
     multipart:
       max-file-size: 5MB

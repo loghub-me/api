@@ -42,7 +42,7 @@ class AnswerGenerateWorker(
         """.trimIndent()
         private const val BOT_USERNAME = "bot"
         private const val REJECTION_TITLE = "답변이 거절되었습니다"
-        private const val CRON = "0 0/1 * * * *" // every minute
+        private const val CRON = "0/10 * * * * *" // Every 10 seconds
     }
 
     @Scheduled(cron = CRON)
@@ -83,19 +83,19 @@ class AnswerGenerateWorker(
     }
 
     private fun createAnswer(res: AnswerGenerateResponse, question: Question, bot: User) = when (res.rejectionReason) {
+        AnswerGenerateResponse.RejectionReason.NONE ->
+            QuestionAnswer(
+                title = res.title,
+                content = res.content,
+                question = question,
+                writer = bot
+            )
+
         AnswerGenerateResponse.RejectionReason.OFF_TOPIC,
         AnswerGenerateResponse.RejectionReason.NOT_ENOUGH_INFO ->
             QuestionAnswer(
                 title = REJECTION_TITLE,
                 content = res.rejectionReason.message,
-                question = question,
-                writer = bot
-            )
-
-        else ->
-            QuestionAnswer(
-                title = res.title,
-                content = res.content,
                 question = question,
                 writer = bot
             )
