@@ -14,17 +14,17 @@ class LoginMailSendRequest(
     <title>LogHub | 가입 인증 OTP</title>
   </head>
   <body style="font-family: Arial, Helvetica, sans-serif">
-    <header style="padding: 12px; background-color: #3a97fa">
-        <img src="${HttpDomain.WEB}/logo.png" alt="logo" width="128" height="128" />
+    <header style="padding: 12px; background-color: #ffffff">
+        <img src="${HttpDomain.WEB}/logo.png" alt="logo" width="128" height="32" />
     </header>
     <section style="padding: 12px">
       <h2>가입 인증 OTP</h2>
-      <div style="display: inline-block; padding: 8px 12px; border-radius: 6px; color: #fff; background-color: #3a97fa">
+      <div style="display: inline-block; padding: 8px 12px; border-radius: 6px; color: #ffffff; background-color: #3a97fa">
         $otp
       </div>
       <a
         href="${HttpDomain.WEB}/join/confirm?email=$to&otp=$otp"
-        style="display: inline-block; padding: 8px 12px; border-radius: 6px; color: #3a97fa; background-color: #fff"
+        style="display: inline-block; padding: 8px 12px; border-radius: 6px; color: #3a97fa;"
       >
         인증하기
       </a>
