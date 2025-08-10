@@ -15,7 +15,7 @@ class JoinMailSendRequest(
   </head>
   <body style="font-family: Arial, Helvetica, sans-serif">
     <header style="padding: 12px; background-color: #ffffff">
-        <img src="${HttpDomain.WEB}/logo.png" alt="logo" width="128" height="32" />
+        <img src="${HttpDomain.WEB}/logo.webp" alt="logo" width="128" height="32" />
     </header>
     <section style="padding: 12px">
       <h2>로그인 인증 OTP</h2>
