@@ -49,6 +49,7 @@ client:
   host: ${CLIENT_HOST}
 server:
   port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
 task-api:
   host: ${TASK_API_HOST}
   interval-token: ${TASK_API_INTERVAL_TOKEN}
