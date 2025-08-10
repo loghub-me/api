@@ -8,5 +8,5 @@ interface TopicRepository : JpaRepository<Topic, Long> {
 
     fun findBySlug(slug: String): Topic?
 
-    fun findTop20ByOrderByTrendingScoreDesc(): List<Topic>
+    fun findAllByOrderByTrendingScoreDesc(): List<Topic>
 }

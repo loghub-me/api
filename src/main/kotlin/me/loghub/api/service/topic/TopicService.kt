@@ -14,6 +14,7 @@ import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.topic.TopicRepository
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,8 +26,9 @@ class TopicService(
     private val questionRepository: QuestionRepository,
 ) {
     @Transactional(readOnly = true)
+    @Cacheable("getTrendingTopics")
     fun getTrendingTopics(): List<TopicDTO> =
-        topicRepository.findTop20ByOrderByTrendingScoreDesc()
+        topicRepository.findAllByOrderByTrendingScoreDesc()
             .map { TopicMapper.map(it) }
 
     @Transactional(readOnly = true)
