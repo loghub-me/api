@@ -3,6 +3,7 @@ package me.loghub.api.repository.article
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
+import me.loghub.api.constant.hibernate.HibernateFunction
 import me.loghub.api.dto.article.ArticleSort
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.QArticle
@@ -24,18 +25,17 @@ class ArticleCustomRepository(private val entityManager: EntityManager) {
         username: String? = null
     ): Page<Article> {
         val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
-            "ecfts({0}, {1})",
+            HibernateFunction.ECFTS.template,
             Expressions.constant(query),
-            Expressions.constant("articles_search_index")
+            HibernateFunction.INDEX.ARTICLES_SEARCH_INDEX,
         ) else null
+        val usernameFilter = if (username.isNullOrBlank()) null else article.writerUsername.eq(username)
+        val conditions = arrayOf(fullTextSearch, usernameFilter)
 
         val searchQuery = JPAQuery<Article>(entityManager)
             .select(article)
             .from(article)
-            .where(
-                username?.let { article.writerUsername.eq(it) },
-                fullTextSearch
-            )
+            .where(*conditions)
             .orderBy(sort.order)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -43,10 +43,7 @@ class ArticleCustomRepository(private val entityManager: EntityManager) {
         val countQuery = JPAQuery<Long>(entityManager)
             .select(article.count())
             .from(article)
-            .where(
-                username?.let { article.writerUsername.eq(it) },
-                fullTextSearch
-            )
+            .where(*conditions)
 
         val articles = searchQuery.fetch()
         val total = countQuery.fetchOne() ?: 0L
