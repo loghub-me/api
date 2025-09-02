@@ -47,4 +47,17 @@ interface ArticleRepository : JpaRepository<Article, Long> {
         @Param("oldUsername") oldUsername: String,
         @Param("newUsername") newUsername: String
     ): Int
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Article a SET a.stats.commentCount = a.stats.commentCount + 1 WHERE a.id = :id")
+    fun incrementCommentCount(id: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        UPDATE Article a
+        SET a.stats.commentCount = CASE WHEN a.stats.commentCount > 0 THEN a.stats.commentCount - 1 ELSE 0 END
+        WHERE a.id = :id"""
+    )
+    fun decrementCommentCount(id: Long)
 }

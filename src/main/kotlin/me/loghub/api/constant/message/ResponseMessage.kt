@@ -71,6 +71,7 @@ object ResponseMessage {
             const val POST_SUCCESS = "댓글이 성공적으로 등록되었습니다!"
             const val DELETE_SUCCESS = "댓글이 성공적으로 삭제되었습니다!"
             const val PERMISSION_DENIED = "이 댓글에 대한 권한이 없습니다!"
+            const val PARENT_DELETED = "부모 댓글이 삭제되었습니다."
         }
     }
 

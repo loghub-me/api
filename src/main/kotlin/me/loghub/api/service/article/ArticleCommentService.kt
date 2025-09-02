@@ -3,16 +3,18 @@ package me.loghub.api.service.article
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.article.comment.ArticleCommentDTO
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
+import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleComment
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.article.ArticleCommentMapper
 import me.loghub.api.repository.article.ArticleCommentRepository
 import me.loghub.api.repository.article.ArticleRepository
+import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
+import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,45 +28,57 @@ class ArticleCommentService(
     }
 
     @Transactional(readOnly = true)
-    fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> =
-        articleCommentRepository.findRootsByArticleId(
-            articleId = articleId,
-            pageable = PageRequest.of(
-                page - 1,
-                DEFAULT_PAGE_SIZE,
-                Sort.by(ArticleComment::createdAt.name).descending()
-            ),
+    fun getComments(articleId: Long, page: Int): Page<ArticleCommentDTO> {
+        checkField("page", page > 0) { ResponseMessage.Page.MUST_BE_POSITIVE }
+
+        val articleRef = articleRepository.getReferenceById(articleId)
+        return articleCommentRepository.findRootComments(
+            articleRef,
+            PageRequest.of(page - 1, DEFAULT_PAGE_SIZE)
         ).map(ArticleCommentMapper::map)
+    }
 
     @Transactional(readOnly = true)
-    fun getReplies(articleId: Long, parentId: Long): List<ArticleCommentDTO> =
-        articleCommentRepository.findLeafsByArticleIdAndParentId(articleId, parentId)
+    fun getReplies(articleId: Long, parentId: Long): List<ArticleCommentDTO> {
+        val articleRef = articleRepository.getReferenceById(articleId)
+        val parentRef = articleCommentRepository.getReferenceById(parentId)
+        return articleCommentRepository.findLeafComments(articleRef, parentRef)
             .map(ArticleCommentMapper::map)
+    }
 
     @Transactional
     fun postComment(articleId: Long, requestBody: PostArticleCommentDTO, writer: User): ArticleComment {
         val article = articleRepository.findById(articleId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
-        val parent = requestBody.parentId?.let { parentId ->
-            articleCommentRepository.findByArticleAndId(article, parentId)
-                ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
-        }
+            .orElseThrowNotFound { ResponseMessage.Article.NOT_FOUND }
+        val parent = getAvailableParent(article, requestBody.parentId)
 
         val comment = requestBody.toEntity(article, parent, writer)
-        article.incrementCommentCount()
-        comment.parent?.incrementReplyCount()
+        articleRepository.incrementCommentCount(articleId)
+        parent?.let { articleCommentRepository.incrementReplyCount(it.id!!) }
         return articleCommentRepository.save(comment)
     }
 
     @Transactional
     fun removeComment(articleId: Long, commentId: Long, writer: User) {
-        val comment = articleCommentRepository.findWithGraphByArticleIdAndId(articleId, commentId)
+        val article = articleRepository.getReferenceById(articleId)
+        val comment = articleCommentRepository.findWithGraphByArticleAndId(article, commentId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
 
-        checkPermission(comment.writer == writer) { ResponseMessage.Article.Comment.PERMISSION_DENIED }
+        checkPermission(comment.writer.id == writer.id) { ResponseMessage.Auth.FORBIDDEN }
 
-        comment.parent?.decrementReplyCount()
-        comment.article.decrementCommentCount()
         comment.delete()
+        comment.parent?.let { parent -> articleCommentRepository.decrementReplyCount(parent.id!!) }
+        articleRepository.decrementCommentCount(articleId)
     }
+
+    private fun getAvailableParent(article: Article, parentId: Long?) =
+        parentId?.let { id ->
+            articleCommentRepository.findByArticleAndId(article, id)
+                ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
+        }?.also { parent ->
+            checkField(
+                PostArticleCommentDTO::parentId.name,
+                !parent.deleted
+            ) { ResponseMessage.Article.Comment.PARENT_DELETED }
+        }
 }
