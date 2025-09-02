@@ -10,6 +10,7 @@ object ResponseMessage {
         const val ALREADY_EXISTS = "이미 존재하는 정보입니다."
         const val CONFLICT_FIELD = "필드 값이 충돌합니다."
         const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
+        const val COOLDOWN_NOT_ELAPSED = "쿨타임이 지나지 않았습니다."
         const val INTERNAL_SERVER_ERROR = "알 수 없는 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     }
 
@@ -116,7 +117,7 @@ object ResponseMessage {
             const val CANNOT_POST_SELF = "자신의 질문에 답변을 작성할 수 없습니다."
             const val ALREADY_ACCEPTED = "이미 채택된 답변입니다!"
             const val REQUEST_GENERATE_SUCCESS = "답변 생성 요청이 성공적으로 처리되었습니다!"
-            const val GENERATE_COOLDOWN = "답변 생성 요청은 10분에 한 번만 가능합니다!"
+            const val COOLDOWN_NOT_ELAPSED = "답변 생성 요청은 10분에 한 번만 가능합니다!"
         }
     }
 

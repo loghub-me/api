@@ -1,11 +1,12 @@
 package me.loghub.api.util
 
 import me.loghub.api.exception.auth.PermissionDeniedException
-import me.loghub.api.exception.entity.EntityExistsException
+import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityExistsFieldException
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.exception.entity.EntityNotFoundFieldException
 import me.loghub.api.exception.validation.ConflictFieldException
+import me.loghub.api.exception.validation.CooldownNotElapsedException
 import me.loghub.api.exception.validation.IllegalFieldException
 
 inline fun checkField(
@@ -40,17 +41,17 @@ inline fun checkExists(
     }
 }
 
-inline fun checkAlreadyExists(
+inline fun checkConflict(
     condition: Boolean,
     lazyMessage: () -> String,
 ) {
     if (condition) {
         val message = lazyMessage()
-        throw EntityExistsException(message)
+        throw EntityConflictException(message)
     }
 }
 
-inline fun checkAlreadyExists(
+inline fun checkConflict(
     field: String,
     condition: Boolean,
     lazyMessage: () -> String,
@@ -58,6 +59,16 @@ inline fun checkAlreadyExists(
     if (condition) {
         val message = lazyMessage()
         throw EntityExistsFieldException(field, message)
+    }
+}
+
+inline fun checkCooldown(
+    condition: Boolean,
+    lazyMessage: () -> String,
+) {
+    if (condition) {
+        val message = lazyMessage()
+        throw CooldownNotElapsedException(message)
     }
 }
 

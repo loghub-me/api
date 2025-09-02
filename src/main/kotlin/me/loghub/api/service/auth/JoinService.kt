@@ -14,7 +14,7 @@ import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import me.loghub.api.util.OTPBuilder
-import me.loghub.api.util.checkAlreadyExists
+import me.loghub.api.util.checkConflict
 import me.loghub.api.worker.MailSendWorker
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.BadCredentialsException
@@ -53,11 +53,11 @@ class JoinService(
     }
 
     private fun checkJoinable(email: String, username: String) {
-        checkAlreadyExists(
+        checkConflict(
             User::email.name,
             userRepository.existsByEmail(email),
         ) { ResponseMessage.User.EMAIL_ALREADY_EXISTS }
-        checkAlreadyExists(
+        checkConflict(
             User::username.name,
             userRepository.existsByUsername(username),
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }

@@ -7,7 +7,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.user.UserStarRepository
 import me.loghub.api.service.common.IStarService
-import me.loghub.api.util.checkAlreadyExists
+import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkExists
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +26,7 @@ class QuestionStarService(
         val question = questionRepository.findById(id)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Question.NOT_FOUND) }
 
-        checkAlreadyExists(userStarRepository.existsByQuestionAndUser(question, user)) {
+        checkConflict(userStarRepository.existsByQuestionAndUser(question, user)) {
             ResponseMessage.Star.ALREADY_EXISTS
         }
 

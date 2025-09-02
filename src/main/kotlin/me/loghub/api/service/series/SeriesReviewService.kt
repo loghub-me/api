@@ -9,7 +9,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.series.SeriesReviewMapper
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.series.SeriesReviewRepository
-import me.loghub.api.util.checkAlreadyExists
+import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -42,7 +42,7 @@ class SeriesReviewService(
         val series = seriesRepository.findById(seriesId)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Series.NOT_FOUND) }
 
-        checkAlreadyExists(seriesReviewRepository.existsBySeriesAndWriter(series, writer)) {
+        checkConflict(seriesReviewRepository.existsBySeriesAndWriter(series, writer)) {
             ResponseMessage.Series.Review.ALREADY_EXISTS
         }
 

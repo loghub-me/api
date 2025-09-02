@@ -4,7 +4,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.FieldErrorsResponseBody
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
-import me.loghub.api.exception.entity.EntityExistsException
+import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityExistsFieldException
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.exception.entity.EntityNotFoundFieldException
@@ -31,8 +31,8 @@ class EntityExceptionHandler {
         ).toResponseEntity()
     }
 
-    @ExceptionHandler(EntityExistsException::class)
-    fun handleException(e: EntityExistsException): ResponseEntity<ResponseBody> {
+    @ExceptionHandler(EntityConflictException::class)
+    fun handleException(e: EntityConflictException): ResponseEntity<ResponseBody> {
         return MessageResponseBody(
             message = e.message ?: ResponseMessage.Default.ALREADY_EXISTS,
             status = HttpStatus.CONFLICT

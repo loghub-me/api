@@ -7,7 +7,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserStarRepository
 import me.loghub.api.service.common.IStarService
-import me.loghub.api.util.checkAlreadyExists
+import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkExists
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +26,7 @@ class SeriesStarService(
         val series = seriesRepository.findById(id)
             .orElseThrow { EntityNotFoundException(ResponseMessage.Series.NOT_FOUND) }
 
-        checkAlreadyExists(userStarRepository.existsBySeriesAndUser(series, user)) {
+        checkConflict(userStarRepository.existsBySeriesAndUser(series, user)) {
             ResponseMessage.Star.ALREADY_EXISTS
         }
 

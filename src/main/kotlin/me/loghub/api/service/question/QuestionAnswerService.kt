@@ -13,7 +13,7 @@ import me.loghub.api.mapper.question.QuestionAnswerMapper
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.service.common.CacheService
-import me.loghub.api.util.checkAlreadyExists
+import me.loghub.api.util.checkCooldown
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.worker.AnswerGenerateWorker
@@ -77,8 +77,8 @@ class QuestionAnswerService(
 
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         checkPermission(question.status === Question.Status.OPEN) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
-        checkAlreadyExists(redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}")) {
-            ResponseMessage.Question.Answer.GENERATE_COOLDOWN
+        checkCooldown(redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}")) {
+            ResponseMessage.Question.Answer.COOLDOWN_NOT_ELAPSED
         }
 
         val request = AnswerGenerateRequest(question.id!!, question.title, question.content)

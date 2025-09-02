@@ -5,6 +5,7 @@ import me.loghub.api.dto.response.FieldErrorsResponseBody
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.exception.validation.ConflictFieldException
+import me.loghub.api.exception.validation.CooldownNotElapsedException
 import me.loghub.api.exception.validation.IllegalFieldException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -55,6 +56,14 @@ class ValidationExceptionHandler {
         return MessageResponseBody(
             message = ResponseMessage.Default.MISSING_COOKIE,
             status = HttpStatus.BAD_REQUEST
+        ).toResponseEntity()
+    }
+
+    @ExceptionHandler(CooldownNotElapsedException::class)
+    fun handleException(e: CooldownNotElapsedException): ResponseEntity<ResponseBody> {
+        return MessageResponseBody(
+            message = e.message ?: ResponseMessage.Default.COOLDOWN_NOT_ELAPSED,
+            status = HttpStatus.TOO_MANY_REQUESTS
         ).toResponseEntity()
     }
 }

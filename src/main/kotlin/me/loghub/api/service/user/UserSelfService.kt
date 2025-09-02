@@ -11,7 +11,7 @@ import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserRepository
-import me.loghub.api.util.checkAlreadyExists
+import me.loghub.api.util.checkConflict
 import me.loghub.api.util.requireNotEquals
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
@@ -42,7 +42,7 @@ class UserSelfService(
             UpdateUsernameDTO::newUsername.name,
             user.username, requestBody.newUsername,
         ) { ResponseMessage.User.USERNAME_NOT_CHANGED }
-        checkAlreadyExists(
+        checkConflict(
             UpdateUsernameDTO::newUsername.name,
             userRepository.existsByUsername(requestBody.newUsername)
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
