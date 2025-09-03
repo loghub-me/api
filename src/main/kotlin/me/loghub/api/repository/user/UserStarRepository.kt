@@ -59,23 +59,20 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
     fun findDTOsByUserId(userId: Long, pageable: Pageable): Page<UserStarDTO>
 
     // -----------[Article]-----------
-    fun existsByArticleIdAndUser(articleId: Long, user: User): Boolean
     fun existsByArticleAndUser(article: Article, user: User): Boolean
 
     @EntityGraph(attributePaths = ["article", "user"])
-    fun deleteByArticleIdAndUser(articleId: Long, user: User): Int
+    fun deleteByArticleAndUser(article: Article, user: User): Int
 
     // -----------[Series]-----------
-    fun existsBySeriesIdAndUser(seriesId: Long, user: User): Boolean
     fun existsBySeriesAndUser(series: Series, user: User): Boolean
 
     @EntityGraph(attributePaths = ["series", "user"])
-    fun deleteBySeriesIdAndUser(seriesId: Long, user: User): Int
+    fun deleteBySeriesAndUser(series: Series, user: User): Int
 
     // -----------[Question]-----------
-    fun existsByQuestionIdAndUser(questionId: Long, user: User): Boolean
     fun existsByQuestionAndUser(question: Question, user: User): Boolean
 
     @EntityGraph(attributePaths = ["question", "user"])
-    fun deleteByQuestionIdAndUser(questionId: Long, user: User): Int
+    fun deleteByQuestionAndUser(question: Question, user: User): Int
 }

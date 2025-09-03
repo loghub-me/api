@@ -87,8 +87,4 @@ class Series(
     fun decrementReviewCount() {
         stats.reviewCount--
     }
-
-    fun incrementStarCount() {
-        stats.starCount++
-    }
 }

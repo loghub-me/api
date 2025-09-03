@@ -3,7 +3,6 @@ package me.loghub.api.service.article
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserStar
-import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.user.UserStarRepository
 import me.loghub.api.service.common.IStarService
@@ -18,27 +17,37 @@ class ArticleStarService(
     private val articleRepository: ArticleRepository,
 ) : IStarService {
     @Transactional(readOnly = true)
-    override fun existsStar(id: Long, user: User): Boolean =
-        userStarRepository.existsByArticleIdAndUser(id, user)
+    override fun existsStar(id: Long, user: User): Boolean {
+        val articleRef = articleRepository.getReferenceById(id)
+        return userStarRepository.existsByArticleAndUser(articleRef, user)
+    }
 
     @Transactional
     override fun addStar(id: Long, user: User): UserStar {
-        val article = articleRepository.findById(id)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Article.NOT_FOUND) }
+        val articleRef = articleRepository.getReferenceById(id)
 
-        checkConflict(userStarRepository.existsByArticleAndUser(article, user)) {
-            ResponseMessage.Star.ALREADY_EXISTS
-        }
+        checkConflict(
+            userStarRepository.existsByArticleAndUser(articleRef, user)
+        ) { ResponseMessage.Star.ALREADY_EXISTS }
+        checkExists(
+            articleRepository.existsById(id)
+        ) { ResponseMessage.Article.NOT_FOUND }
 
-        article.incrementStarCount()
-        return userStarRepository.save(UserStar(user = user, article = article, target = UserStar.Target.ARTICLE))
+        articleRepository.incrementStarCount(id); return userStarRepository.save(
+            UserStar(
+                user = user,
+                article = articleRef,
+                target = UserStar.Target.ARTICLE
+            )
+        )
     }
 
     @Transactional
     override fun removeStar(id: Long, user: User) {
-        val affectedRows = userStarRepository.deleteByArticleIdAndUser(id, user)
+        val articleRef = articleRepository.getReferenceById(id)
+        val deletedRows = userStarRepository.deleteByArticleAndUser(articleRef, user)
 
-        checkExists(affectedRows > 0) { ResponseMessage.Star.NOT_FOUND }
+        checkExists(deletedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 
         articleRepository.decrementStarCount(id)
     }

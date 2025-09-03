@@ -3,7 +3,6 @@ package me.loghub.api.service.series
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserStar
-import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserStarRepository
 import me.loghub.api.service.common.IStarService
@@ -18,27 +17,32 @@ class SeriesStarService(
     private val seriesRepository: SeriesRepository,
 ) : IStarService {
     @Transactional(readOnly = true)
-    override fun existsStar(id: Long, user: User): Boolean =
-        userStarRepository.existsBySeriesIdAndUser(id, user)
+    override fun existsStar(id: Long, user: User): Boolean {
+        val seriesRef = seriesRepository.getReferenceById(id)
+        return userStarRepository.existsBySeriesAndUser(seriesRef, user)
+    }
 
     @Transactional
     override fun addStar(id: Long, user: User): UserStar {
-        val series = seriesRepository.findById(id)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Series.NOT_FOUND) }
+        val seriesRef = seriesRepository.getReferenceById(id)
 
-        checkConflict(userStarRepository.existsBySeriesAndUser(series, user)) {
-            ResponseMessage.Star.ALREADY_EXISTS
-        }
+        checkConflict(
+            userStarRepository.existsBySeriesAndUser(seriesRef, user)
+        ) { ResponseMessage.Star.ALREADY_EXISTS }
+        checkExists(
+            seriesRepository.existsById(id)
+        ) { ResponseMessage.Series.NOT_FOUND }
 
-        series.incrementStarCount()
-        return userStarRepository.save(UserStar(user = user, series = series, target = UserStar.Target.SERIES))
+        seriesRepository.incrementStarCount(id)
+        return userStarRepository.save(UserStar(user = user, series = seriesRef, target = UserStar.Target.SERIES))
     }
 
     @Transactional
     override fun removeStar(id: Long, user: User) {
-        val affectedRows = userStarRepository.deleteBySeriesIdAndUser(id, user)
+        val seriesRef = seriesRepository.getReferenceById(id)
+        val deletedRows = userStarRepository.deleteBySeriesAndUser(seriesRef, user)
 
-        checkExists(affectedRows > 0) { ResponseMessage.Star.NOT_FOUND }
+        checkExists(deletedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 
         seriesRepository.decrementStarCount(id)
     }

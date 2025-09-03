@@ -30,10 +30,6 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount - 1 WHERE $BY_ID")
-    fun decrementStarCount(id: Long)
-
-    @Modifying
     @Query("UPDATE Article a SET a.stats.trendingScore = :trendingScore WHERE $BY_ID")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
 
@@ -47,6 +43,19 @@ interface ArticleRepository : JpaRepository<Article, Long> {
         @Param("oldUsername") oldUsername: String,
         @Param("newUsername") newUsername: String
     ): Int
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount + 1 WHERE a.id = :id")
+    fun incrementStarCount(id: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        UPDATE Article a
+        SET a.stats.starCount = CASE WHEN a.stats.starCount > 0 THEN a.stats.starCount - 1 ELSE 0 END
+        WHERE a.id = :id"""
+    )
+    fun decrementStarCount(id: Long)
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Article a SET a.stats.commentCount = a.stats.commentCount + 1 WHERE a.id = :id")

@@ -71,16 +71,4 @@ class Article(
         this.topics = topics.toMutableSet()
         this.topicsFlat = TopicsFlatConverter.toFlat(topics)
     }
-
-    fun incrementCommentCount() {
-        stats.commentCount++
-    }
-
-    fun decrementCommentCount() {
-        stats.commentCount--
-    }
-
-    fun incrementStarCount() {
-        stats.starCount++
-    }
 }
