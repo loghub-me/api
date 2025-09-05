@@ -1,6 +1,6 @@
 package me.loghub.api.dto.task.mail
 
-import me.loghub.api.constant.http.HttpDomain
+import me.loghub.api.config.ClientConfig
 
 class JoinMailSendRequest(
     override val to: String,
@@ -15,7 +15,7 @@ class JoinMailSendRequest(
   </head>
   <body style="font-family: Arial, Helvetica, sans-serif">
     <header style="padding: 12px; background-color: #ffffff">
-        <img src="${HttpDomain.WEB}/logo.webp" alt="logo" width="128" height="32" />
+        <img src="${ClientConfig.HOST}/logo.webp" alt="logo" width="128" height="32" />
     </header>
     <section style="padding: 12px">
       <h2>로그인 인증 OTP</h2>
@@ -23,7 +23,7 @@ class JoinMailSendRequest(
         $otp
       </div>
       <a
-        href="${HttpDomain.WEB}/login/confirm?email=$to&otp=$otp"
+        href="${ClientConfig.HOST}/login/confirm?email=$to&otp=$otp"
         style="display: inline-block; padding: 8px 12px; border-radius: 6px; color: #3a97fa;"
       >
         인증하기
