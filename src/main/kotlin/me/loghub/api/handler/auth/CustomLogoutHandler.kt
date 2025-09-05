@@ -3,8 +3,8 @@ package me.loghub.api.handler.auth
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.http.HttpContentType
-import me.loghub.api.constant.http.HttpCookie
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.service.auth.token.RefreshTokenService
@@ -29,7 +29,7 @@ class CustomLogoutHandler(
         }
 
         for (cookie in request.cookies) {
-            if (cookie.name == HttpCookie.RefreshToken.NAME) {
+            if (cookie.name == RefreshTokenConfig.NAME) {
                 refreshTokenService.revokeToken(cookie.value)
                 cookie.apply {
                     value = ""

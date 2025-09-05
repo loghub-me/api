@@ -21,7 +21,6 @@ object ResponseMessage {
     object Auth {
         const val UNAUTHORIZED = "인증 정보를 찾을 수 없습니다."
         const val FORBIDDEN = "접근 권한이 없습니다."
-        const val BAD_CREDENTIALS = "인증 정보가 유효하지 않습니다."
         const val INVALID_OTP = "유효하지 않은 OTP입니다."
         const val INVALID_TOKEN = "유효하지 않은 토큰입니다."
         const val AUTHENTICATION_FAILED = "인증에 실패했습니다."

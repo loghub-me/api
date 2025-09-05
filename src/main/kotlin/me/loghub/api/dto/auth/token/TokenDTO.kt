@@ -1,6 +1,6 @@
 package me.loghub.api.dto.auth.token
 
-import me.loghub.api.constant.http.HttpCookie
+import me.loghub.api.config.RefreshTokenConfig
 import org.springframework.http.ResponseCookie
 import java.util.*
 
@@ -11,13 +11,13 @@ data class TokenDTO(
     val authorization get() = "Bearer $accessToken"
     val cookie
         get() = ResponseCookie
-            .from(HttpCookie.RefreshToken.NAME, refreshToken.toString())
-            .domain(HttpCookie.RefreshToken.DOMAIN)
+            .from(RefreshTokenConfig.NAME, refreshToken.toString())
+            .domain(RefreshTokenConfig.DOMAIN)
             .httpOnly(true)
             .secure(true)
-            .path(HttpCookie.RefreshToken.PATH)
-            .sameSite(HttpCookie.RefreshToken.SAME_SITE)
-            .maxAge(HttpCookie.RefreshToken.MAX_AGE)
+            .path(RefreshTokenConfig.PATH)
+            .sameSite(RefreshTokenConfig.SAME_SITE)
+            .maxAge(RefreshTokenConfig.MAX_AGE)
             .build()
             .toString()
 }

@@ -10,6 +10,7 @@ import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.dto.task.mail.JoinMailSendRequest
 import me.loghub.api.entity.user.User
+import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
@@ -17,7 +18,6 @@ import me.loghub.api.util.OTPBuilder
 import me.loghub.api.util.checkConflict
 import me.loghub.api.worker.MailSendWorker
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service
 
 @Service
@@ -40,10 +40,10 @@ class JoinService(
     @Transactional
     fun confirmJoin(requestBody: JoinConfirmDTO): TokenDTO {
         val otp = redisTemplate.opsForValue().get("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
-            ?: throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
+            ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
-            requestBody.otp != otp.otp -> throw BadCredentialsException(ResponseMessage.Auth.INVALID_OTP)
+            requestBody.otp != otp.otp -> throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
             else -> redisTemplate.delete("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
         }
 

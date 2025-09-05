@@ -1,6 +1,6 @@
 package me.loghub.api.controller.auth
 
-import me.loghub.api.constant.http.HttpCookie
+import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -20,7 +20,7 @@ class RefreshController(private val refreshService: RefreshService) {
     @PostMapping
     fun refreshToken(
         @CookieValue(
-            HttpCookie.RefreshToken.NAME,
+            RefreshTokenConfig.NAME,
             required = false
         ) refreshToken: UUID?
     ): ResponseEntity<ResponseBody> {

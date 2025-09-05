@@ -42,6 +42,8 @@ jwt:
   issuer: ${APP_NAME}
   secret: ${ACCESS_TOKEN_SECRET}
   expiration: 600  # 10 minutes
+refresh-token:
+  domain: ${CLIENT_DOMAIN}
 resend:
   api-key: ${RESEND_API_KEY}
   from: ${RESEND_FROM_EMAIL}
