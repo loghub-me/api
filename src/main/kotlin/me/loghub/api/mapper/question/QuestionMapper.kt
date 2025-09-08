@@ -1,6 +1,7 @@
 package me.loghub.api.mapper.question
 
 import me.loghub.api.dto.common.ContentDTO
+import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.question.QuestionDTO
 import me.loghub.api.dto.question.QuestionDetailDTO
 import me.loghub.api.dto.question.QuestionStatsDTO
@@ -23,15 +24,16 @@ object QuestionMapper {
         updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
-    fun mapDetail(question: Question, questionContentHTML: String) =
+    fun mapDetail(question: Question, renderedMarkdown: RenderedMarkdownDTO) =
         QuestionDetailDTO(
             id = question.id!!,
             slug = question.slug,
             title = question.title,
             content = ContentDTO(
                 markdown = question.content,
-                html = questionContentHTML,
+                html = renderedMarkdown.html,
             ),
+            anchors = renderedMarkdown.anchors,
             status = question.status,
             writer = UserMapper.map(question.writer),
             stats = mapStats(question.stats),

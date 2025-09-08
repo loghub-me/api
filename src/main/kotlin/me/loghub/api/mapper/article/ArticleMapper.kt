@@ -4,6 +4,7 @@ import me.loghub.api.dto.article.ArticleDTO
 import me.loghub.api.dto.article.ArticleDetailDTO
 import me.loghub.api.dto.article.ArticleStatsDTO
 import me.loghub.api.dto.common.ContentDTO
+import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.user.UserSimpleDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleStats
@@ -23,14 +24,15 @@ object ArticleMapper {
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
-    fun mapDetail(article: Article, contentHTML: String) = ArticleDetailDTO(
+    fun mapDetail(article: Article, renderedMarkdown: RenderedMarkdownDTO) = ArticleDetailDTO(
         id = article.id!!,
         slug = article.slug,
         title = article.title,
         content = ContentDTO(
             markdown = article.content,
-            html = contentHTML,
+            html = renderedMarkdown.html,
         ),
+        anchors = renderedMarkdown.anchors,
         thumbnail = article.thumbnail,
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),

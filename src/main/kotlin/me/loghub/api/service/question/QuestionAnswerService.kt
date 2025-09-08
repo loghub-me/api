@@ -33,9 +33,9 @@ class QuestionAnswerService(
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
         val answers = questionAnswerRepository.findAllWithWriterByQuestionIdOrderByCreatedAt(questionId)
         val answerMarkdowns = answers.map { it.content }
-        val answerHTMLs = cacheService.findOrGenerateMarkdownCache(answerMarkdowns)
+        val renderedMarkdowns = cacheService.findOrGenerateMarkdownCache(answerMarkdowns)
 
-        return answers.mapIndexed { i, answer -> QuestionAnswerMapper.map(answer, answerHTMLs[i]) }
+        return answers.mapIndexed { i, answer -> QuestionAnswerMapper.map(answer, renderedMarkdowns[i]) }
     }
 
     @Transactional

@@ -11,6 +11,7 @@ import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.series.SeriesReviewRepository
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkPermission
+import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -40,7 +41,7 @@ class SeriesReviewService(
     @Transactional
     fun postReview(seriesId: Long, requestBody: PostSeriesReviewDTO, writer: User): SeriesReview {
         val series = seriesRepository.findById(seriesId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Series.NOT_FOUND) }
+            .orElseThrowNotFound { ResponseMessage.Series.NOT_FOUND }
 
         checkConflict(seriesReviewRepository.existsBySeriesAndWriter(series, writer)) {
             ResponseMessage.Series.Review.ALREADY_EXISTS

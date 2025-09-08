@@ -48,8 +48,8 @@ class ArticleService(
     fun getArticle(username: String, slug: String): ArticleDetailDTO {
         val article = articleRepository.findWithWriterByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
-        val cachedHTML = cacheService.findOrGenerateMarkdownCache(article.content)
-        return ArticleMapper.mapDetail(article, cachedHTML)
+        val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(article.content)
+        return ArticleMapper.mapDetail(article, renderedMarkdown)
     }
 
     @Transactional

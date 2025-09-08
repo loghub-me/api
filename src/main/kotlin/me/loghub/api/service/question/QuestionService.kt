@@ -46,9 +46,9 @@ class QuestionService(
     fun getQuestion(username: String, slug: String): QuestionDetailDTO {
         val question = questionRepository.findWithWriterByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
-        val questionHTML = cacheService.findOrGenerateMarkdownCache(question.content)
+        val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(question.content)
 
-        return QuestionMapper.mapDetail(question, questionHTML)
+        return QuestionMapper.mapDetail(question, renderedMarkdown)
     }
 
     @Transactional

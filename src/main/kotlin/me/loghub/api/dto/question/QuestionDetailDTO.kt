@@ -1,5 +1,6 @@
 package me.loghub.api.dto.question
 
+import me.loghub.api.dto.common.AnchorDTO
 import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.topic.TopicDTO
 import me.loghub.api.dto.user.UserDTO
@@ -10,6 +11,7 @@ data class QuestionDetailDTO(
     val slug: String,
     val title: String,
     val content: ContentDTO,
+    val anchors: List<AnchorDTO>,
     val status: Question.Status,
     val writer: UserDTO,
     val stats: QuestionStatsDTO,

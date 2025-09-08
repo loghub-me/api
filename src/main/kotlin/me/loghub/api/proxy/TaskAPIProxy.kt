@@ -2,10 +2,10 @@ package me.loghub.api.proxy
 
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.dto.task.image.ImageUploadResponse
-import me.loghub.api.dto.task.markdown.MarkdownParseRequest
-import me.loghub.api.dto.task.markdown.MarkdownParseResponse
-import me.loghub.api.dto.task.markdown.MarkdownsParseRequest
-import me.loghub.api.dto.task.markdown.MarkdownsParseResponse
+import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
+import me.loghub.api.dto.task.markdown.MarkdownRenderResponse
+import me.loghub.api.dto.task.markdown.MarkdownsRenderRequest
+import me.loghub.api.dto.task.markdown.MarkdownsRenderResponse
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,11 +19,11 @@ import org.springframework.web.multipart.MultipartFile
     configuration = [TaskAPIConfiguration::class],
 )
 interface TaskAPIProxy {
-    @PostMapping("/markdown/parse")
-    fun parseMarkdown(@RequestBody request: MarkdownParseRequest): MarkdownParseResponse
+    @PostMapping("/markdown/render")
+    fun renderMarkdown(@RequestBody request: MarkdownRenderRequest): MarkdownRenderResponse
 
-    @PostMapping("/markdown/parse")
-    fun parseMarkdowns(@RequestBody request: MarkdownsParseRequest): MarkdownsParseResponse
+    @PostMapping("/markdown/render")
+    fun renderMarkdowns(@RequestBody request: MarkdownsRenderRequest): MarkdownsRenderResponse
 
     @PostMapping(
         value = ["/image/upload"],

@@ -11,6 +11,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.user.UserRepository
+import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -77,7 +78,7 @@ class AnswerGenerateWorker(
         checkNotNull(res) { ServerMessage.FAILED_CALL_CHAT_CLIENT }
 
         val question = questionRepository.findById(req.questionId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Question.NOT_FOUND) }
+            .orElseThrowNotFound { ResponseMessage.Question.NOT_FOUND }
         val answer = createAnswer(res, question, bot)
         questionAnswerRepository.save(answer)
     }

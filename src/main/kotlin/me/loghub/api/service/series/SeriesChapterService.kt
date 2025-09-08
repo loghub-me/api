@@ -11,6 +11,7 @@ import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.service.common.CacheService
 import me.loghub.api.util.checkPermission
+import me.loghub.api.util.orElseThrowNotFound
 import me.loghub.api.util.requireNotEquals
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,14 +30,14 @@ class SeriesChapterService(
     fun getChapter(seriesId: Long, sequence: Int): SeriesChapterDetailDTO {
         val chapter = seriesChapterRepository.findBySeriesIdAndSequence(seriesId, sequence)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
-        val cachedHTML = cacheService.findOrGenerateMarkdownCache(chapter.content)
-        return SeriesChapterMapper.mapDetail(chapter, cachedHTML)
+        val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(chapter.content)
+        return SeriesChapterMapper.mapDetail(chapter, renderedMarkdown)
     }
 
     @Transactional
     fun createChapter(seriesId: Long, writer: User): SeriesChapter {
         val series = seriesRepository.findById(seriesId)
-            .orElseThrow { EntityNotFoundException(ResponseMessage.Series.NOT_FOUND) }
+            .orElseThrowNotFound { ResponseMessage.Series.NOT_FOUND }
 
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
