@@ -37,8 +37,8 @@ enum class HibernateFunction(
     }
 
     object INDEX {
-        val ARTICLES_SEARCH_INDEX = Expressions.constant("articles_search_index")!!
-        val SERIES_SEARCH_INDEX = Expressions.constant("series_search_index")!!
-        val QUESTIONS_SEARCH_INDEX = Expressions.constant("questions_search_index")!!
+        val ARTICLES_SEARCH_INDEX = Expressions.constant("articles_search_idx")!!
+        val SERIES_SEARCH_INDEX = Expressions.constant("series_search_idx")!!
+        val QUESTIONS_SEARCH_INDEX = Expressions.constant("questions_search_idx")!!
     }
 }
