@@ -49,6 +49,10 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     fun incrementStarCount(id: Long)
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Question q SET q.stats.answerCount = q.stats.answerCount + 1 WHERE q.id = :id")
+    fun incrementAnswerCount(id: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         """
         UPDATE Question q
@@ -56,4 +60,13 @@ interface QuestionRepository : JpaRepository<Question, Long> {
         WHERE q.id = :id"""
     )
     fun decrementStarCount(id: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        UPDATE Question q
+        SET q.stats.answerCount = CASE WHEN q.stats.answerCount > 0 THEN q.stats.answerCount - 1 ELSE 0 END
+        WHERE q.id = :id"""
+    )
+    fun decrementAnswerCount(id: Long)
 }

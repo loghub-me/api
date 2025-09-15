@@ -14,6 +14,7 @@ import me.loghub.api.mapper.question.QuestionAnswerMapper
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.service.common.CacheService
+import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkCooldown
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
@@ -54,15 +55,17 @@ class QuestionAnswerService(
         val question = questionRepository.findWithWriterById(questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
 
-        checkPermission(question.writer == writer) { ResponseMessage.Question.Answer.CANNOT_POST_SELF }
+        checkConflict(question.writer == writer) { ResponseMessage.Question.Answer.CANNOT_POST_SELF }
 
         val answer = requestBody.toEntity(question, writer)
+        questionRepository.incrementAnswerCount(question.id!!)
         return questionAnswerRepository.save(answer)
     }
 
     @Transactional
     fun editAnswer(questionId: Long, answerId: Long, requestBody: PostQuestionAnswerDTO, writer: User): QuestionAnswer {
         val answer = findUpdatableAnswer(questionId, answerId, writer)
+        checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         answer.update(requestBody)
         return answer
     }
@@ -70,12 +73,15 @@ class QuestionAnswerService(
     @Transactional
     fun removeAnswer(questionId: Long, answerId: Long, writer: User) {
         val answer = findUpdatableAnswer(questionId, answerId, writer)
+        checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
+        questionRepository.decrementAnswerCount(answer.question.id!!)
         questionAnswerRepository.delete(answer)
     }
 
     @Transactional
     fun acceptAnswer(questionId: Long, answerId: Long, writer: User): QuestionAnswer {
         val answer = findUpdatableAnswer(questionId, answerId, writer)
+        checkPermission(answer.question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         answer.accept()
         answer.question.solved()
         return answer
@@ -104,7 +110,6 @@ class QuestionAnswerService(
             ?: throw EntityNotFoundException(ResponseMessage.Question.Answer.NOT_FOUND)
         val question = answer.question
 
-        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         checkField(
             Question::status.name,
             question.status == Question.Status.OPEN
