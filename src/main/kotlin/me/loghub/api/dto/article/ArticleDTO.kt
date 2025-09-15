@@ -1,7 +1,7 @@
 package me.loghub.api.dto.article
 
 import me.loghub.api.dto.topic.TopicDTO
-import me.loghub.api.dto.user.UserSimpleDTO
+import me.loghub.api.dto.user.UserDTO
 
 data class ArticleDTO(
     val id: Long,
@@ -9,7 +9,7 @@ data class ArticleDTO(
     val title: String,
     val thumbnail: String,
     val stats: ArticleStatsDTO,
-    val writer: UserSimpleDTO,
+    val writer: UserDTO,
     val topics: List<TopicDTO>,
     val createdAt: String,
     val updatedAt: String,

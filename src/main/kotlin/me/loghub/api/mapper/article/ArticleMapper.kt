@@ -6,7 +6,6 @@ import me.loghub.api.dto.article.ArticleForEditDTO
 import me.loghub.api.dto.article.ArticleStatsDTO
 import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
-import me.loghub.api.dto.user.UserSimpleDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleStats
 import me.loghub.api.mapper.user.UserMapper
@@ -18,7 +17,7 @@ object ArticleMapper {
         slug = article.slug,
         title = article.title,
         thumbnail = article.thumbnail,
-        writer = UserSimpleDTO(article.writer.id!!, article.writerUsername),
+        writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
@@ -35,7 +34,7 @@ object ArticleMapper {
         ),
         anchors = renderedMarkdown.anchors,
         thumbnail = article.thumbnail,
-        writer = UserMapper.map(article.writer),
+        writer = UserMapper.mapDetail(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),

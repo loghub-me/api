@@ -27,7 +27,7 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
                     WHEN us.target = 'SERIES' THEN us.series.title
                     WHEN us.target = 'QUESTION' THEN us.question.title
                 END,
-                new me.loghub.api.dto.user.UserSimpleDTO(
+                new me.loghub.api.dto.user.UserDTO(
                     CASE
                         WHEN us.target = 'ARTICLE' THEN us.article.writer.id
                         WHEN us.target = 'SERIES' THEN us.series.writer.id

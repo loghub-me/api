@@ -10,21 +10,20 @@ object UserMapper {
     fun map(user: User) = UserDTO(
         id = user.id!!,
         username = user.username,
-        nickname = user.profile.nickname,
-        role = user.role
     )
 
     fun mapDetail(user: User) = UserDetailDTO(
         id = user.id!!,
+        email = if (user.privacy.emailVisible) user.email else null,
         username = user.username,
         nickname = user.profile.nickname,
-        readme = user.profile.readme,
-        role = user.role,
+        role = user.role
     )
 
     fun mapProfile(user: User) = UserProfileDTO(
+        id = user.id!!,
         nickname = user.profile.nickname,
-        readme = user.profile.readme,
+        readme = user.profile.readme
     )
 
     fun mapPrivacy(user: User) = UserPrivacyDTO(

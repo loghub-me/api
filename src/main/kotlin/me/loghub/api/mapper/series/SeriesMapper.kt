@@ -4,7 +4,6 @@ import me.loghub.api.dto.series.SeriesDTO
 import me.loghub.api.dto.series.SeriesDetailDTO
 import me.loghub.api.dto.series.SeriesForEditDTO
 import me.loghub.api.dto.series.SeriesStatsDTO
-import me.loghub.api.dto.user.UserSimpleDTO
 import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.series.SeriesStats
 import me.loghub.api.mapper.user.UserMapper
@@ -16,7 +15,7 @@ object SeriesMapper {
         slug = series.slug,
         title = series.title,
         thumbnail = series.thumbnail,
-        writer = UserSimpleDTO(series.writer.id!!, series.writerUsername),
+        writer = UserMapper.map(series.writer),
         stats = mapStats(series.stats),
         topics = series.topicsFlat,
         createdAt = series.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
@@ -29,7 +28,7 @@ object SeriesMapper {
         title = series.title,
         content = series.content,
         thumbnail = series.thumbnail,
-        writer = UserMapper.map(series.writer),
+        writer = UserMapper.mapDetail(series.writer),
         stats = mapStats(series.stats),
         topics = series.topicsFlat,
         chapters = series.chapters.map(SeriesChapterMapper::map),

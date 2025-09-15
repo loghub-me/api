@@ -3,7 +3,7 @@ package me.loghub.api.dto.question
 import me.loghub.api.dto.common.AnchorDTO
 import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.topic.TopicDTO
-import me.loghub.api.dto.user.UserDTO
+import me.loghub.api.dto.user.UserDetailDTO
 import me.loghub.api.entity.question.Question
 
 data class QuestionDetailDTO(
@@ -13,7 +13,7 @@ data class QuestionDetailDTO(
     val content: ContentDTO,
     val anchors: List<AnchorDTO>,
     val status: Question.Status,
-    val writer: UserDTO,
+    val writer: UserDetailDTO,
     val stats: QuestionStatsDTO,
     val topics: List<TopicDTO>,
     val createdAt: String,
