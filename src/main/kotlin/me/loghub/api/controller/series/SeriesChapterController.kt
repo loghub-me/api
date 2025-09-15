@@ -3,6 +3,7 @@ package me.loghub.api.controller.series
 import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.MessageResponseBody
+import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.dto.series.chapter.EditSeriesChapterDTO
@@ -28,8 +29,9 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         @PathVariable seriesId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        seriesChapterService.createChapter(seriesId, writer)
-        return MessageResponseBody(
+        val createdChapter = seriesChapterService.createChapter(seriesId, writer)
+        return MethodResponseBody(
+            id = createdChapter.id!!,
             message = ResponseMessage.Series.Chapter.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -44,7 +46,7 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
     ): ResponseEntity<ResponseBody> {
         val updatedChapter = seriesChapterService.editChapter(seriesId, sequence, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/@${writer.username}/series/${updatedChapter.series.slug}/edit",
+            pathname = "/edit/series/${updatedChapter.series.id}",
             message = ResponseMessage.Series.Chapter.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

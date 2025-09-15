@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.question.*
 import me.loghub.api.dto.response.MessageResponseBody
+import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
@@ -41,7 +42,7 @@ class QuestionController(private val questionService: QuestionService) {
     ): ResponseEntity<ResponseBody> {
         val createdQuestion = questionService.postQuestion(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/@${writer.username}/questions/${createdQuestion.slug}",
+            pathname = "/questions/${writer.username}/${createdQuestion.slug}",
             message = ResponseMessage.Question.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -55,7 +56,7 @@ class QuestionController(private val questionService: QuestionService) {
     ): ResponseEntity<ResponseBody> {
         val updatedQuestion = questionService.editQuestion(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/@${writer.username}/questions/${updatedQuestion.slug}",
+            pathname = "/questions/${writer.username}/${updatedQuestion.slug}",
             message = ResponseMessage.Question.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
@@ -79,8 +80,8 @@ class QuestionController(private val questionService: QuestionService) {
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val closedQuestion = questionService.closeQuestion(id, writer)
-        return RedirectResponseBody(
-            pathname = "/@${writer.username}/questions/${closedQuestion.slug}",
+        return MethodResponseBody(
+            id = closedQuestion.id!!,
             message = ResponseMessage.Question.CLOSE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

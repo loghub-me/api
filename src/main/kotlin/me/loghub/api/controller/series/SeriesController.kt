@@ -43,7 +43,7 @@ class SeriesController(private val seriesService: SeriesService) {
     ): ResponseEntity<ResponseBody> {
         val createdSeries = seriesService.postSeries(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/@${writer.username}/series/${createdSeries.slug}/edit",
+            pathname = "/edit/series/${createdSeries.id}",
             message = ResponseMessage.Series.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -57,7 +57,7 @@ class SeriesController(private val seriesService: SeriesService) {
     ): ResponseEntity<ResponseBody> {
         val updatedSeries = seriesService.editSeries(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/@${writer.username}/series/${updatedSeries.slug}",
+            pathname = "/series/${writer.username}/${updatedSeries.slug}",
             message = ResponseMessage.Series.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

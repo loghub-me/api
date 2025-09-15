@@ -6,7 +6,6 @@ import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.MethodResponseBody
-import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.question.QuestionAnswerService
@@ -31,9 +30,8 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val createdAnswer = questionAnswerService.postAnswer(questionId, requestBody, writer)
-        val question = createdAnswer.question
-        return RedirectResponseBody(
-            pathname = "/@${question.writerUsername}/questions/${question.slug}",
+        return MethodResponseBody(
+            id = createdAnswer.id!!,
             message = ResponseMessage.Question.Answer.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -47,9 +45,8 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val updatedAnswer = questionAnswerService.editAnswer(questionId, answerId, requestBody, writer)
-        val question = updatedAnswer.question
-        return RedirectResponseBody(
-            pathname = "/@${question.writerUsername}/questions/${question.slug}",
+        return MethodResponseBody(
+            id = updatedAnswer.id!!,
             message = ResponseMessage.Question.Answer.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
