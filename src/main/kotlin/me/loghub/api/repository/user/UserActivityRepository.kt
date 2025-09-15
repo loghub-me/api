@@ -2,6 +2,7 @@ package me.loghub.api.repository.user
 
 import me.loghub.api.dto.user.activity.UserActivityDTO
 import me.loghub.api.dto.user.activity.UserActivitySummaryDTO
+import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -24,14 +25,15 @@ interface UserActivityRepository : JpaRepository<UserActivity, Long> {
                 WHEN ua.action = 'POST_SERIES' THEN ua.series.title
                 WHEN ua.action = 'POST_QUESTION' THEN ua.question.title
             END,
-            ua.action
+            ua.action,
+            ua.createdAt
         )
         FROM UserActivity ua
         LEFT JOIN ua.article
         LEFT JOIN ua.series
         LEFT JOIN ua.question
         """
-        const val BY_USER_ID = "ua.user.id = :userId"
+        const val BY_USER = "ua.user = :user"
         const val BY_CREATED_DATE_BETWEEN = "ua.createdDate BETWEEN :from AND :to"
         const val BY_CREATED_DATE = "ua.createdDate = :createdDate"
         const val GROUP_BY_CREATED_DATE = "GROUP BY ua.createdDate"
@@ -39,13 +41,13 @@ interface UserActivityRepository : JpaRepository<UserActivity, Long> {
         const val ORDER_BY_CREATED_AT_DESC = "ORDER BY ua.createdAt DESC"
     }
 
-    @Query("$SELECT_SUMMARY_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE_BETWEEN $GROUP_BY_CREATED_DATE $ORDER_BY_CREATED_DATE_ASC")
-    fun findSummaryDTOsByCreatedDateBetween(
-        userId: Long,
+    @Query("$SELECT_SUMMARY_DTO WHERE $BY_USER AND $BY_CREATED_DATE_BETWEEN $GROUP_BY_CREATED_DATE $ORDER_BY_CREATED_DATE_ASC")
+    fun findSummaryDTOsByUserAndCreatedDateBetween(
+        user: User,
         from: LocalDate,
         to: LocalDate,
     ): List<UserActivitySummaryDTO>
 
-    @Query("$SELECT_DTO WHERE $BY_USER_ID AND $BY_CREATED_DATE $ORDER_BY_CREATED_AT_DESC")
-    fun findDTOByUserIdAndCreatedDate(userId: Long, createdDate: LocalDate): List<UserActivityDTO>
+    @Query("$SELECT_DTO WHERE $BY_USER AND $BY_CREATED_DATE $ORDER_BY_CREATED_AT_DESC")
+    fun findDTOByUserAndCreatedDate(user: User, createdDate: LocalDate): List<UserActivityDTO>
 }
