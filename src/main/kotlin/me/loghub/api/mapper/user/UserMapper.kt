@@ -14,7 +14,7 @@ object UserMapper {
 
     fun mapDetail(user: User) = UserDetailDTO(
         id = user.id!!,
-        email = if (user.privacy.emailVisible) user.email else null,
+        email = if (user.privacy.emailPublic) user.email else null,
         username = user.username,
         nickname = user.profile.nickname,
         role = user.role
@@ -26,8 +26,5 @@ object UserMapper {
         readme = user.profile.readme
     )
 
-    fun mapPrivacy(user: User) = UserPrivacyDTO(
-        emailVisible = user.privacy.emailVisible,
-        starVisible = user.privacy.starVisible,
-    )
+    fun mapPrivacy(user: User) = UserPrivacyDTO(emailPublic = user.privacy.emailPublic)
 }

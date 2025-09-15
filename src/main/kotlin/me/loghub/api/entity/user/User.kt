@@ -66,9 +66,6 @@ class User(
     }
 
     fun updatePrivacy(requestBody: UpdateUserPrivacyDTO) {
-        this.privacy = UserPrivacy(
-            emailVisible = requestBody.emailVisible,
-            starVisible = requestBody.starVisible,
-        )
+        this.privacy = UserPrivacy(emailPublic = requestBody.emailPublic)
     }
 }
