@@ -27,12 +27,11 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
         username: String? = null
     ): Page<Question> {
         val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
-            HibernateFunction.ECFTS.template,
+            HibernateFunction.QUESTIONS_FTS.template,
             Expressions.constant(query),
-            HibernateFunction.INDEX.QUESTIONS_SEARCH_INDEX,
         ) else null
         val usernameFilter = if (username.isNullOrBlank()) null else question.writerUsername.eq(username)
-        val conditions = arrayOf(fullTextSearch, usernameFilter)
+        val conditions = arrayOf(fullTextSearch, usernameFilter, filter.where)
 
         val searchQuery = JPAQuery<Question>(entityManager)
             .select(question)

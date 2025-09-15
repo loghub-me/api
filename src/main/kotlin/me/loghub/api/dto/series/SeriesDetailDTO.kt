@@ -8,7 +8,7 @@ data class SeriesDetailDTO(
     val id: Long,
     val slug: String,
     val title: String,
-    val content: String,
+    val description: String,
     val thumbnail: String,
     val writer: UserDetailDTO,
     val stats: SeriesStatsDTO,

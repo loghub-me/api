@@ -5,7 +5,7 @@ import me.loghub.api.dto.series.chapter.SeriesChapterDTO
 data class SeriesForEditDTO(
     val id: Long,
     val title: String,
-    val content: String,
+    val description: String,
     val thumbnail: String,
     val topicSlugs: List<String>,
     val chapters: List<SeriesChapterDTO>,

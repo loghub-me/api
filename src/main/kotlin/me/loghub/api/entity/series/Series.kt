@@ -22,8 +22,8 @@ class Series(
     @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
-    @Column(name = "content", nullable = false, length = 8192)
-    var content: String,
+    @Column(name = "description", nullable = false, length = 8192)
+    var description: String,
 
     @Column(name = "thumbnail", nullable = false)
     var thumbnail: String,
@@ -66,7 +66,7 @@ class Series(
 ) : PublicEntity() {
     fun update(requestBody: PostSeriesDTO) {
         this.title = requestBody.title
-        this.content = requestBody.content
+        this.description = requestBody.description
         this.thumbnail = requestBody.thumbnail
     }
 

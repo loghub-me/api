@@ -26,7 +26,7 @@ object SeriesMapper {
         id = series.id!!,
         slug = series.slug,
         title = series.title,
-        content = series.content,
+        description = series.description,
         thumbnail = series.thumbnail,
         writer = UserMapper.mapDetail(series.writer),
         stats = mapStats(series.stats),
@@ -39,7 +39,7 @@ object SeriesMapper {
     fun mapForEdit(series: Series) = SeriesForEditDTO(
         id = series.id!!,
         title = series.title,
-        content = series.content,
+        description = series.description,
         thumbnail = series.thumbnail,
         topicSlugs = series.topicsFlat.map { it.slug },
         chapters = series.chapters.map(SeriesChapterMapper::map),

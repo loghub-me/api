@@ -1,19 +1,19 @@
 CREATE INDEX IF NOT EXISTS topics_trending_idx ON public.topics (trending_score DESC);
 
-CREATE INDEX IF NOT EXISTS articles_search_idx ON public.articles USING pgroonga ((ARRAY [title, content, writer_username, topics_flat])) WITH (tokenizer='TokenMecab');
+CREATE INDEX IF NOT EXISTS articles_fts_idx ON public.articles USING pgroonga ((ARRAY [title, content, writer_username, topics_flat])) WITH (tokenizer='TokenMecab');
 CREATE INDEX IF NOT EXISTS articles_created_idx ON public.articles (created_at);
 CREATE INDEX IF NOT EXISTS articles_trending_idx ON public.articles (trending_score DESC);
 CREATE INDEX IF NOT EXISTS articles_writer_id_idx ON public.articles (writer_id);
 CREATE INDEX IF NOT EXISTS article_comments_article_id_created_idx ON public.article_comments (article_id, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS series_search_idx ON public.series USING pgroonga ((ARRAY [title, content, writer_username, topics_flat])) WITH (tokenizer='TokenMecab');
+CREATE INDEX IF NOT EXISTS series_fts_idx ON public.series USING pgroonga ((ARRAY [title, description, writer_username, topics_flat])) WITH (tokenizer='TokenMecab');
 CREATE INDEX IF NOT EXISTS series_created_idx ON public.series (created_at);
 CREATE INDEX IF NOT EXISTS series_trending_idx ON public.series (trending_score DESC);
 CREATE INDEX IF NOT EXISTS series_writer_id_idx ON public.series (writer_id);
 CREATE INDEX IF NOT EXISTS series_chapters_series_id_sequence_idx ON public.series_chapters (series_id, sequence ASC);
 CREATE INDEX IF NOT EXISTS series_reviews_series_id_created_idx ON public.series_reviews (series_id, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS questions_search_idx ON public.questions USING pgroonga ((ARRAY [title, content, writer_username, topics_flat])) WITH (tokenizer='TokenMecab');
+CREATE INDEX IF NOT EXISTS questions_fts_idx ON public.questions USING pgroonga ((ARRAY [title, content, writer_username, topics_flat])) WITH (tokenizer='TokenMecab');
 CREATE INDEX IF NOT EXISTS questions_created_idx ON public.questions (created_at);
 CREATE INDEX IF NOT EXISTS questions_trending_idx ON public.questions (trending_score DESC);
 CREATE INDEX IF NOT EXISTS questions_writer_id_idx ON public.questions (writer_id);

@@ -25,9 +25,8 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
         username: String? = null
     ): Page<Series> {
         val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
-            HibernateFunction.ECFTS.template,
+            HibernateFunction.SERIES_FTS.template,
             Expressions.constant(query),
-            HibernateFunction.INDEX.SERIES_SEARCH_INDEX,
         ) else null
         val usernameFilter = if (username.isNullOrBlank()) null else series.writerUsername.eq(username)
         val conditions = arrayOf(fullTextSearch, usernameFilter)

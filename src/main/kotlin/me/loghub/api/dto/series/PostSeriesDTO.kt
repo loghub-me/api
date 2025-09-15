@@ -17,9 +17,9 @@ data class PostSeriesDTO(
     @field:Trimmed
     val title: String,
 
-    @field:NotBlank(message = "내용은 필수 입력 항목입니다.")
-    @field:Size(min = 10, max = 8192, message = "내용은 10자 이상 8192자 이하이어야 합니다.")
-    val content: String,
+    @field:NotBlank(message = "설명은 필수 입력 항목입니다.")
+    @field:Size(min = 10, max = 8192, message = "설명은 8192자 이하이어야 합니다.")
+    val description: String,
 
     @field:NotBlank(message = "썸네일은 필수 입력 항목입니다.")
     @field:Pattern(regexp = RegexExpression.THUMBNAIL, message = "올바르지 않은 썸네일 형식입니다.")
@@ -33,7 +33,7 @@ data class PostSeriesDTO(
     fun toEntity(slug: String, writer: User, topics: Set<Topic>) = Series(
         slug = slug,
         title = title,
-        content = content,
+        description = description,
         thumbnail = thumbnail,
         writer = writer,
         writerUsername = writer.username,
