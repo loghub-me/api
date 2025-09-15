@@ -2,12 +2,13 @@ package me.loghub.api.controller.user
 
 import me.loghub.api.dto.article.ArticleDTO
 import me.loghub.api.dto.article.ArticleSort
-import me.loghub.api.dto.series.SeriesDTO
-import me.loghub.api.dto.series.SeriesSort
 import me.loghub.api.dto.question.QuestionDTO
 import me.loghub.api.dto.question.QuestionFilter
 import me.loghub.api.dto.question.QuestionSort
+import me.loghub.api.dto.series.SeriesDTO
+import me.loghub.api.dto.series.SeriesSort
 import me.loghub.api.dto.user.UserDetailDTO
+import me.loghub.api.dto.user.UserProfileDTO
 import me.loghub.api.service.user.UserService
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
@@ -17,8 +18,14 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/users")
 class UserController(private val userService: UserService) {
     @GetMapping("/@{username}")
-    fun getProfile(@PathVariable username: String): ResponseEntity<UserDetailDTO> {
+    fun getUser(@PathVariable username: String): ResponseEntity<UserDetailDTO> {
         val user = userService.getUser(username)
+        return ResponseEntity.ok(user)
+    }
+
+    @GetMapping("/@{username}/profile")
+    fun getUserProfile(@PathVariable username: String): ResponseEntity<UserProfileDTO> {
+        val user = userService.getUserProfile(username)
         return ResponseEntity.ok(user)
     }
 

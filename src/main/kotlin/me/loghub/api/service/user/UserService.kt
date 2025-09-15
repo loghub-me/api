@@ -8,6 +8,7 @@ import me.loghub.api.dto.question.QuestionFilter
 import me.loghub.api.dto.question.QuestionSort
 import me.loghub.api.dto.series.SeriesDTO
 import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.mapper.question.QuestionMapper
 import me.loghub.api.mapper.series.SeriesMapper
@@ -19,7 +20,6 @@ import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.checkField
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,9 +34,15 @@ class UserService(
         private const val PAGE_SIZE = 20
     }
 
+    @Transactional(readOnly = true)
     fun getUser(username: String) = userRepository.findByUsername(username)
         ?.let { UserMapper.mapDetail(it) }
-        ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
+        ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
+
+    @Transactional(readOnly = true)
+    fun getUserProfile(username: String) = userRepository.findByUsername(username)
+        ?.let { UserMapper.mapProfile(it) }
+        ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
 
     @Transactional(readOnly = true)
     fun searchUserArticles(username: String, query: String, sort: ArticleSort, page: Int): Page<ArticleDTO> {
