@@ -71,14 +71,19 @@ class ArticleCommentService(
         articleRepository.decrementCommentCount(articleId)
     }
 
-    private fun getAvailableParent(article: Article, parentId: Long?) =
+    private fun getAvailableParent(article: Article, parentId: Long?): ArticleComment? =
         parentId?.let { id ->
             articleCommentRepository.findByArticleAndId(article, id)
                 ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
-        }?.also { parent ->
+        }?.also {
             checkField(
                 PostArticleCommentDTO::parentId.name,
-                !parent.deleted
+                !it.deleted
             ) { ResponseMessage.Article.Comment.PARENT_DELETED }
+        }.let {
+            if (it?.parent != null) {
+                return it.parent
+            }
+            return it
         }
 }
