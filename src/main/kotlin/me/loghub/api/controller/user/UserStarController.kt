@@ -7,14 +7,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/users/{userId}/stars")
+@RequestMapping("/users/@{username}/stars")
 class UserStarController(private val userStarService: UserStarService) {
     @GetMapping
     fun getStars(
-        @PathVariable userId: Long,
+        @PathVariable username: String,
         @RequestParam(defaultValue = "1") page: Int,
     ): ResponseEntity<Page<UserStarDTO>> {
-        val stars = userStarService.getStars(userId, page)
+        val stars = userStarService.getStars(username, page)
         return ResponseEntity.ok(stars)
     }
 }
