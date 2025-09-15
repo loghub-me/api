@@ -49,7 +49,7 @@ class SecurityConfig {
             it.configurationSource { _ ->
                 CorsConfiguration().apply {
                     allowedOrigins = listOf(clientHost)
-                    allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                     allowedHeaders = listOf("*")
                     allowCredentials = true
                     exposedHeaders = listOf(HttpHeaders.AUTHORIZATION)
@@ -84,6 +84,7 @@ class SecurityConfig {
             it.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/**").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.PUT, "/**").hasRole(User.Role.MEMBER.name)
+            it.requestMatchers(HttpMethod.PATCH, "/**").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.DELETE, "/**").hasRole(User.Role.MEMBER.name)
         }
         .build() ?: throw IllegalStateException(ServerMessage.FAILED_BUILD_SECURITY_FILTER_CHAIN)

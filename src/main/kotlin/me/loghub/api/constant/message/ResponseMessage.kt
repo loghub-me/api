@@ -87,7 +87,9 @@ object ResponseMessage {
             const val EDIT_SUCCESS = "책 챕터가 성공적으로 수정되었습니다!"
             const val DELETE_SUCCESS = "책 챕터가 성공적으로 삭제되었습니다!"
             const val CHANGE_SEQUENCE_SUCCESS = "책 챕터 순서가 성공적으로 변경되었습니다!"
-            const val SEQUENCE_MUST_BE_DIFF = "챕터 순서는 서로 다른 값이어야 합니다!"
+            const val INVALID_SEQUENCE = "챕터 순서가 유효하지 않습니다."
+            const val DUPLICATED_SEQUENCE = "챕터 순서에 중복된 값이 있습니다."
+            const val OUT_OF_BOUNDS_SEQUENCE = "챕터 순서가 범위를 벗어났습니다."
         }
 
         object Review {

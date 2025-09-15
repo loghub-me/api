@@ -9,6 +9,7 @@ import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.dto.series.chapter.EditSeriesChapterDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
+import me.loghub.api.dto.series.chapter.UpdateSeriesChapterSequenceDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.series.SeriesChapterService
 import org.springframework.http.HttpStatus
@@ -76,14 +77,13 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         ).toResponseEntity()
     }
 
-    @PutMapping("/{sequenceA}/sequence/{sequenceB}")
-    fun changeChapterSequence(
+    @PatchMapping("/sequence")
+    fun updateChapterSequence(
         @PathVariable seriesId: Long,
-        @PathVariable sequenceA: Int,
-        @PathVariable sequenceB: Int,
+        @RequestBody @Valid requestBody: UpdateSeriesChapterSequenceDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        seriesChapterService.changeChapterSequence(seriesId, sequenceA, sequenceB, writer)
+        seriesChapterService.updateChapterSequence(seriesId, requestBody, writer)
         return MessageResponseBody(
             message = ResponseMessage.Series.Chapter.CHANGE_SEQUENCE_SUCCESS,
             status = HttpStatus.OK,

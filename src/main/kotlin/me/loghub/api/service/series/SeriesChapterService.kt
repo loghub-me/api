@@ -4,6 +4,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.series.chapter.EditSeriesChapterDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
+import me.loghub.api.dto.series.chapter.UpdateSeriesChapterSequenceDTO
 import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -11,9 +12,9 @@ import me.loghub.api.mapper.series.SeriesChapterMapper
 import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.service.common.CacheService
+import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.orElseThrowNotFound
-import me.loghub.api.util.requireNotEquals
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -93,19 +94,29 @@ class SeriesChapterService(
     }
 
     @Transactional
-    fun changeChapterSequence(seriesId: Long, sequenceA: Int, sequenceB: Int, writer: User) {
-        requireNotEquals("sequenceB", sequenceA, sequenceB) { ResponseMessage.Series.Chapter.SEQUENCE_MUST_BE_DIFF }
-
+    fun updateChapterSequence(seriesId: Long, requestBody: UpdateSeriesChapterSequenceDTO, writer: User) {
         val series = seriesRepository.getReferenceById(seriesId)
-        val chapterA = seriesChapterRepository.findWithWriterBySeriesAndSequence(series, sequenceA)
-            ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
-        val chapterB = seriesChapterRepository.findWithWriterBySeriesAndSequence(series, sequenceB)
-            ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
+        val chapters = seriesChapterRepository.findWithWriterAllBySeriesOrderBySequenceAsc(series)
+        val sequences = requestBody.sequences
 
-        checkPermission(chapterA.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
-        checkPermission(chapterB.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
+        checkField(
+            UpdateSeriesChapterSequenceDTO::sequences.name,
+            sequences.size == chapters.size
+        ) { ResponseMessage.Series.Chapter.INVALID_SEQUENCE }
+        checkField(
+            UpdateSeriesChapterSequenceDTO::sequences.name,
+            sequences.distinct().size == chapters.size
+        ) { ResponseMessage.Series.Chapter.DUPLICATED_SEQUENCE }
+        checkField(
+            UpdateSeriesChapterSequenceDTO::sequences.name,
+            sequences.all { it in 1..chapters.size }
+        ) { ResponseMessage.Series.Chapter.OUT_OF_BOUNDS_SEQUENCE }
 
-        chapterA.updateSequence(sequenceB)
-        chapterB.updateSequence(sequenceA)
+        for (i in 0..<chapters.size) {
+            checkPermission(chapters[i].writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
+            if (chapters[i].sequence != sequences[i]) {
+                chapters[i].updateSequence(sequences[i])
+            }
+        }
     }
 }
