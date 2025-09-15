@@ -4,6 +4,7 @@ import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.question.QuestionDTO
 import me.loghub.api.dto.question.QuestionDetailDTO
+import me.loghub.api.dto.question.QuestionForEditDTO
 import me.loghub.api.dto.question.QuestionStatsDTO
 import me.loghub.api.dto.user.UserSimpleDTO
 import me.loghub.api.entity.question.Question
@@ -41,6 +42,13 @@ object QuestionMapper {
             createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
             updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
         )
+
+    fun mapForEdit(question: Question) = QuestionForEditDTO(
+        id = question.id!!,
+        title = question.title,
+        content = question.content,
+        topicSlugs = question.topicsFlat.map { it.slug },
+    )
 
     private fun mapStats(question: QuestionStats) = QuestionStatsDTO(question.starCount, question.answerCount)
 }

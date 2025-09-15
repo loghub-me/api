@@ -5,10 +5,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
-import me.loghub.api.dto.series.PostSeriesDTO
-import me.loghub.api.dto.series.SeriesDTO
-import me.loghub.api.dto.series.SeriesDetailDTO
-import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.series.*
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.series.SeriesService
 import org.springframework.data.domain.Page
@@ -33,6 +30,15 @@ class SeriesController(private val seriesService: SeriesService) {
     @GetMapping("/@{username}/{slug}")
     fun getSeries(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<SeriesDetailDTO> {
         val foundSeries = seriesService.getSeries(username, slug)
+        return ResponseEntity.ok(foundSeries)
+    }
+
+    @GetMapping("/{id}/edit")
+    fun getSeriesForEdit(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<SeriesForEditDTO> {
+        val foundSeries = seriesService.getSeriesForEdit(id, writer)
         return ResponseEntity.ok(foundSeries)
     }
 

@@ -19,6 +19,10 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     @EntityGraph(attributePaths = ["writer"])
     fun findWithWriterById(id: Long): Series?
 
+    @Query("$SELECT_SERIES WHERE $BY_ID")
+    @EntityGraph(attributePaths = ["writer", "chapters"])
+    fun findWithGraphById(id: Long): Series?
+
     @Query("$SELECT_SERIES WHERE $BY_COMPOSITE_KEY")
     @EntityGraph(attributePaths = ["writer", "chapters"])
     fun findWithGraphByCompositeKey(username: String, slug: String): Series?

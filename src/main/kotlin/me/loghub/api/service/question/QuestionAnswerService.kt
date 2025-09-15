@@ -4,6 +4,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.redis.RedisKey
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
+import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
@@ -36,6 +37,16 @@ class QuestionAnswerService(
         val renderedMarkdowns = cacheService.findOrGenerateMarkdownCache(answerMarkdowns)
 
         return answers.mapIndexed { i, answer -> QuestionAnswerMapper.map(answer, renderedMarkdowns[i]) }
+    }
+
+    @Transactional(readOnly = true)
+    fun getAnswerForEdit(questionId: Long, answerId: Long, writer: User): QuestionAnswerForEditDTO {
+        val answer = questionAnswerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
+            ?: throw EntityNotFoundException(ResponseMessage.Question.Answer.NOT_FOUND)
+
+        checkPermission(answer.writer == writer) { ResponseMessage.Question.Answer.PERMISSION_DENIED }
+
+        return QuestionAnswerMapper.mapForEdit(answer)
     }
 
     @Transactional

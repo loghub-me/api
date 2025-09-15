@@ -2,6 +2,7 @@ package me.loghub.api.mapper.series
 
 import me.loghub.api.dto.series.SeriesDTO
 import me.loghub.api.dto.series.SeriesDetailDTO
+import me.loghub.api.dto.series.SeriesForEditDTO
 import me.loghub.api.dto.series.SeriesStatsDTO
 import me.loghub.api.dto.user.UserSimpleDTO
 import me.loghub.api.entity.series.Series
@@ -34,6 +35,15 @@ object SeriesMapper {
         chapters = series.chapters.map(SeriesChapterMapper::map),
         createdAt = series.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = series.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+    )
+
+    fun mapForEdit(series: Series) = SeriesForEditDTO(
+        id = series.id!!,
+        title = series.title,
+        content = series.content,
+        thumbnail = series.thumbnail,
+        topicSlugs = series.topicsFlat.map { it.slug },
+        chapters = series.chapters.map(SeriesChapterMapper::map),
     )
 
     private fun mapStats(series: SeriesStats) = SeriesStatsDTO(series.starCount, series.reviewCount)

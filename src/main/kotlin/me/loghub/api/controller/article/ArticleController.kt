@@ -2,10 +2,7 @@ package me.loghub.api.controller.article
 
 import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.dto.article.ArticleDTO
-import me.loghub.api.dto.article.ArticleDetailDTO
-import me.loghub.api.dto.article.ArticleSort
-import me.loghub.api.dto.article.PostArticleDTO
+import me.loghub.api.dto.article.*
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -33,6 +30,15 @@ class ArticleController(private val articleService: ArticleService) {
     @GetMapping("/@{username}/{slug}")
     fun getArticle(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<ArticleDetailDTO> {
         val foundArticle = articleService.getArticle(username, slug)
+        return ResponseEntity.ok(foundArticle)
+    }
+
+    @GetMapping("/{id}/edit")
+    fun getArticleForEdit(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ArticleForEditDTO> {
+        val foundArticle = articleService.getArticleForEdit(id, writer)
         return ResponseEntity.ok(foundArticle)
     }
 

@@ -35,6 +35,15 @@ class QuestionController(private val questionService: QuestionService) {
         return ResponseEntity.ok(foundQuestion)
     }
 
+    @GetMapping("/{id}/edit")
+    fun getQuestionForEdit(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<QuestionForEditDTO> {
+        val foundQuestion = questionService.getQuestionForEdit(id, writer)
+        return ResponseEntity.ok(foundQuestion)
+    }
+
     @PostMapping
     fun postQuestion(
         @RequestBody @Valid requestBody: PostQuestionDTO,

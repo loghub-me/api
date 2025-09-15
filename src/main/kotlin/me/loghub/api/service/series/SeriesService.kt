@@ -1,10 +1,7 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.dto.series.PostSeriesDTO
-import me.loghub.api.dto.series.SeriesDTO
-import me.loghub.api.dto.series.SeriesDetailDTO
-import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.series.*
 import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -47,6 +44,16 @@ class SeriesService(
         seriesRepository.findWithGraphByCompositeKey(username, slug)
             ?.let { SeriesMapper.mapDetail(it) }
             ?: throw EntityNotFoundException(ResponseMessage.Series.NOT_FOUND)
+
+    @Transactional(readOnly = true)
+    fun getSeriesForEdit(seriesId: Long, writer: User): SeriesForEditDTO {
+        val series = seriesRepository.findWithGraphById(seriesId)
+            ?: throw EntityNotFoundException(ResponseMessage.Series.NOT_FOUND)
+
+        checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
+
+        return SeriesMapper.mapForEdit(series)
+    }
 
     @Transactional
     fun postSeries(requestBody: PostSeriesDTO, writer: User): Series {

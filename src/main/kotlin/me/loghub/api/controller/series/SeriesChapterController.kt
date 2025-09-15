@@ -8,6 +8,7 @@ import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.dto.series.chapter.EditSeriesChapterDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
+import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.series.SeriesChapterService
 import org.springframework.http.HttpStatus
@@ -22,6 +23,16 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
     fun getChapter(@PathVariable seriesId: Long, @PathVariable sequence: Int): ResponseEntity<SeriesChapterDetailDTO> {
         val chapter = seriesChapterService.getChapter(seriesId, sequence)
         return ResponseEntity.ok(chapter)
+    }
+
+    @GetMapping("/{sequence}/edit")
+    fun getChapterForEdit(
+        @PathVariable seriesId: Long,
+        @PathVariable sequence: Int,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<SeriesChapterForEditDTO> {
+        val foundSeries = seriesChapterService.getChapterForEdit(seriesId, sequence, writer)
+        return ResponseEntity.ok(foundSeries)
     }
 
     @PostMapping

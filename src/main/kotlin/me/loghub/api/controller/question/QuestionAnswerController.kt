@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
+import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -21,6 +22,16 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
     fun getAnswers(@PathVariable questionId: Long): ResponseEntity<List<QuestionAnswerDTO>> {
         val answers = questionAnswerService.getAnswers(questionId)
         return ResponseEntity.ok(answers)
+    }
+
+    @GetMapping("/{answerId}/edit")
+    fun getAnswerForEdit(
+        @PathVariable questionId: Long,
+        @PathVariable answerId: Long,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<QuestionAnswerForEditDTO> {
+        val foundAnswer = questionAnswerService.getAnswerForEdit(questionId, answerId, writer)
+        return ResponseEntity.ok(foundAnswer)
     }
 
     @PostMapping

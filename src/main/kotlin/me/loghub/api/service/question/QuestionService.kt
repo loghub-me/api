@@ -51,6 +51,16 @@ class QuestionService(
         return QuestionMapper.mapDetail(question, renderedMarkdown)
     }
 
+    @Transactional(readOnly = true)
+    fun getQuestionForEdit(questionId: Long, writer: User): QuestionForEditDTO {
+        val question = questionRepository.findWithWriterById(questionId)
+            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+
+        checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
+
+        return QuestionMapper.mapForEdit(question)
+    }
+
     @Transactional
     fun postQuestion(requestBody: PostQuestionDTO, writer: User): Question {
         val slug = generateUniqueSlug(writer.username, requestBody.title)

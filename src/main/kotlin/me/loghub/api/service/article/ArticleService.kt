@@ -1,10 +1,7 @@
 package me.loghub.api.service.article
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.dto.article.ArticleDTO
-import me.loghub.api.dto.article.ArticleDetailDTO
-import me.loghub.api.dto.article.ArticleSort
-import me.loghub.api.dto.article.PostArticleDTO
+import me.loghub.api.dto.article.*
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -50,6 +47,16 @@ class ArticleService(
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
         val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(article.content)
         return ArticleMapper.mapDetail(article, renderedMarkdown)
+    }
+
+    @Transactional(readOnly = true)
+    fun getArticleForEdit(articleId: Long, writer: User): ArticleForEditDTO {
+        val article = articleRepository.findWithWriterById(articleId)
+            ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+
+        checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
+
+        return ArticleMapper.mapForEdit(article)
     }
 
     @Transactional
