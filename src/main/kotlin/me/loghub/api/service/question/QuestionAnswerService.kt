@@ -64,7 +64,7 @@ class QuestionAnswerService(
 
     @Transactional
     fun editAnswer(questionId: Long, answerId: Long, requestBody: PostQuestionAnswerDTO, writer: User): QuestionAnswer {
-        val answer = findUpdatableAnswer(questionId, answerId, writer)
+        val answer = findUpdatableAnswer(questionId, answerId)
         checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         answer.update(requestBody)
         return answer
@@ -72,7 +72,7 @@ class QuestionAnswerService(
 
     @Transactional
     fun removeAnswer(questionId: Long, answerId: Long, writer: User) {
-        val answer = findUpdatableAnswer(questionId, answerId, writer)
+        val answer = findUpdatableAnswer(questionId, answerId)
         checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         questionRepository.decrementAnswerCount(answer.question.id!!)
         questionAnswerRepository.delete(answer)
@@ -80,7 +80,7 @@ class QuestionAnswerService(
 
     @Transactional
     fun acceptAnswer(questionId: Long, answerId: Long, writer: User): QuestionAnswer {
-        val answer = findUpdatableAnswer(questionId, answerId, writer)
+        val answer = findUpdatableAnswer(questionId, answerId)
         checkPermission(answer.question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         answer.accept()
         answer.question.solved()
@@ -105,14 +105,13 @@ class QuestionAnswerService(
         redisTemplate.opsForValue().set(redisKey, "true", RedisKey.Question.Answer.GENERATE_COOLDOWN.ttl)
     }
 
-    private fun findUpdatableAnswer(questionId: Long, answerId: Long, writer: User): QuestionAnswer {
+    private fun findUpdatableAnswer(questionId: Long, answerId: Long): QuestionAnswer {
         val answer = questionAnswerRepository.findWithWriterByIdAndQuestionId(answerId, questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.Answer.NOT_FOUND)
-        val question = answer.question
 
         checkField(
             Question::status.name,
-            question.status == Question.Status.OPEN
+            answer.question.status == Question.Status.OPEN
         ) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
         checkField(
             QuestionAnswer::accepted.name,

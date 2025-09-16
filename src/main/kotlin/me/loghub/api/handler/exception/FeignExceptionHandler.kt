@@ -1,6 +1,7 @@
 package me.loghub.api.handler.exception
 
 import feign.FeignException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -11,8 +12,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class FeignExceptionHandler {
+    private companion object {
+        private val logger = KotlinLogging.logger { };
+    }
+
     @ExceptionHandler(FeignException::class)
     fun handleException(e: FeignException): ResponseEntity<ResponseBody> {
+        logger.error(e) { "Feign client error: ${e.message}" }
         return MessageResponseBody(
             message = ResponseMessage.Default.INTERNAL_SERVER_ERROR,
             status = HttpStatus.INTERNAL_SERVER_ERROR

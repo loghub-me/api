@@ -1,8 +1,8 @@
 package me.loghub.api.worker
 
 import com.resend.Resend
-import com.resend.core.exception.ResendException
 import com.resend.services.emails.model.CreateEmailOptions
+import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.dto.task.mail.MailSendRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
@@ -17,6 +17,7 @@ class MailSendWorker(
     private companion object {
         private val queue = ConcurrentLinkedQueue<MailSendRequest>()
         private const val CRON = "0/10 * * * * *" // Every 10 seconds
+        private val logger = KotlinLogging.logger { };
     }
 
     @Scheduled(cron = CRON)
@@ -39,8 +40,8 @@ class MailSendWorker(
 
         try {
             resendClient.emails().send(params)
-        } catch (_: ResendException) {
-            return
+        } catch (e: RuntimeException) {
+            logger.error(e) { "Resend client error: ${e.message}" }
         }
     }
 }

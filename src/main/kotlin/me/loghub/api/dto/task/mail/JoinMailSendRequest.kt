@@ -14,11 +14,8 @@ class JoinMailSendRequest(
     <title>LogHub | 로그인 인증 OTP</title>
   </head>
   <body style="font-family: Arial, Helvetica, sans-serif">
-    <header style="padding: 12px; background-color: #ffffff">
-        <img src="${ClientConfig.HOST}/logo.webp" alt="logo" width="128" height="32" />
-    </header>
     <section style="padding: 12px">
-      <h2>로그인 인증 OTP</h2>
+      <h1>LogHub | 로그인 인증 OTP</h1>
       <div style="display: inline-block; padding: 8px 12px; border-radius: 6px; color: #ffffff; background-color: #3a97fa">
         $otp
       </div>

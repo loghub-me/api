@@ -34,6 +34,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.ai:spring-ai-starter-model-openai")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     implementation("io.github.openfeign.querydsl:querydsl-jpa:6.11")
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.9.10")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
