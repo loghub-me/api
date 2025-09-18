@@ -134,4 +134,10 @@ object ResponseMessage {
         const val ADD_SUCCESS = "스타가 성공적으로 추가되었습니다!"
         const val DELETE_SUCCESS = "스타가 성공적으로 삭제되었습니다!"
     }
+
+    object Support {
+        object Inquiry {
+            const val POST_SUCCESS = "문의가 성공적으로 등록되었습니다!"
+        }
+    }
 }
