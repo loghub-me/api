@@ -13,7 +13,7 @@ enum class HibernateFunction(
         "articles_fts",
         "articles_fts({0})",
         """
-            ARRAY[name, description] &@~ pgroonga_condition(
+            ARRAY[title, content, writer_username, topics_flat] &@~ pgroonga_condition(
                 pgroonga_query_expand('search_synonyms', 'term', 'synonyms', ?1),
                 weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.CONTENT}, ${WEIGHTS.WRITER_USERNAME}, ${WEIGHTS.TOPICS_FLAT}],
                 index_name => 'articles_fts_idx'
@@ -25,7 +25,7 @@ enum class HibernateFunction(
         "series_fts",
         "series_fts({0})",
         """
-            ARRAY[name, description] &@~ pgroonga_condition(
+            ARRAY[title, description, writer_username, topics_flat] &@~ pgroonga_condition(
                 pgroonga_query_expand('search_synonyms', 'term', 'synonyms', ?1),
                 weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.DESCRIPTION}, ${WEIGHTS.WRITER_USERNAME}, ${WEIGHTS.TOPICS_FLAT}],
                 index_name => 'series_fts_idx'
@@ -37,7 +37,7 @@ enum class HibernateFunction(
         "questions_fts",
         "questions_fts({0})",
         """
-            ARRAY[name, description] &@~ pgroonga_condition(
+            ARRAY[title, content, writer_username, topics_flat] &@~ pgroonga_condition(
                 pgroonga_query_expand('search_synonyms', 'term', 'synonyms', ?1),
                 weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.CONTENT}, ${WEIGHTS.WRITER_USERNAME}, ${WEIGHTS.TOPICS_FLAT}],
                 index_name => 'questions_fts_idx'
