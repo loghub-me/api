@@ -9,6 +9,7 @@ import me.loghub.api.mapper.series.SeriesMapper
 import me.loghub.api.repository.series.SeriesCustomRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.topic.TopicRepository
+import me.loghub.api.util.SlugBuilder
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 class SeriesService(
@@ -57,7 +57,10 @@ class SeriesService(
 
     @Transactional
     fun postSeries(requestBody: PostSeriesDTO, writer: User): Series {
-        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val slug = SlugBuilder.generateUniqueSlug(
+            slug = requestBody.title.toSlug(),
+            exists = { slug -> seriesRepository.existsByCompositeKey(writer.username, slug) }
+        )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         val series = requestBody.toEntity(slug, writer, topics)
@@ -71,7 +74,10 @@ class SeriesService(
 
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val slug = SlugBuilder.generateUniqueSlug(
+            slug = requestBody.title.toSlug(),
+            exists = { slug -> seriesRepository.existsByCompositeKeyAndIdNot(writer.username, slug, seriesId) }
+        )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         series.update(requestBody)
@@ -88,13 +94,5 @@ class SeriesService(
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
         seriesRepository.delete(series)
-    }
-
-    private fun generateUniqueSlug(username: String, title: String): String {
-        var slug = title.toSlug()
-        while (seriesRepository.existsByCompositeKey(username, slug)) {
-            slug = "$slug-${UUID.randomUUID()}"
-        }
-        return slug
     }
 }

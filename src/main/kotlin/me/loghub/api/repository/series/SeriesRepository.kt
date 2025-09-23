@@ -33,6 +33,9 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     @Query("$EXISTS_SERIES WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
+    @Query("$EXISTS_SERIES WHERE $BY_COMPOSITE_KEY AND s.id <> :id")
+    fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
+
     @Modifying
     @Query("UPDATE Series s SET s.stats.trendingScore = :trendingScore WHERE $BY_ID")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int

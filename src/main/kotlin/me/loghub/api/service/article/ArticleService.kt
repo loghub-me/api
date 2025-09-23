@@ -10,6 +10,7 @@ import me.loghub.api.repository.article.ArticleCustomRepository
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.topic.TopicRepository
 import me.loghub.api.service.common.CacheService
+import me.loghub.api.util.SlugBuilder
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 class ArticleService(
@@ -61,7 +61,10 @@ class ArticleService(
 
     @Transactional
     fun postArticle(requestBody: PostArticleDTO, writer: User): Article {
-        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val slug = SlugBuilder.generateUniqueSlug(
+            slug = requestBody.title.toSlug(),
+            exists = { slug -> articleRepository.existsByCompositeKey(writer.username, slug) }
+        )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         val article = requestBody.toEntity(slug, writer, topics)
@@ -75,7 +78,10 @@ class ArticleService(
 
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val slug = SlugBuilder.generateUniqueSlug(
+            slug = requestBody.title.toSlug(),
+            exists = { slug -> articleRepository.existsByCompositeKeyAndIdNot(writer.username, slug, articleId) }
+        )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         article.update(requestBody)
@@ -92,13 +98,5 @@ class ArticleService(
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
         articleRepository.delete(article)
-    }
-
-    private fun generateUniqueSlug(username: String, title: String): String {
-        var slug = title.toSlug()
-        while (articleRepository.existsByCompositeKey(username, slug)) {
-            slug = "$slug-${UUID.randomUUID()}"
-        }
-        return slug
     }
 }

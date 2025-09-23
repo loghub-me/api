@@ -10,6 +10,7 @@ import me.loghub.api.repository.question.QuestionCustomRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.topic.TopicRepository
 import me.loghub.api.service.common.CacheService
+import me.loghub.api.util.SlugBuilder
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
@@ -63,13 +64,14 @@ class QuestionService(
 
     @Transactional
     fun postQuestion(requestBody: PostQuestionDTO, writer: User): Question {
-        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val slug = SlugBuilder.generateUniqueSlug(
+            slug = requestBody.title.toSlug(),
+            exists = { slug -> questionRepository.existsByCompositeKey(writer.username, slug) }
+        )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         val question = requestBody.toEntity(slug, writer, topics)
-        val savedQuestion = questionRepository.save(question)
-
-        return savedQuestion
+        return questionRepository.save(question)
     }
 
     @Transactional
@@ -79,7 +81,10 @@ class QuestionService(
 
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        val slug = generateUniqueSlug(writer.username, requestBody.title)
+        val slug = SlugBuilder.generateUniqueSlug(
+            slug = requestBody.title.toSlug(),
+            exists = { slug -> questionRepository.existsByCompositeKeyAndIdNot(writer.username, slug, questionId) }
+        )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         question.update(requestBody)

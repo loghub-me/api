@@ -29,6 +29,9 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
+    @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY AND q.id <> :id")
+    fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
+
     @Modifying
     @Query("UPDATE Question q SET q.stats.trendingScore = :trendingScore WHERE $BY_ID")
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
