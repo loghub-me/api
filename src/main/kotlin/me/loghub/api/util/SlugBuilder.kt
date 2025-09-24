@@ -7,7 +7,7 @@ object SlugBuilder {
         slug: String,
         exists: (String) -> Boolean,
     ): String {
-        var uniqueSlug = slug;
+        var uniqueSlug = slug
         while (exists(uniqueSlug)) {
             uniqueSlug = "$slug-${UUID.randomUUID()}"
         }
