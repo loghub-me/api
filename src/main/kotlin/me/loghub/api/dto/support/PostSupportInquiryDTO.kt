@@ -3,6 +3,7 @@ package me.loghub.api.dto.support
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import me.loghub.api.dto.task.discord.DiscordEmbed
 import me.loghub.api.entity.support.SupportInquiry
 import me.loghub.api.lib.validation.Trimmed
 
@@ -23,5 +24,11 @@ data class PostSupportInquiryDTO(
         email = email,
         title = title,
         content = content,
+    )
+
+    fun toDiscordEmbed() = DiscordEmbed(
+        title = title,
+        description = content,
+        author = if (email != null) DiscordEmbed.Author(email) else null,
     )
 }

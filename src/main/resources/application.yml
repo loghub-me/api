@@ -55,6 +55,8 @@ server:
 task-api:
   host: ${TASK_API_HOST}
   interval-token: ${TASK_API_INTERVAL_TOKEN}
+discord-webhook:
+  url: ${DISCORD_WEBHOOK_URL}
 management:
   server:
     port: ${MANAGEMENT_PORT:8081}
