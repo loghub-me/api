@@ -8,6 +8,7 @@ object ResponseMessage {
         const val INVALID_FIELD = "유효하지 않은 필드입니다."
         const val NOT_FOUND = "해당하는 정보를 찾을 수 없습니다."
         const val ALREADY_EXISTS = "이미 존재하는 정보입니다."
+        const val CONFLICT = "요청이 현재 상태와 충돌합니다."
         const val CONFLICT_FIELD = "필드 값이 충돌합니다."
         const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
         const val COOLDOWN_NOT_ELAPSED = "쿨타임이 지나지 않았습니다."
