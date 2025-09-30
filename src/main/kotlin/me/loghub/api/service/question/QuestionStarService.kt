@@ -38,7 +38,7 @@ class QuestionStarService(
     }
 
     @Transactional
-    override fun removeStar(id: Long, user: User) {
+    override fun deleteStar(id: Long, user: User) {
         val questionRef = questionRepository.getReferenceById(id)
         val deletedRows = userStarRepository.deleteByQuestionAndUser(questionRef, user)
 

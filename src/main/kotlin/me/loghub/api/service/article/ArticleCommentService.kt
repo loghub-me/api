@@ -59,7 +59,7 @@ class ArticleCommentService(
     }
 
     @Transactional
-    fun removeComment(articleId: Long, commentId: Long, writer: User) {
+    fun deleteComment(articleId: Long, commentId: Long, writer: User) {
         val article = articleRepository.getReferenceById(articleId)
         val comment = articleCommentRepository.findWithGraphByArticleAndId(article, commentId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)

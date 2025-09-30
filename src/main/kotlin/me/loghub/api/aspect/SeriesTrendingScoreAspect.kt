@@ -22,15 +22,15 @@ class SeriesTrendingScoreAspect(private val redisTemplate: RedisTemplate<String,
     fun updateTrendingScoreAfterPostSeriesReview(seriesId: Long) =
         zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), TrendingScoreDelta.REVIEW)
 
-    @AfterReturning("execution(* me.loghub.api.service.series.SeriesReviewService.removeReview(..)) && args(seriesId, ..))")
-    fun updateTrendingScoreAfterRemoveSeriesReview(seriesId: Long) =
+    @AfterReturning("execution(* me.loghub.api.service.series.SeriesReviewService.deleteReview(..)) && args(seriesId, ..))")
+    fun updateTrendingScoreAfterDeleteSeriesReview(seriesId: Long) =
         zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), -TrendingScoreDelta.REVIEW)
 
     @AfterReturning("execution(* me.loghub.api.service.series.SeriesStarService.addStar(..)) && args(articleId, ..)")
     fun updateTrendingScoreAfterAddSeriesStar(articleId: Long) =
         zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.STAR)
 
-    @AfterReturning("execution(* me.loghub.api.service.series.SeriesStarService.removeStar(..)) && args(articleId, ..)")
-    fun updateTrendingScoreAfterRemoveSeriesStar(articleId: Long) =
+    @AfterReturning("execution(* me.loghub.api.service.series.SeriesStarService.deleteStar(..)) && args(articleId, ..)")
+    fun updateTrendingScoreAfterDeleteSeriesStar(articleId: Long) =
         zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
 }

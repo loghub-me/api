@@ -41,11 +41,11 @@ class ArticleStarController(private val articleStarService: ArticleStarService) 
     }
 
     @DeleteMapping
-    fun removeArticleStar(
+    fun deleteArticleStar(
         @PathVariable articleId: Long,
         @AuthenticationPrincipal user: User
     ): ResponseEntity<ResponseBody> {
-        articleStarService.removeStar(articleId, user)
+        articleStarService.deleteStar(articleId, user)
         return MessageResponseBody(
             message = ResponseMessage.Star.DELETE_SUCCESS,
             status = HttpStatus.OK,

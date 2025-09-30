@@ -1,10 +1,10 @@
 package me.loghub.api.controller.series
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.dto.series.review.PostSeriesReviewDTO
-import me.loghub.api.dto.series.review.SeriesReviewDTO
 import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.ResponseBody
+import me.loghub.api.dto.series.review.PostSeriesReviewDTO
+import me.loghub.api.dto.series.review.SeriesReviewDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.series.SeriesReviewService
 import org.springframework.data.domain.Page
@@ -41,12 +41,12 @@ class SeriesReviewController(private val seriesReviewService: SeriesReviewServic
     }
 
     @DeleteMapping("/{reviewId}")
-    fun removeReview(
+    fun deleteReview(
         @PathVariable seriesId: Long,
         @PathVariable reviewId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        seriesReviewService.removeReview(seriesId, reviewId, writer)
+        seriesReviewService.deleteReview(seriesId, reviewId, writer)
         return MethodResponseBody(
             id = reviewId,
             message = ResponseMessage.Series.Review.DELETE_SUCCESS,

@@ -70,11 +70,11 @@ class SeriesController(private val seriesService: SeriesService) {
     }
 
     @DeleteMapping("/{id}")
-    fun removeSeries(
+    fun deleteSeries(
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        seriesService.removeSeries(id, writer)
+        seriesService.deleteSeries(id, writer)
         return MessageResponseBody(
             message = ResponseMessage.Series.DELETE_SUCCESS,
             status = HttpStatus.OK,

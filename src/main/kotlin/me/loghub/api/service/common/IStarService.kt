@@ -8,5 +8,5 @@ interface IStarService {
 
     fun addStar(id: Long, user: User): UserStar
 
-    fun removeStar(id: Long, user: User)
+    fun deleteStar(id: Long, user: User)
 }

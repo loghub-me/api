@@ -71,7 +71,7 @@ class QuestionAnswerService(
     }
 
     @Transactional
-    fun removeAnswer(questionId: Long, answerId: Long, writer: User) {
+    fun deleteAnswer(questionId: Long, answerId: Long, writer: User) {
         val answer = findUpdatableAnswer(questionId, answerId)
         checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         questionRepository.decrementAnswerCount(answer.question.id!!)

@@ -50,12 +50,12 @@ class ArticleCommentController(private val articleCommentService: ArticleComment
     }
 
     @DeleteMapping("/{commentId}")
-    fun removeComment(
+    fun deleteComment(
         @PathVariable articleId: Long,
         @PathVariable commentId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        articleCommentService.removeComment(articleId, commentId, writer)
+        articleCommentService.deleteComment(articleId, commentId, writer)
         return MethodResponseBody(
             id = commentId,
             message = ResponseMessage.Article.Comment.DELETE_SUCCESS,

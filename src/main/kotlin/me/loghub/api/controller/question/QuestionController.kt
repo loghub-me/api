@@ -72,11 +72,11 @@ class QuestionController(private val questionService: QuestionService) {
     }
 
     @DeleteMapping("/{id}")
-    fun removeQuestion(
+    fun deleteQuestion(
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        questionService.removeQuestion(id, writer)
+        questionService.deleteQuestion(id, writer)
         return MessageResponseBody(
             message = ResponseMessage.Question.DELETE_SUCCESS,
             status = HttpStatus.OK,

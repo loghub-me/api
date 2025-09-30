@@ -87,7 +87,7 @@ class SeriesService(
     }
 
     @Transactional
-    fun removeSeries(seriesId: Long, writer: User) {
+    fun deleteSeries(seriesId: Long, writer: User) {
         val series = seriesRepository.findWithWriterById(seriesId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.NOT_FOUND)
 

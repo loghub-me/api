@@ -70,11 +70,11 @@ class ArticleController(private val articleService: ArticleService) {
     }
 
     @DeleteMapping("/{id}")
-    fun removeArticle(
+    fun deleteArticle(
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        articleService.removeArticle(id, writer)
+        articleService.deleteArticle(id, writer)
         return MessageResponseBody(
             message = ResponseMessage.Article.DELETE_SUCCESS,
             status = HttpStatus.OK,
