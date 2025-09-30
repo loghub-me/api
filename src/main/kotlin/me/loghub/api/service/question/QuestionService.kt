@@ -94,7 +94,7 @@ class QuestionService(
     }
 
     @Transactional
-    fun removeQuestion(questionId: Long, writer: User) {
+    fun deleteQuestion(questionId: Long, writer: User) {
         val question = questionRepository.findWithWriterById(questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
 

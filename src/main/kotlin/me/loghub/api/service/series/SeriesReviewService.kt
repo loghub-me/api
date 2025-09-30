@@ -53,7 +53,7 @@ class SeriesReviewService(
     }
 
     @Transactional
-    fun removeReview(seriesId: Long, commentId: Long, writer: User) {
+    fun deleteReview(seriesId: Long, commentId: Long, writer: User) {
         val comment = seriesReviewRepository.findWithGraphBySeriesIdAndId(seriesId, commentId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Review.NOT_FOUND)
 

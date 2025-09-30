@@ -91,7 +91,7 @@ class ArticleService(
     }
 
     @Transactional
-    fun removeArticle(articleId: Long, writer: User) {
+    fun deleteArticle(articleId: Long, writer: User) {
         val article = articleRepository.findWithWriterById(articleId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
 

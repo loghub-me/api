@@ -64,12 +64,12 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
     }
 
     @DeleteMapping("/{answerId}")
-    fun removeAnswer(
+    fun deleteAnswer(
         @PathVariable questionId: Long,
         @PathVariable answerId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        questionAnswerService.removeAnswer(questionId, answerId, writer)
+        questionAnswerService.deleteAnswer(questionId, answerId, writer)
         return MethodResponseBody(
             id = answerId,
             message = ResponseMessage.Question.Answer.DELETE_SUCCESS,
