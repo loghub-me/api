@@ -151,26 +151,25 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
 
 INSERT INTO public.articles(slug, title, content, writer_id, writer_username)
 VALUES ('article-1', 'Article 1', 'Article content 1',
-        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for get
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'),
        ('article-2', 'Article 2', 'Article content 2',
-        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for edit
-       ('article-3', 'Article 3', 'Article content 3',
-        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for delete
-       ('article-4', 'Article 4', 'Article content 4',
         ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
 INSERT INTO public.article_comments(content, article_id, writer_id)
 VALUES ('Article comment 1', 1, ( SELECT id FROM users WHERE username = 'member1' )),
-       ('Article comment 2', 1, ( SELECT id FROM users WHERE username = 'member1' ));
+       ('Article comment 2', 1, ( SELECT id FROM users WHERE username = 'member2' ));
 INSERT INTO public.article_comments(content, article_id, parent_id, mention_id, writer_id)
-VALUES ('Article comment 3', 1, 1,
-        ( SELECT id FROM users WHERE username = 'member1' ), ( SELECT id FROM users WHERE username = 'member2' ));
+VALUES ('Article reply 1-1', 1, 1,
+        ( SELECT id FROM users WHERE username = 'member1' ),
+        ( SELECT id FROM users WHERE username = 'member2' )),
+       ('Article reply 2-1', 1, 1,
+        ( SELECT id FROM users WHERE username = 'member2' ),
+        ( SELECT id FROM users WHERE username = 'member1' ));
 UPDATE public.articles
 SET comment_count = c.cnt
 FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.article_comments GROUP BY article_id ) c
 WHERE id = c.article_id;
 INSERT INTO public.user_stars(target, article_id, user_id)
-VALUES ('ARTICLE', 1, ( SELECT id FROM public.users WHERE username = 'member1' )), -- for check exists
-       ('ARTICLE', 3, ( SELECT id FROM public.users WHERE username = 'member1' )); -- for delete
+VALUES ('ARTICLE', 1, ( SELECT id FROM public.users WHERE username = 'member1' ));
 UPDATE public.articles
 SET star_count = c.cnt
 FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.user_stars WHERE article_id IS NOT NULL GROUP BY article_id ) c

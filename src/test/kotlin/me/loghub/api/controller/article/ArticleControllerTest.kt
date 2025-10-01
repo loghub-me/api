@@ -25,7 +25,7 @@ import kotlin.test.assertEquals
 @ActiveProfiles("test")
 @Sql(
     scripts = ["/database/data/truncate.sql", "/database/data/test.sql"],
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS,
+    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
 )
 class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
     companion object {
@@ -33,9 +33,8 @@ class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
         lateinit var member2: TokenDTO;
 
         object ArticleId {
-            const val FOR_GET = 1L
-            const val FOR_EDIT = 2L
-            const val FOR_DELETE = 3L
+            const val BY_MEMBER1 = 1L
+            const val INVALID = 999L
         }
 
         val bodyForPost = PostArticleDTO(
@@ -91,27 +90,27 @@ class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
 
     @Test
     fun `getArticleForEdit - unauthorized`() {
-        val response = getArticleForEdit<String>(ArticleId.FOR_EDIT)
+        val response = getArticleForEdit<String>(ArticleId.BY_MEMBER1)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `getArticleForEdit - forbidden`() {
-        val response = getArticleForEdit<String>(ArticleId.FOR_EDIT, member2)
+        val response = getArticleForEdit<String>(ArticleId.BY_MEMBER1, member2)
         assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
     }
 
     @Test
     fun `getArticleForEdit - not found`() {
-        val response = getArticleForEdit<String>(999L, member2)
+        val response = getArticleForEdit<String>(ArticleId.INVALID, member2)
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
     fun `getArticleForEdit - found`() {
-        val response = getArticleForEdit<ArticleForEditDTO>(ArticleId.FOR_EDIT, member1)
+        val response = getArticleForEdit<ArticleForEditDTO>(ArticleId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(ArticleId.FOR_EDIT, response.body?.id)
+        assertEquals(ArticleId.BY_MEMBER1, response.body?.id)
     }
 
     @Test
@@ -128,49 +127,49 @@ class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
 
     @Test
     fun `editArticle - unauthorized`() {
-        val response = editArticle<String>(ArticleId.FOR_EDIT, bodyForEdit)
+        val response = editArticle<String>(ArticleId.BY_MEMBER1, bodyForEdit)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `editArticle - forbidden`() {
-        val response = editArticle<String>(ArticleId.FOR_EDIT, bodyForEdit, member2)
+        val response = editArticle<String>(ArticleId.BY_MEMBER1, bodyForEdit, member2)
         assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
     }
 
     @Test
     fun `editArticle - not found`() {
-        val response = editArticle<String>(999L, bodyForEdit, member1)
+        val response = editArticle<String>(ArticleId.INVALID, bodyForEdit, member1)
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
     fun `editArticle - ok`() {
-        val response = editArticle<String>(ArticleId.FOR_EDIT, bodyForEdit, member1)
+        val response = editArticle<String>(ArticleId.BY_MEMBER1, bodyForEdit, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     @Test
     fun `deleteArticle - unauthorized`() {
-        val response = deleteArticle<String>(ArticleId.FOR_DELETE)
+        val response = deleteArticle<String>(ArticleId.BY_MEMBER1)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `deleteArticle - forbidden`() {
-        val response = deleteArticle<String>(ArticleId.FOR_DELETE, member2)
+        val response = deleteArticle<String>(ArticleId.BY_MEMBER1, member2)
         assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
     }
 
     @Test
     fun `deleteArticle - not found`() {
-        val response = deleteArticle<String>(999L, member1)
+        val response = deleteArticle<String>(ArticleId.INVALID, member1)
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
     fun `deleteArticle - ok`() {
-        val response = deleteArticle<String>(ArticleId.FOR_DELETE, member1)
+        val response = deleteArticle<String>(ArticleId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
     }
 

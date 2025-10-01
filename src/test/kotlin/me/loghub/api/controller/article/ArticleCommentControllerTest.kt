@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 @ActiveProfiles("test")
 @Sql(
     scripts = ["/database/data/truncate.sql", "/database/data/test.sql"],
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS,
+    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
 )
 class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate) {
     companion object {
@@ -28,19 +28,20 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
         lateinit var member2: TokenDTO;
 
         object ArticleCommentId {
-            const val FOR_GET_REPLIES = 1L
-            const val FOR_DELETE = 2L
+            const val BY_MEMBER1 = 1L
+            const val INVALID = 999L
+//            const val FOR_GET_REPLIES = 1L
+//            const val FOR_DELETE = 3L
+//            const val FOR_DELETE_FAIL = 4L
+//            const val INVALID = 999L
         }
 
         val bodyForPost = PostArticleCommentDTO(content = "New comment", parentId = null)
-        val bodyForPostReply = PostArticleCommentDTO(content = "New reply", parentId = 1L)
+        val bodyForPostReply = PostArticleCommentDTO(content = "New reply", parentId = ArticleCommentId.BY_MEMBER1)
 
         @JvmStatic
         @BeforeAll
-        fun setup(
-            @Autowired grantService: TestGrantService,
-            @Autowired rest: TestRestTemplate,
-        ) {
+        fun setup(@Autowired grantService: TestGrantService) {
             member1 = grantService.generateToken("member1")
             member2 = grantService.generateToken("member2")
         }
@@ -54,7 +55,7 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
 
     @Test
     fun getReplies() {
-        val response = getReplies<String>(1L, ArticleCommentId.FOR_GET_REPLIES)
+        val response = getReplies<String>(1L, ArticleCommentId.BY_MEMBER1)
         assertEquals(HttpStatus.OK, response.statusCode)
     }
 
@@ -78,25 +79,25 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
 
     @Test
     fun `deleteComment - unauthenticated`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.FOR_DELETE)
+        val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `deleteComment - forbidden`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.FOR_DELETE, member2)
+        val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1, member2)
         assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
     }
 
     @Test
     fun `deleteComment - not found`() {
-        val response = deleteComment<String>(1L, 999L, member1)
+        val response = deleteComment<String>(1L, ArticleCommentId.INVALID, member1)
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
     fun `deleteComment - ok`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.FOR_DELETE, member1)
+        val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
     }
 
