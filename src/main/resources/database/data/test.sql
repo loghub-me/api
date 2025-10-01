@@ -158,3 +158,13 @@ VALUES ('article-1', 'Article 1', 'Article content 1',
         ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for delete
        ('article-4', 'Article 4', 'Article content 4',
         ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
+INSERT INTO public.article_comments(content, article_id, writer_id)
+VALUES ('Article comment 1', 1, ( SELECT id FROM users WHERE username = 'member1' )),
+       ('Article comment 2', 1, ( SELECT id FROM users WHERE username = 'member1' ));
+INSERT INTO public.article_comments(content, article_id, parent_id, mention_id, writer_id)
+VALUES ('Article comment 3', 1, 1,
+        ( SELECT id FROM users WHERE username = 'member1' ), ( SELECT id FROM users WHERE username = 'member2' ));
+UPDATE public.articles
+SET comment_count = c.cnt
+FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.article_comments GROUP BY article_id ) c
+WHERE id = c.article_id;
