@@ -1,15 +1,3 @@
-TRUNCATE TABLE public.articles RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.article_topics RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.series RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.questions RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.users RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.topics RESTART IDENTITY CASCADE;
-TRUNCATE TABLE public.search_synonyms RESTART IDENTITY CASCADE;
-
-INSERT INTO public.search_synonyms
-VALUES ('k8s', ARRAY ['kubernetes', 'k8s']),
-       ('js', ARRAY ['javascript', 'js']);
-
 INSERT INTO public.topics(slug, name, description)
 VALUES ('c', 'C', '저수준 메모리 제어가 가능한 시스템 프로그래밍 언어. 포인터 때문에 머리가 아플 수도 있다.'),
        ('cpp', 'C++', 'C에 객체지향과 다양한 기능을 추가한 언어. 배우는 건 쉽지만 마스터는 평생 숙제.'),
@@ -162,98 +150,11 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
        ('member2@loghub.me', 'member2', '멤버2', 'MEMBER');
 
 INSERT INTO public.articles(slug, title, content, writer_id, writer_username)
-VALUES ('a-article', 'A Article',
-        E'### A Content\n\nThis is a sample article content for A Article.\n\n- Point 1\n- Point 2\n- Point 3\n\nEnjoy reading!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
-       ('b-article', 'B Article',
-        E'### B Content\n\nThis is a sample article content for B Article.\n\n- Point A\n- Point B\n- Point C\n\nHappy coding!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
-       ('c-article', 'C Article',
-        E'### C Content\n\nThis is a sample article content for C Article.\n\n- Item X\n- Item Y\n- Item Z\n\nKeep learning!',
-        ( SELECT id FROM users WHERE username = 'member2' ), 'member2');
-INSERT INTO public.article_topics(article_id, topic_id)
-VALUES (( SELECT id FROM articles WHERE slug = 'a-article' ),
-        ( SELECT id FROM topics WHERE slug = 'c' )),
-       (( SELECT id FROM articles WHERE slug = 'a-article' ),
-        ( SELECT id FROM topics WHERE slug = 'cpp' )),
-       (( SELECT id FROM articles WHERE slug = 'b-article' ),
-        ( SELECT id FROM topics WHERE slug = 'java' )),
-       (( SELECT id FROM articles WHERE slug = 'c-article' ),
-        ( SELECT id FROM topics WHERE slug = 'python' )),
-       (( SELECT id FROM articles WHERE slug = 'c-article' ),
-        ( SELECT id FROM topics WHERE slug = 'django' ));
-UPDATE public.articles
-SET topics_flat = ( SELECT STRING_AGG(t.slug || ':' || t.name, ',')
-                    FROM article_topics at
-                             JOIN topics t ON at.topic_id = t.id
-                    WHERE at.article_id = articles.id )
-WHERE TRUE;
-
-INSERT INTO public.series(slug, title, description, writer_id, writer_username)
-VALUES ('a-series', 'A Series', 'This is a description for A Series.',
-        ( SELECT id FROM users WHERE username = 'admin' ), 'admin'),
-       ('b-series', 'B Series', 'This is a description for B Series.',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1');
-INSERT INTO public.series_chapters(title, content, sequence, series_id, writer_id)
-VALUES ('Chapter 1 of A Series', 'Content for Chapter 1 of A Series.', 1,
-        ( SELECT id FROM series WHERE slug = 'a-series' ), ( SELECT id FROM users WHERE username = 'admin' )),
-       ('Chapter 2 of A Series', 'Content for Chapter 2 of A Series.', 2,
-        ( SELECT id FROM series WHERE slug = 'a-series' ), ( SELECT id FROM users WHERE username = 'admin' )),
-       ('Chapter 1 of B Series', 'Content for Chapter 1 of B Series.', 1,
-        ( SELECT id FROM series WHERE slug = 'b-series' ), ( SELECT id FROM users WHERE username = 'member1' ));
-INSERT INTO public.series_topics(series_id, topic_id)
-VALUES (( SELECT id FROM series WHERE slug = 'a-series' ),
-        ( SELECT id FROM topics WHERE slug = 'c' )),
-       (( SELECT id FROM series WHERE slug = 'a-series' ),
-        ( SELECT id FROM topics WHERE slug = 'cpp' )),
-       (( SELECT id FROM series WHERE slug = 'b-series' ),
-        ( SELECT id FROM topics WHERE slug = 'java' ));
-UPDATE public.series
-SET topics_flat = ( SELECT STRING_AGG(t.slug || ':' || t.name, ',')
-                    FROM series_topics at
-                             JOIN topics t ON at.topic_id = t.id
-                    WHERE at.series_id = series.id )
-WHERE TRUE;
-
-INSERT INTO public.questions(slug, title, content, writer_id, writer_username)
-VALUES ('a-question', 'This is the content of question A.',
-        E'# Question A Content\n\nI have a question about topic A. Can someone help?\n\nThanks in advance!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
-       ('b-question', 'This is the content of question B.',
-        E'# Question B Content\n\nI am facing an issue with topic B. Any advice?\n\nAppreciate your help!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
-       ('c-question', 'This is the content of question C.',
-        E'# Question C Content\n\nCan anyone explain topic C to me?\n\nLooking forward to your insights!',
-        ( SELECT id FROM users WHERE username = 'member2' ), 'member2');
-INSERT INTO public.question_topics(question_id, topic_id)
-VALUES (( SELECT id FROM questions WHERE slug = 'a-question' ),
-        ( SELECT id FROM topics WHERE slug = 'c' )),
-       (( SELECT id FROM questions WHERE slug = 'a-question' ),
-        ( SELECT id FROM topics WHERE slug = 'cpp' )),
-       (( SELECT id FROM questions WHERE slug = 'b-question' ),
-        ( SELECT id FROM topics WHERE slug = 'java' )),
-       (( SELECT id FROM questions WHERE slug = 'c-question' ),
-        ( SELECT id FROM topics WHERE slug = 'python' ));
-INSERT INTO public.question_answers(title, content, question_id, writer_id)
-VALUES ('Answer to A Question', 'This is an answer to question A.',
-        ( SELECT id FROM questions WHERE slug = 'a-question' ),
-        ( SELECT id FROM users WHERE username = 'member2' )),
-       ('Answer to B Question', 'This is an answer to question B.',
-        ( SELECT id FROM questions WHERE slug = 'b-question' ),
-        ( SELECT id FROM users WHERE username = 'member2' ));
-UPDATE public.questions
-SET topics_flat = ( SELECT STRING_AGG(t.slug || ':' || t.name, ',')
-                    FROM question_topics at
-                             JOIN topics t ON at.topic_id = t.id
-                    WHERE at.question_id = questions.id )
-WHERE TRUE;
-UPDATE public.questions
-SET status = 'SOLVED'
-WHERE id = ( SELECT id FROM questions WHERE slug = 'a-question' );
-UPDATE public.question_answers
-SET accepted    = TRUE,
-    accepted_at = NOW()
-WHERE id = ( SELECT id FROM question_answers WHERE title = 'Answer to A Question' );
-UPDATE public.questions
-SET status = 'CLOSED'
-WHERE id = ( SELECT id FROM questions WHERE slug = 'b-question' );
+VALUES ('article-1', 'Article 1', 'Article content 1',
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for get
+       ('article-2', 'Article 2', 'Article content 2',
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for edit
+       ('article-3', 'Article 3', 'Article content 3',
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'), -- for delete
+       ('article-4', 'Article 4', 'Article content 4',
+        ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');

@@ -15,8 +15,5 @@ spring:
         - classpath:database/archive/tables.sql
         - classpath:database/archive/functions.sql
         - classpath:database/archive/triggers.sql
-      data-locations:
-        - classpath:database/data/truncate.sql
-        - classpath:database/data/dev.sql
   jpa:
     show-sql: true
