@@ -1,11 +1,9 @@
 CREATE OR REPLACE FUNCTION archive.archive_user_on_delete() RETURNS TRIGGER AS
 '
     BEGIN
-        INSERT INTO archive.users (id, email, username, nickname, readme,
-                                   email_visible, star_visible, provider, role,
-                                   created_at, updated_at) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.id, OLD.email, OLD.username, OLD.nickname, OLD.readme,
-                OLD.email_visible, OLD.star_visible, OLD.provider, OLD.role,
+        INSERT INTO archive.users (id, email, username, nickname, readme, email_public, provider, role, created_at,
+                                   updated_at) OVERRIDING SYSTEM VALUE
+        VALUES (OLD.id, OLD.email, OLD.username, OLD.nickname, OLD.readme, OLD.email_public, OLD.provider, OLD.role,
                 OLD.created_at, OLD.updated_at);
         RETURN OLD;
     END
