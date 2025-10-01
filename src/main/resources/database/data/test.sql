@@ -168,3 +168,10 @@ UPDATE public.articles
 SET comment_count = c.cnt
 FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.article_comments GROUP BY article_id ) c
 WHERE id = c.article_id;
+INSERT INTO public.user_stars(target, article_id, user_id)
+VALUES ('ARTICLE', 1, ( SELECT id FROM public.users WHERE username = 'member1' )), -- for check exists
+       ('ARTICLE', 3, ( SELECT id FROM public.users WHERE username = 'member1' )); -- for delete
+UPDATE public.articles
+SET star_count = c.cnt
+FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.user_stars WHERE article_id IS NOT NULL GROUP BY article_id ) c
+WHERE id = c.article_id;
