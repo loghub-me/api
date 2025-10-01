@@ -174,3 +174,9 @@ UPDATE public.articles
 SET star_count = c.cnt
 FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.user_stars WHERE article_id IS NOT NULL GROUP BY article_id ) c
 WHERE id = c.article_id;
+
+INSERT INTO public.series(slug, title, description, writer_id, writer_username)
+VALUES ('series-1', 'Series 1', 'Series content 1',
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'),
+       ('series-2', 'Series 2', 'Series content 2',
+        ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
