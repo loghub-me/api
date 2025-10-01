@@ -194,3 +194,9 @@ UPDATE public.series
 SET review_count = c.cnt
 FROM ( SELECT series_id, COUNT(*) AS cnt FROM public.series_reviews GROUP BY series_id ) c
 WHERE id = c.series_id;
+INSERT INTO public.user_stars(target, series_id, user_id)
+VALUES ('SERIES', 1, ( SELECT id FROM public.users WHERE username = 'member1' ));
+UPDATE public.series
+SET star_count = c.cnt
+FROM ( SELECT series_id, COUNT(*) AS cnt FROM public.user_stars WHERE series_id IS NOT NULL GROUP BY series_id ) c
+WHERE id = c.series_id;
