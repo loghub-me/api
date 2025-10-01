@@ -20,7 +20,7 @@ import kotlin.test.Test
 @ActiveProfiles("test")
 @Sql(
     scripts = ["/database/data/truncate.sql", "/database/data/test.sql"],
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS,
+    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
 )
 class ArticleStarControllerTest(@Autowired private val rest: TestRestTemplate) {
     companion object {
@@ -28,17 +28,14 @@ class ArticleStarControllerTest(@Autowired private val rest: TestRestTemplate) {
         lateinit var member2: TokenDTO;
 
         object ArticleId {
-            const val FOR_CHECK_EXIST = 1L
-            const val FOR_ADD = 2L
-            const val FOR_DELETE = 3L
+            const val BY_MEMBER1 = 1L
+            const val BY_MEMBER2 = 2L
+            const val INVALID = 999L
         }
 
         @JvmStatic
         @BeforeAll
-        fun setup(
-            @Autowired grantService: TestGrantService,
-            @Autowired rest: TestRestTemplate,
-        ) {
+        fun setup(@Autowired grantService: TestGrantService) {
             member1 = grantService.generateToken("member1")
             member2 = grantService.generateToken("member2")
         }
@@ -46,63 +43,63 @@ class ArticleStarControllerTest(@Autowired private val rest: TestRestTemplate) {
 
     @Test
     fun `existsArticleStar - unauthorized`() {
-        val response = existsArticleStar<String>(ArticleId.FOR_CHECK_EXIST)
+        val response = existsArticleStar<String>(ArticleId.BY_MEMBER1)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `existsArticleStar - not found`() {
-        val response = existsArticleStar<DataResponseBody<Boolean>>(ArticleId.FOR_CHECK_EXIST, member2)
+        val response = existsArticleStar<DataResponseBody<Boolean>>(ArticleId.BY_MEMBER1, member2)
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(false, response.body!!.data)
     }
 
     @Test
     fun `existsArticleStar - ok`() {
-        val response = existsArticleStar<DataResponseBody<Boolean>>(ArticleId.FOR_CHECK_EXIST, member1)
+        val response = existsArticleStar<DataResponseBody<Boolean>>(ArticleId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(true, response.body!!.data)
     }
 
     @Test
     fun `addArticleStar - unauthorized`() {
-        val response = addArticleStar<String>(ArticleId.FOR_ADD)
+        val response = addArticleStar<String>(ArticleId.BY_MEMBER2)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `addArticleStar - not found`() {
-        val response = addArticleStar<String>(999, member1)
+        val response = addArticleStar<String>(ArticleId.INVALID, member1)
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
     fun `addArticleStar - conflict`() {
-        val response = addArticleStar<String>(ArticleId.FOR_CHECK_EXIST, member1)
+        val response = addArticleStar<String>(ArticleId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.CONFLICT, response.statusCode)
     }
 
     @Test
     fun `addArticleStar - created`() {
-        val response = addArticleStar<String>(ArticleId.FOR_ADD, member1)
+        val response = addArticleStar<String>(ArticleId.BY_MEMBER2, member1)
         assertEquals(HttpStatus.CREATED, response.statusCode)
     }
 
     @Test
     fun `deleteArticleStar - unauthorized`() {
-        val response = deleteArticleStar<String>(ArticleId.FOR_DELETE)
+        val response = deleteArticleStar<String>(ArticleId.BY_MEMBER1)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test
     fun `deleteArticleStar - not found`() {
-        val response = deleteArticleStar<String>(ArticleId.FOR_DELETE, member2)
+        val response = deleteArticleStar<String>(ArticleId.BY_MEMBER2, member1)
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 
     @Test
     fun `deleteArticleStar - ok`() {
-        val response = deleteArticleStar<String>(ArticleId.FOR_DELETE, member1)
+        val response = deleteArticleStar<String>(ArticleId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
     }
 
