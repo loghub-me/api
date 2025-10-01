@@ -180,3 +180,10 @@ VALUES ('series-1', 'Series 1', 'Series content 1',
         ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'),
        ('series-2', 'Series 2', 'Series content 2',
         ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
+INSERT INTO public.series_chapters(title, content, sequence, series_id, writer_id)
+VALUES ('Series Chapter 1-1', 'Series Chapter content 1-1', 1, 1,
+        ( SELECT id FROM public.users WHERE username = 'member1' )),
+       ('Series Chapter 1-2', 'Series Chapter content 1-2', 2, 1,
+        ( SELECT id FROM public.users WHERE username = 'member1' )),
+       ('Series Chapter 2-1', 'Series Chapter content 2-1', 1, 2,
+        ( SELECT id FROM public.users WHERE username = 'member2' ));
