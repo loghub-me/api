@@ -1,0 +1,27 @@
+services:
+  loghub-me-task-api:
+    container_name: loghub-me-task-api
+    image: ghcr.io/loghub-me/task-api:0.1.1
+    ports:
+      - "8082:8082/tcp"
+    env_file: ./.env.task-api.test
+  loghub-me-postgres:
+    container_name: loghub-me-postgres
+    image: ghcr.io/loghub-me/postgres:0.1.0
+    shm_size: 128mb
+    ports:
+      - "5432:5432/tcp"
+    env_file: ./.env.postgres.test
+    command:
+      [
+        "postgres",
+        "-c", "shared_preload_libraries=pg_cron",
+        "-c", "timezone=Asia/Seoul"
+      ]
+    restart: always
+  loghub-me-redis:
+    container_name: loghub-me-redis
+    image: redis:latest
+    ports:
+      - "6379:6379/tcp"
+    restart: always

@@ -13,13 +13,50 @@ jobs:
     env:
       SPRING_PROFILES_ACTIVE: test
       CI: true
+      APP_NAME: loghub-me
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      MANAGEMENT_PORT: ${{ secrets.MANAGEMENT_PORT }}
+      CLIENT_HOST: ${{ secrets.CLINET_HOST }}
+      TASK_API_HOST: ${{ secrets.TASK_API_HOST }}
+      TASK_API_INTERVAL_TOKEN: ${{ secrets.TASK_API_INTERVAL_TOKEN }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USERNAME: ${{ secrets.POSTGRES_USER }}
+      DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Create .env.postgres.test
+        run: |
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env.postgres.test
+
+      - name: Create .env.task-api.test
+        run: |
+          echo "PORT=${{ secrets.TASK_API_PORT }}" >> .env
+          echo "CLIENT_HOST=http://localhost:8080" >> .env
+          echo "INTERNAL_TOKEN=${{ secrets.TASK_API_INTERVAL_TOKEN }}" >> .env.task-api.test
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Compose
+        run: docker compose -f docker-compose.test.yml up -d
+
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/actions/wrapper-validation@v4
 
       - name: Set up GraalVM 21
         uses: actions/setup-java@v4
