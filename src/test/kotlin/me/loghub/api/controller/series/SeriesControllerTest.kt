@@ -1,10 +1,7 @@
 package me.loghub.api.controller.series
 
 import me.loghub.api.dto.auth.token.TokenDTO
-import me.loghub.api.dto.series.PostSeriesDTO
-import me.loghub.api.dto.series.SeriesDTO
-import me.loghub.api.dto.series.SeriesForEditDTO
-import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.series.*
 import me.loghub.api.service.test.TestGrantService
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,7 +80,7 @@ class SeriesControllerTest(@Autowired private val rest: TestRestTemplate) {
 
     @Test
     fun `getSeries - found`() {
-        val response = getSeries<SeriesDTO>("member1", "series-1")
+        val response = getSeries<SeriesDetailDTO>("member1", "series-1")
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals("series-1", response.body?.slug)
     }

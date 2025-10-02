@@ -30,10 +30,6 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
         object ArticleCommentId {
             const val BY_MEMBER1 = 1L
             const val INVALID = 999L
-//            const val FOR_GET_REPLIES = 1L
-//            const val FOR_DELETE = 3L
-//            const val FOR_DELETE_FAIL = 4L
-//            const val INVALID = 999L
         }
 
         val bodyForPost = PostArticleCommentDTO(content = "New comment", parentId = null)
@@ -66,13 +62,13 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
     }
 
     @Test
-    fun `postComment - ok`() {
-        val response = postComment<String>(1L, bodyForPostReply, member1)
+    fun `postComment - created 1`() {
+        val response = postComment<String>(1L, bodyForPost, member1)
         assertEquals(HttpStatus.CREATED, response.statusCode)
     }
 
     @Test
-    fun `postReply - ok`() {
+    fun `postComment - created 2`() {
         val response = postComment<String>(1L, bodyForPostReply, member1)
         assertEquals(HttpStatus.CREATED, response.statusCode)
     }

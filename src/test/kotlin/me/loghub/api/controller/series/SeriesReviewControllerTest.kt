@@ -61,7 +61,7 @@ class SeriesReviewControllerTest(@Autowired private val rest: TestRestTemplate) 
     }
 
     @Test
-    fun `postReview - ok`() {
+    fun `postReview - created`() {
         val response = postReview<String>(2L, bodyForPost, member1)
         assertEquals(HttpStatus.CREATED, response.statusCode)
     }

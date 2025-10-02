@@ -1,9 +1,6 @@
 package me.loghub.api.controller.article
 
-import me.loghub.api.dto.article.ArticleDTO
-import me.loghub.api.dto.article.ArticleForEditDTO
-import me.loghub.api.dto.article.ArticleSort
-import me.loghub.api.dto.article.PostArticleDTO
+import me.loghub.api.dto.article.*
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.service.test.TestGrantService
 import org.junit.jupiter.api.BeforeAll
@@ -83,7 +80,7 @@ class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
 
     @Test
     fun `getArticle - found`() {
-        val response = getArticle<ArticleDTO>("member1", "article-1")
+        val response = getArticle<ArticleDetailDTO>("member1", "article-1")
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals("article-1", response.body?.slug)
     }
@@ -110,7 +107,7 @@ class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
     fun `getArticleForEdit - found`() {
         val response = getArticleForEdit<ArticleForEditDTO>(ArticleId.BY_MEMBER1, member1)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(ArticleId.BY_MEMBER1, response.body?.id)
+        assertEquals(ArticleId.BY_MEMBER1, response.body!!.id)
     }
 
     @Test
