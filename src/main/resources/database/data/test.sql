@@ -213,3 +213,9 @@ UPDATE public.questions
 SET answer_count = c.cnt
 FROM ( SELECT question_id, COUNT(*) AS cnt FROM public.question_answers GROUP BY question_id ) c
 WHERE id = c.question_id;
+INSERT INTO public.user_stars(target, question_id, user_id)
+VALUES ('QUESTION', 1, ( SELECT id FROM public.users WHERE username = 'member1' ));
+UPDATE public.questions
+SET star_count = c.cnt
+FROM ( SELECT question_id, COUNT(*) AS cnt FROM public.user_stars WHERE question_id IS NOT NULL GROUP BY question_id ) c
+WHERE id = c.question_id;
