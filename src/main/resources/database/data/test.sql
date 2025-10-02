@@ -206,3 +206,10 @@ VALUES ('question-1', 'Question 1', 'Question content 1',
         ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'),
        ('question-2', 'Question 2', 'Question content 2',
         ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
+INSERT INTO public.question_answers(title, content, question_id, writer_id)
+VALUES ('Question Answer 1-1', 'Question Answer content 1-1', 1,
+        ( SELECT id FROM public.users WHERE username = 'member2' ));
+UPDATE public.questions
+SET answer_count = c.cnt
+FROM ( SELECT question_id, COUNT(*) AS cnt FROM public.question_answers GROUP BY question_id ) c
+WHERE id = c.question_id;
