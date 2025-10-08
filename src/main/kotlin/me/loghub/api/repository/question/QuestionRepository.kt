@@ -26,6 +26,9 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>
 
+    @Query("SELECT q.answerGenerating FROM Question q WHERE $BY_ID")
+    fun findAnswerGeneratingById(id: Long): Boolean?
+
     @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
 
@@ -39,6 +42,10 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @Modifying
     @Query("UPDATE Question q SET q.stats.trendingScore = 0")
     fun clearTrendingScore(): Int
+
+    @Modifying
+    @Query("UPDATE Question q SET q.answerGenerating = :answerGenerating WHERE $BY_ID")
+    fun updateAnswerGeneratingById(answerGenerating: Boolean, id: Long): Int
 
     @Modifying
     @Query("UPDATE Question q SET q.writerUsername = :newUsername WHERE q.writerUsername = :oldUsername")

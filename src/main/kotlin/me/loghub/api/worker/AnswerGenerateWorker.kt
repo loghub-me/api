@@ -66,7 +66,10 @@ class AnswerGenerateWorker(
         }
     }
 
-    fun addToQueue(dto: AnswerGenerateRequest) = queue.add(dto)
+    fun addToQueue(dto: AnswerGenerateRequest) {
+        questionRepository.updateAnswerGeneratingById(true, dto.questionId)
+        queue.add(dto)
+    }
 
     private fun generateAnswerAndSave(req: AnswerGenerateRequest, bot: User) {
         val res = chatClient.prompt()
@@ -80,7 +83,9 @@ class AnswerGenerateWorker(
         val question = questionRepository.findById(req.questionId)
             .orElseThrowNotFound { ResponseMessage.Question.NOT_FOUND }
         val answer = createAnswer(res, question, bot)
+
         questionAnswerRepository.save(answer)
+        questionRepository.updateAnswerGeneratingById(false, req.questionId)
     }
 
     private fun createAnswer(res: AnswerGenerateResponse, question: Question, bot: User) = when (res.rejectionReason) {

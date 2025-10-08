@@ -145,7 +145,7 @@ VALUES ('github', 'GitHub', '소스 코드 호스팅과 협업의 대표 플랫�
 
 INSERT INTO public.users(email, username, nickname, role)
 VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
-       ('loghub-bot@loghub.me', 'loghub-bot', 'LogHub 봇', 'BOT'),
+       ('bot@loghub.me', 'bot', 'LogHub 봇', 'BOT'),
        ('member1@loghub.me', 'member1', '멤버1', 'MEMBER'),
        ('member2@loghub.me', 'member2', '멤버2', 'MEMBER');
 

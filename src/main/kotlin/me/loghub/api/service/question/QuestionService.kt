@@ -53,6 +53,11 @@ class QuestionService(
     }
 
     @Transactional(readOnly = true)
+    fun getQuestionAnswerGenerating(questionId: Long) =
+        questionRepository.findAnswerGeneratingById(questionId)
+            ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
+
+    @Transactional(readOnly = true)
     fun getQuestionForEdit(questionId: Long, writer: User): QuestionForEditDTO {
         val question = questionRepository.findWithWriterById(questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
