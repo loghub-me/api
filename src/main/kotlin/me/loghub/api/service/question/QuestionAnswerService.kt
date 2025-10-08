@@ -5,6 +5,7 @@ import me.loghub.api.constant.redis.RedisKey
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
+import me.loghub.api.dto.question.answer.RequestGenerateAnswerDTO
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
@@ -88,7 +89,7 @@ class QuestionAnswerService(
     }
 
     @Transactional
-    fun requestGenerateAnswer(questionId: Long, writer: User) {
+    fun requestGenerateAnswer(questionId: Long, requestBody: RequestGenerateAnswerDTO, writer: User) {
         val question = questionRepository.findWithWriterById(questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
 
@@ -98,7 +99,7 @@ class QuestionAnswerService(
             ResponseMessage.Question.Answer.COOLDOWN_NOT_ELAPSED
         }
 
-        val request = AnswerGenerateRequest(question.id!!, question.title, question.content)
+        val request = AnswerGenerateRequest(question.id!!, question.title, question.content, requestBody.instruction)
         answerGenerateWorker.addToQueue(request)
 
         val redisKey = "${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}"

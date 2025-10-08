@@ -74,7 +74,7 @@ class AnswerGenerateWorker(
     private fun generateAnswerAndSave(req: AnswerGenerateRequest, bot: User) {
         val res = chatClient.prompt()
             .system(SYSTEM_PROMPT)
-            .user("${req.questionTitle}\n${req.questionContent}")
+            .user("# 제목: ${req.questionTitle}\n---\n${req.questionContent}\n---\n${req.userInstruction}")
             .call()
             .entity(AnswerGenerateResponse::class.java)
 

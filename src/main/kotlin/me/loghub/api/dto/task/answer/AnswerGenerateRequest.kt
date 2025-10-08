@@ -4,4 +4,5 @@ data class AnswerGenerateRequest(
     val questionId: Long,
     val questionTitle: String,
     val questionContent: String,
+    val userInstruction: String?,
 )

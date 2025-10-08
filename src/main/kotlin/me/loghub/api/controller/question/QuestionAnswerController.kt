@@ -5,6 +5,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
+import me.loghub.api.dto.question.answer.RequestGenerateAnswerDTO
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -94,9 +95,10 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
     @PostMapping("/generate")
     fun requestGenerateAnswer(
         @PathVariable questionId: Long,
+        @RequestBody @Valid requestBody: RequestGenerateAnswerDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        questionAnswerService.requestGenerateAnswer(questionId, writer)
+        questionAnswerService.requestGenerateAnswer(questionId, requestBody, writer)
 
         return MessageResponseBody(
             message = ResponseMessage.Question.Answer.REQUEST_GENERATE_SUCCESS,
