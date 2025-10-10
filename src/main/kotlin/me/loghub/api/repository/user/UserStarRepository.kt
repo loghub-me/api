@@ -17,33 +17,15 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
         const val SELECT_DTO = """
             SELECT new me.loghub.api.dto.user.star.UserStarDTO(
                 us.id,
-                CASE
-                    WHEN us.target = 'ARTICLE' THEN us.article.slug
-                    WHEN us.target = 'SERIES' THEN us.series.slug
-                    WHEN us.target = 'QUESTION' THEN us.question.slug
-                END,
-                CASE
-                    WHEN us.target = 'ARTICLE' THEN us.article.title
-                    WHEN us.target = 'SERIES' THEN us.series.title
-                    WHEN us.target = 'QUESTION' THEN us.question.title
-                END,
+                COALESCE(us.article.id, us.series.id, us.question.id),
+                COALESCE(us.article.slug, us.series.slug, us.question.slug),
+                COALESCE(us.article.title, us.series.title, us.question.title),
+                COALESCE(us.article.stats.starCount, us.series.stats.starCount, us.question.stats.starCount),
                 new me.loghub.api.dto.user.UserDTO(
-                    CASE
-                        WHEN us.target = 'ARTICLE' THEN us.article.writer.id
-                        WHEN us.target = 'SERIES' THEN us.series.writer.id
-                        WHEN us.target = 'QUESTION' THEN us.question.writer.id
-                    END,
-                    CASE
-                        WHEN us.target = 'ARTICLE' THEN us.article.writerUsername
-                        WHEN us.target = 'SERIES' THEN us.series.writerUsername
-                        WHEN us.target = 'QUESTION' THEN us.question.writerUsername
-                    END
+                    COALESCE(us.article.writer.id, us.series.writer.id, us.question.writer.id),
+                    COALESCE(us.article.writerUsername, us.series.writerUsername, us.question.writerUsername)
                 ),
-                CASE
-                    WHEN us.target = 'ARTICLE' THEN us.article.topicsFlat
-                    WHEN us.target = 'SERIES' THEN us.series.topicsFlat
-                    WHEN us.target = 'QUESTION' THEN us.question.topicsFlat
-                END,
+                COALESCE(us.article.topicsFlat, us.series.topicsFlat, us.question.topicsFlat),
                 us.target
             )
             FROM UserStar us

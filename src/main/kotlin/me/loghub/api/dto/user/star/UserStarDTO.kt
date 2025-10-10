@@ -6,8 +6,10 @@ import me.loghub.api.entity.user.UserStar
 
 data class UserStarDTO(
     val id: Long,
+    val targetId: Long,
     val slug: String,
     val title: String,
+    val count: Int,
     val writer: UserDTO,
     val topics: List<TopicDTO>,
     val target: UserStar.Target,
