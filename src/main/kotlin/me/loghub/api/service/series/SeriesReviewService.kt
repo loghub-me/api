@@ -47,19 +47,19 @@ class SeriesReviewService(
             ResponseMessage.Series.Review.ALREADY_EXISTS
         }
 
-        val comment = requestBody.toEntity(series, writer)
+        val review = requestBody.toEntity(series, writer)
         series.incrementReviewCount()
-        return seriesReviewRepository.save(comment)
+        return seriesReviewRepository.save(review)
     }
 
     @Transactional
-    fun deleteReview(seriesId: Long, commentId: Long, writer: User) {
-        val comment = seriesReviewRepository.findWithGraphBySeriesIdAndId(seriesId, commentId)
+    fun deleteReview(seriesId: Long, reviewId: Long, writer: User) {
+        val review = seriesReviewRepository.findWithGraphBySeriesIdAndId(seriesId, reviewId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Review.NOT_FOUND)
 
-        checkPermission(comment.writer == writer) { ResponseMessage.Series.Review.PERMISSION_DENIED }
+        checkPermission(review.writer == writer) { ResponseMessage.Series.Review.PERMISSION_DENIED }
 
-        comment.series.decrementReviewCount()
-        seriesReviewRepository.delete(comment)
+        review.series.decrementReviewCount()
+        seriesReviewRepository.delete(review)
     }
 }
