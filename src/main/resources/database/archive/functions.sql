@@ -65,10 +65,12 @@ CREATE OR REPLACE FUNCTION archive.archive_series_review_on_delete() RETURNS TRI
 CREATE OR REPLACE FUNCTION archive.archive_question_on_delete() RETURNS TRIGGER AS
 '
     BEGIN
-        INSERT INTO archive.questions (id, slug, title, content, status, solved_at, closed_at, star_count, answer_count,
+        INSERT INTO archive.questions (id, slug, title, content, status, answer_generating, solved_at, closed_at,
+                                       star_count, answer_count,
                                        trending_score, created_at, updated_at, writer_id, writer_username,
                                        topics_flat) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.id, OLD.slug, OLD.title, OLD.content, OLD.status, OLD.solved_at, OLD.closed_at,
+        VALUES (OLD.id, OLD.slug, OLD.title, OLD.content, OLD.status, OLD.answer_generating, OLD.solved_at,
+                OLD.closed_at,
                 OLD.star_count, OLD.answer_count, OLD.trending_score, OLD.created_at, OLD.updated_at,
                 OLD.writer_id, OLD.writer_username, OLD.topics_flat);
         RETURN OLD;
