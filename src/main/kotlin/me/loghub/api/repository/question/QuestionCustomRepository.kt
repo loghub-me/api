@@ -36,6 +36,7 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
         val searchQuery = JPAQuery<Question>(entityManager)
             .select(question)
             .from(question)
+            .leftJoin(question.writer).fetchJoin()
             .where(*conditions)
             .orderBy(sort.order)
             .offset(pageable.offset)

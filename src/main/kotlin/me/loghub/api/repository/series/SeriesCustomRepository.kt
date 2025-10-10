@@ -34,6 +34,7 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
         val searchQuery = JPAQuery<Series>(entityManager)
             .select(series)
             .from(series)
+            .leftJoin(series.writer).fetchJoin()
             .where(*conditions)
             .orderBy(sort.order)
             .offset(pageable.offset)
