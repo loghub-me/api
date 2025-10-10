@@ -4,6 +4,7 @@ import me.loghub.api.constant.redis.RedisKey
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
+import me.loghub.api.repository.topic.TopicRepository
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ZSetOperations
 import org.springframework.scheduling.annotation.Scheduled
@@ -16,6 +17,7 @@ class TrendingScoreWorker(
     private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
     private val redisTemplate: RedisTemplate<String, String>,
+    private val topicRepository: TopicRepository,
 ) {
     private companion object {
         const val CRON = "0 0 */6 * * *" // Every 6 hours
@@ -43,6 +45,9 @@ class TrendingScoreWorker(
             questionRepository::clearTrendingScore,
             questionRepository::updateTrendingScoreById
         )
+
+        topicRepository.updateTrendingScoresFromTrendingTopic()
+        topicRepository.clearTrendingScoresNotInTrendingTopic()
     }
 
     private fun updateTrendingScore(

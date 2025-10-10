@@ -9,8 +9,6 @@ spring:
         - classpath:database/public/tables.sql
         - classpath:database/public/views.sql
         - classpath:database/public/indexes.sql
-        - classpath:database/public/functions.sql
-        - classpath:database/cron/schedules.sql
         - classpath:database/archive/tables.sql
         - classpath:database/archive/functions.sql
         - classpath:database/archive/triggers.sql
