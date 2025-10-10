@@ -10,7 +10,6 @@ spring:
         - classpath:database/public/views.sql
         - classpath:database/public/indexes.sql
         - classpath:database/public/functions.sql
-        - classpath:database/public/triggers.sql
         - classpath:database/cron/schedules.sql
         - classpath:database/archive/tables.sql
         - classpath:database/archive/functions.sql
