@@ -39,15 +39,15 @@ class JoinService(
 
     @Transactional
     fun confirmJoin(requestBody: JoinConfirmDTO): TokenDTO {
-        val otp = redisTemplate.opsForValue().get("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
+        val info = redisTemplate.opsForValue().get("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
-            requestBody.otp != otp.otp -> throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
+            requestBody.otp != info.otp -> throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
             else -> redisTemplate.delete("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
         }
 
-        val joinedUser = userRepository.save(otp.toUserEntity())
+        val joinedUser = userRepository.save(info.toUserEntity())
         taskAPIProxy.generateAvatar(AvatarGenerateRequest(joinedUser.id!!))
         return tokenService.generateToken(joinedUser)
     }

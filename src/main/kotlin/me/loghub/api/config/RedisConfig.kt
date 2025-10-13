@@ -1,8 +1,10 @@
 package me.loghub.api.config
 
 import me.loghub.api.dto.auth.join.JoinInfoDTO
+import me.loghub.api.dto.auth.join.OAuth2JoinInfoDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.lib.redis.JoinInfoRedisSerializer
+import me.loghub.api.lib.redis.OAuth2JoinInfoRedisSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -27,6 +29,15 @@ class RedisConfig {
         template.connectionFactory = redisConnectionFactory
         template.keySerializer = StringRedisSerializer()
         template.valueSerializer = JoinInfoRedisSerializer()
+        return template
+    }
+
+    @Bean
+    fun oauth2JoinInfoRedisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, OAuth2JoinInfoDTO> {
+        val template = RedisTemplate<String, OAuth2JoinInfoDTO>()
+        template.connectionFactory = redisConnectionFactory
+        template.keySerializer = StringRedisSerializer()
+        template.valueSerializer = OAuth2JoinInfoRedisSerializer()
         return template
     }
 

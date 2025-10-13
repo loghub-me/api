@@ -9,7 +9,6 @@ import me.loghub.api.handler.auth.*
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.CustomOAuth2UserService
 import me.loghub.api.service.auth.token.AccessTokenService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -34,13 +33,12 @@ class SecurityConfig {
         httpSecurity: HttpSecurity,
         userDetailsService: UserDetailsService,
         accessTokenService: AccessTokenService,
-        oAuth2UserService: CustomOAuth2UserService,
+        oauth2UserService: CustomOAuth2UserService,
         authenticationSuccessHandler: CustomAuthenticationSuccessHandler,
         authenticationFailureHandler: CustomAuthenticationFailureHandler,
         authenticationEntryPoint: CustomAuthenticationEntryPoint,
         accessDeniedHandler: CustomAccessDeniedHandler,
         logoutSuccessHandler: CustomLogoutHandler,
-        @Value("\${client.host}") clientHost: String
     ) = httpSecurity
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .userDetailsService(userDetailsService)
@@ -48,7 +46,7 @@ class SecurityConfig {
         .cors {
             it.configurationSource { _ ->
                 CorsConfiguration().apply {
-                    allowedOrigins = listOf(clientHost)
+                    allowedOrigins = listOf(ClientConfig.HOST)
                     allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                     allowedHeaders = listOf("*")
                     allowCredentials = true
@@ -61,7 +59,7 @@ class SecurityConfig {
         .formLogin { it.disable() }
         .oauth2Login { it ->
             it.authorizationEndpoint { it.baseUri("/oauth2/authorize") }
-            it.userInfoEndpoint { it.userService(oAuth2UserService) }
+            it.userInfoEndpoint { it.userService(oauth2UserService) }
             it.successHandler(authenticationSuccessHandler)
             it.failureHandler(authenticationFailureHandler)
         }
@@ -84,6 +82,7 @@ class SecurityConfig {
             it.requestMatchers(HttpMethod.GET, "/*/{id}/chapters/{sequence}/edit").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.GET, "/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+            it.requestMatchers(HttpMethod.POST, "/oauth2/join/confirm").permitAll()
             it.requestMatchers(HttpMethod.POST, "/support/inquiry").permitAll()
             it.requestMatchers(HttpMethod.POST, "/**").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.PUT, "/**").hasRole(User.Role.MEMBER.name)

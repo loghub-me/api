@@ -8,6 +8,7 @@ import kotlin.time.toJavaDuration
 object RedisKey {
     val JOIN_OTP = ExpiringRedisKey("join_otp", 3.minutes.toJavaDuration())
     val LOGIN_OTP = ExpiringRedisKey("login_otp", 3.minutes.toJavaDuration())
+    val OAUTH2_JOIN_TOKEN = ExpiringRedisKey("oauth2_join_token", 10.minutes.toJavaDuration())
     val REFRESH_TOKEN = ExpiringRedisKey("refresh_token", 30.days.toJavaDuration())
     val MARKDOWN = ExpiringRedisKey("markdown", 1.days.toJavaDuration())
 
