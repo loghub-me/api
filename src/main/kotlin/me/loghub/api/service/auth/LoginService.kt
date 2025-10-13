@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional
 import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.redis.RedisKey
-import me.loghub.api.dto.auth.LoginConfirmDTO
-import me.loghub.api.dto.auth.LoginRequestDTO
+import me.loghub.api.dto.auth.login.LoginConfirmDTO
+import me.loghub.api.dto.auth.login.LoginRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.task.mail.LoginMailSendRequest
 import me.loghub.api.entity.user.User

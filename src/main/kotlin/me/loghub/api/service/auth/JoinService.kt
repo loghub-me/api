@@ -3,9 +3,9 @@ package me.loghub.api.service.auth
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.redis.RedisKey
-import me.loghub.api.dto.auth.JoinConfirmDTO
-import me.loghub.api.dto.auth.JoinRequestDTO
-import me.loghub.api.dto.auth.token.JoinTokenDTO
+import me.loghub.api.dto.auth.join.JoinConfirmDTO
+import me.loghub.api.dto.auth.join.JoinInfoDTO
+import me.loghub.api.dto.auth.join.JoinRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.dto.task.mail.JoinMailSendRequest
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class JoinService(
-    private val redisTemplate: RedisTemplate<String, JoinTokenDTO>,
+    private val redisTemplate: RedisTemplate<String, JoinInfoDTO>,
     private val userRepository: UserRepository,
     private val mailSendWorker: MailSendWorker,
     private val tokenService: TokenService,
@@ -66,8 +66,8 @@ class JoinService(
     private fun issueOTP(requestBody: JoinRequestDTO): String {
         val otp = OTPBuilder.generateOTP()
         val key = "${RedisKey.JOIN_OTP.prefix}:${requestBody.email}"
-        val dto = JoinTokenDTO(otp, requestBody.email, requestBody.username, requestBody.nickname)
-        redisTemplate.opsForValue().set(key, dto, RedisKey.JOIN_OTP.ttl)
+        val info = JoinInfoDTO(otp, requestBody.email, requestBody.username, requestBody.nickname)
+        redisTemplate.opsForValue().set(key, info, RedisKey.JOIN_OTP.ttl)
         return otp
     }
 }

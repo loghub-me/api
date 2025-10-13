@@ -1,4 +1,4 @@
-package me.loghub.api.dto.auth
+package me.loghub.api.dto.auth.join
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

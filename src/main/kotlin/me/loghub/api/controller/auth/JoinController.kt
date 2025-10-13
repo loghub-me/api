@@ -2,8 +2,8 @@ package me.loghub.api.controller.auth
 
 import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.dto.auth.JoinConfirmDTO
-import me.loghub.api.dto.auth.JoinRequestDTO
+import me.loghub.api.dto.auth.join.JoinConfirmDTO
+import me.loghub.api.dto.auth.join.JoinRequestDTO
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.service.auth.JoinService
