@@ -1,6 +1,7 @@
 package me.loghub.api.repository.question
 
 import com.querydsl.core.types.dsl.Expressions
+import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
 import me.loghub.api.constant.hibernate.HibernateFunction
@@ -28,17 +29,19 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
     ): Page<Question> {
         val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
             HibernateFunction.QUESTIONS_FTS.template,
-            Expressions.constant(query),
+            Param(String::class.java, query),
         ) else null
         val usernameFilter = if (username.isNullOrBlank()) null else question.writerUsername.eq(username)
         val conditions = arrayOf(fullTextSearch, usernameFilter, filter.where)
+        val resolvedSort = sort.takeUnless { fullTextSearch == null && it == QuestionSort.relevant }
+            ?: QuestionSort.latest
 
         val searchQuery = JPAQuery<Question>(entityManager)
             .select(question)
             .from(question)
             .leftJoin(question.writer).fetchJoin()
             .where(*conditions)
-            .orderBy(sort.order)
+            .orderBy(resolvedSort.order)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
 
