@@ -8,6 +8,7 @@ import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
 import me.loghub.api.dto.question.answer.RequestGenerateAnswerDTO
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.MethodResponseBody
+import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.question.QuestionAnswerService
@@ -57,8 +58,9 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val updatedAnswer = questionAnswerService.editAnswer(questionId, answerId, requestBody, writer)
-        return MethodResponseBody(
-            id = updatedAnswer.id!!,
+        val question = updatedAnswer.question
+        return RedirectResponseBody(
+            pathname = "/questions/${question.writerUsername}/${question.slug}#answer-${updatedAnswer.id}",
             message = ResponseMessage.Question.Answer.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
