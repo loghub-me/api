@@ -203,16 +203,19 @@ SET topics_flat = ( SELECT STRING_AGG(t.slug || ':' || t.name, ',')
                     WHERE at.series_id = series.id )
 WHERE TRUE;
 
-INSERT INTO public.questions(slug, title, content, writer_id, writer_username)
+INSERT INTO public.questions(slug, title, content, writer_id, writer_username, created_at, updated_at)
 VALUES ('a-question', 'This is the content of question A.',
         E'# Question A Content\n\nI have a question about topic A. Can someone help?\n\nThanks in advance!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
+        ( SELECT id FROM users WHERE username = 'member1' ), 'member1',
+        NOW() - INTERVAL '1 hour', NOW() - INTERVAL '1 hour'),
        ('b-question', 'This is the content of question B.',
         E'# Question B Content\n\nI am facing an issue with topic B. Any advice?\n\nAppreciate your help!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
+        ( SELECT id FROM users WHERE username = 'member1' ), 'member1',
+       NOW() - INTERVAL '30 minutes', NOW() - INTERVAL '30 minutes'),
        ('c-question', 'This is the content of question C.',
         E'# Question C Content\n\nCan anyone explain topic C to me?\n\nLooking forward to your insights!',
-        ( SELECT id FROM users WHERE username = 'member2' ), 'member2');
+        ( SELECT id FROM users WHERE username = 'member2' ), 'member2',
+        NOW(), NOW());
 INSERT INTO public.question_topics(question_id, topic_id)
 VALUES (( SELECT id FROM questions WHERE slug = 'a-question' ),
         ( SELECT id FROM topics WHERE slug = 'c' )),

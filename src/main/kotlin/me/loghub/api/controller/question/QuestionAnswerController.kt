@@ -25,7 +25,7 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         return ResponseEntity.ok(answers)
     }
 
-    @GetMapping("/{answerId}/edit")
+    @GetMapping("/{answerId}/for-edit")
     fun getAnswerForEdit(
         @PathVariable questionId: Long,
         @PathVariable answerId: Long,

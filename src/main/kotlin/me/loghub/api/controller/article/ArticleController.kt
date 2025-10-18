@@ -33,7 +33,7 @@ class ArticleController(private val articleService: ArticleService) {
         return ResponseEntity.ok(foundArticle)
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/{id}/for-edit")
     fun getArticleForEdit(
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User

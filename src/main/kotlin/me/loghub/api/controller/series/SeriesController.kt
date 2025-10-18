@@ -33,7 +33,7 @@ class SeriesController(private val seriesService: SeriesService) {
         return ResponseEntity.ok(foundSeries)
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/{id}/for-edit")
     fun getSeriesForEdit(
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User

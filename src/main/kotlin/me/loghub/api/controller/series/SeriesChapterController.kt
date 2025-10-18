@@ -26,7 +26,7 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         return ResponseEntity.ok(chapter)
     }
 
-    @GetMapping("/{sequence}/edit")
+    @GetMapping("/{sequence}/for-edit")
     fun getChapterForEdit(
         @PathVariable seriesId: Long,
         @PathVariable sequence: Int,

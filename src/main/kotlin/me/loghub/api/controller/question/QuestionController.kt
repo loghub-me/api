@@ -39,7 +39,7 @@ class QuestionController(private val questionService: QuestionService) {
         return DataResponseBody(data, HttpStatus.OK).toResponseEntity()
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/{id}/for-edit")
     fun getQuestionForEdit(
         @PathVariable id: Long,
         @AuthenticationPrincipal writer: User
