@@ -16,6 +16,12 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/users/self")
 class UserSelfController(private val userSelfService: UserSelfService) {
+    @GetMapping("/articles/for-import")
+    fun getArticlesForImport(@AuthenticationPrincipal user: User): ResponseEntity<List<ArticleForImportDTO>> {
+        val profile = userSelfService.getArticlesForImport(user)
+        return ResponseEntity.ok(profile)
+    }
+
     @GetMapping("/profile")
     fun getProfile(@AuthenticationPrincipal user: User): ResponseEntity<UserProfileDTO> {
         val profile = userSelfService.getProfile(user)

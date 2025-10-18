@@ -5,6 +5,7 @@ import me.loghub.api.dto.user.UpdateUserPrivacyDTO
 import me.loghub.api.dto.user.UpdateUserProfileDTO
 import me.loghub.api.dto.user.UpdateUsernameDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.mapper.user.UserMapper
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.article.ArticleRepository
@@ -26,6 +27,10 @@ class UserSelfService(
     private val questionRepository: QuestionRepository,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
+    @Transactional(readOnly = true)
+    fun getArticlesForImport(user: User) = articleRepository.findAllByWriter(user)
+        .map { ArticleMapper.mapForImport(it) }
+
     @Transactional(readOnly = true)
     fun getProfile(user: User) = userRepository.findByUsername(user.username)
         ?.let { UserMapper.mapProfile(it) }

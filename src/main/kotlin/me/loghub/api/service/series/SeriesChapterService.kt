@@ -9,6 +9,7 @@ import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.series.SeriesChapterMapper
+import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.service.common.CacheService
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 class SeriesChapterService(
     private val seriesRepository: SeriesRepository,
     private val seriesChapterRepository: SeriesChapterRepository,
+    private val articleRepository: ArticleRepository,
     private val cacheService: CacheService,
 ) {
     private companion object {
@@ -58,6 +60,29 @@ class SeriesChapterService(
         val chapterSize = seriesChapterRepository.countBySeries(series)
         val chapter = SeriesChapter(
             title = DEFAULT_CHAPTER_TITLE,
+            sequence = chapterSize + 1,
+            series = series,
+            writer = writer,
+        )
+        return seriesChapterRepository.save(chapter)
+    }
+
+    @Transactional
+    fun importChapter(seriesId: Long, articleId: Long, writer: User): SeriesChapter {
+        val series = seriesRepository.findById(seriesId)
+            .orElseThrowNotFound { ResponseMessage.Series.NOT_FOUND }
+
+        checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
+
+        val article = articleRepository.findWithWriterById(articleId)
+            ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+
+        checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
+
+        val chapterSize = seriesChapterRepository.countBySeries(series)
+        val chapter = SeriesChapter(
+            title = article.title,
+            content = article.content,
             sequence = chapterSize + 1,
             series = series,
             writer = writer,

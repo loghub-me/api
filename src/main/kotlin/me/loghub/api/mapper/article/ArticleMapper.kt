@@ -1,9 +1,6 @@
 package me.loghub.api.mapper.article
 
-import me.loghub.api.dto.article.ArticleDTO
-import me.loghub.api.dto.article.ArticleDetailDTO
-import me.loghub.api.dto.article.ArticleForEditDTO
-import me.loghub.api.dto.article.ArticleStatsDTO
+import me.loghub.api.dto.article.*
 import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.entity.article.Article
@@ -46,6 +43,13 @@ object ArticleMapper {
         title = article.title,
         content = article.content,
         thumbnail = article.thumbnail,
+        topicSlugs = article.topicsFlat.map { it.slug },
+    )
+
+    fun mapForImport(article: Article) = ArticleForImportDTO(
+        id = article.id!!,
+        slug = article.slug,
+        title = article.title,
         topicSlugs = article.topicsFlat.map { it.slug },
     )
 

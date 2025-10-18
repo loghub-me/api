@@ -84,7 +84,8 @@ object ResponseMessage {
 
         object Chapter {
             const val NOT_FOUND = "책 챕터를 찾을 수 없습니다."
-            const val POST_SUCCESS = "책 챕터가 성공적으로 등록되었습니다!"
+            const val CREATE_SUCCESS = "책 챕터가 성공적으로 등록되었습니다!"
+            const val IMPORT_SUCCESS = "책 챕터가 성공적으로 불러와졌습니다!"
             const val EDIT_SUCCESS = "책 챕터가 성공적으로 수정되었습니다!"
             const val DELETE_SUCCESS = "책 챕터가 성공적으로 삭제되었습니다!"
             const val CHANGE_SEQUENCE_SUCCESS = "책 챕터 순서가 성공적으로 변경되었습니다!"

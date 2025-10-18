@@ -44,7 +44,21 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         val createdChapter = seriesChapterService.createChapter(seriesId, writer)
         return MethodResponseBody(
             id = createdChapter.id!!,
-            message = ResponseMessage.Series.Chapter.POST_SUCCESS,
+            message = ResponseMessage.Series.Chapter.CREATE_SUCCESS,
+            status = HttpStatus.CREATED,
+        ).toResponseEntity()
+    }
+
+    @PostMapping("/import/{articleId}")
+    fun importChapter(
+        @PathVariable seriesId: Long,
+        @PathVariable articleId: Long,
+        @AuthenticationPrincipal writer: User,
+    ): ResponseEntity<ResponseBody> {
+        val importedChapter = seriesChapterService.importChapter(seriesId, articleId, writer)
+        return MethodResponseBody(
+            id = importedChapter.id!!,
+            message = ResponseMessage.Series.Chapter.IMPORT_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
     }
