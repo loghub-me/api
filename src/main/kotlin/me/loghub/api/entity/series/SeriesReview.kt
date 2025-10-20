@@ -1,6 +1,7 @@
 package me.loghub.api.entity.series
 
 import jakarta.persistence.*
+import me.loghub.api.dto.series.review.PostSeriesReviewDTO
 import me.loghub.api.entity.PublicEntity
 import me.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
@@ -12,10 +13,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @EntityListeners(AuditingEntityListener::class)
 class SeriesReview(
     @Column(name = "content", nullable = false, length = 512)
-    val content: String,
+    var content: String,
 
     @Column(name = "rating", nullable = false)
-    val rating: Int,
+    var rating: Int,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "series_id", nullable = false)
@@ -24,4 +25,9 @@ class SeriesReview(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
-) : PublicEntity()
+) : PublicEntity() {
+    fun update(requestBody: PostSeriesReviewDTO) {
+        this.content = requestBody.content
+        this.rating = requestBody.rating
+    }
+}

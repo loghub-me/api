@@ -53,9 +53,9 @@ class QuestionController(private val questionService: QuestionService) {
         @RequestBody @Valid requestBody: PostQuestionDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val createdQuestion = questionService.postQuestion(requestBody, writer)
+        val postedQuestion = questionService.postQuestion(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/questions/${writer.username}/${createdQuestion.slug}",
+            pathname = "/questions/${writer.username}/${postedQuestion.slug}",
             message = ResponseMessage.Question.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -67,9 +67,9 @@ class QuestionController(private val questionService: QuestionService) {
         @RequestBody @Valid requestBody: PostQuestionDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedQuestion = questionService.editQuestion(id, requestBody, writer)
+        val editedQuestion = questionService.editQuestion(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/questions/${writer.username}/${updatedQuestion.slug}",
+            pathname = "/questions/${writer.username}/${editedQuestion.slug}",
             message = ResponseMessage.Question.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

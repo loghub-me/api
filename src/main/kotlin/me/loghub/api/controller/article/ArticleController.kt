@@ -47,9 +47,9 @@ class ArticleController(private val articleService: ArticleService) {
         @RequestBody @Valid requestBody: PostArticleDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val createdArticle = articleService.postArticle(requestBody, writer)
+        val postedArticle = articleService.postArticle(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/articles/${writer.username}/${createdArticle.slug}",
+            pathname = "/articles/${writer.username}/${postedArticle.slug}",
             message = ResponseMessage.Article.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -61,9 +61,9 @@ class ArticleController(private val articleService: ArticleService) {
         @RequestBody @Valid requestBody: PostArticleDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedArticle = articleService.editArticle(id, requestBody, writer)
+        val editedArticle = articleService.editArticle(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/articles/${writer.username}/${updatedArticle.slug}",
+            pathname = "/articles/${writer.username}/${editedArticle.slug}",
             message = ResponseMessage.Article.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

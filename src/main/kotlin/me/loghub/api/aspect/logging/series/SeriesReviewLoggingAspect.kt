@@ -22,6 +22,13 @@ class SeriesReviewLoggingAspect {
         logger.info { "[SeriesReview] posted: { seriesId=${seriesId}, reviewId=${review.id}, writerId=${writer.id}, content=\"${review.content}\" }" }
 
     @AfterReturning(
+        pointcut = "execution(* me.loghub.api.service.series.SeriesReviewService.editReview(..)) && args(seriesId, .., writer)",
+        returning = "review"
+    )
+    fun afterEditReview(seriesId: Long, writer: User, review: SeriesReview) =
+        logger.info { "[SeriesReview] edited: { seriesId=${seriesId}, reviewId=${review.id}, writerId=${writer.id}, content=\"${review.content}\" }" }
+
+    @AfterReturning(
         pointcut = "execution(* me.loghub.api.service.series.SeriesReviewService.deleteReview(..)) && args(seriesId, reviewId, writer)"
     )
     fun afterDeleteReview(seriesId: Long, reviewId: Long, writer: User) =

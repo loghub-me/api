@@ -22,6 +22,13 @@ class ArticleCommentLoggingAspect {
         logger.info { "[ArticleComment] posted: { articleId=${articleId}, commentId=${comment.id}, writerId=${writer.id}, content=\"${comment.content}\" }" }
 
     @AfterReturning(
+        pointcut = "execution(* me.loghub.api.service.article.ArticleCommentService.editComment(..)) && args(articleId, .., writer)",
+        returning = "comment"
+    )
+    fun afterEditComment(articleId: Long, writer: User, comment: ArticleComment) =
+        logger.info { "[ArticleComment] edited: { articleId=${articleId}, commentId=${comment.id}, writerId=${writer.id}, content=\"${comment.content}\" }" }
+
+    @AfterReturning(
         pointcut = "execution(* me.loghub.api.service.article.ArticleCommentService.deleteComment(..)) && args(articleId, commentId, writer)"
     )
     fun afterDeleteComment(articleId: Long, commentId: Long, writer: User) =

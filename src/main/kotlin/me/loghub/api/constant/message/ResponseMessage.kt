@@ -69,6 +69,7 @@ object ResponseMessage {
         object Comment {
             const val NOT_FOUND = "아티클의 댓글을 찾을 수 없습니다."
             const val POST_SUCCESS = "댓글이 성공적으로 등록되었습니다!"
+            const val EDIT_SUCCESS = "댓글이 성공적으로 수정되었습니다!"
             const val DELETE_SUCCESS = "댓글이 성공적으로 삭제되었습니다!"
             const val PERMISSION_DENIED = "이 댓글에 대한 권한이 없습니다!"
             const val PARENT_DELETED = "부모 댓글이 삭제되었습니다."
@@ -76,30 +77,31 @@ object ResponseMessage {
     }
 
     object Series {
-        const val NOT_FOUND = "책을 찾을 수 없습니다."
-        const val POST_SUCCESS = "책이 성공적으로 등록되었습니다!"
-        const val EDIT_SUCCESS = "책이 성공적으로 수정되었습니다!"
-        const val DELETE_SUCCESS = "책이 성공적으로 삭제되었습니다!"
-        const val PERMISSION_DENIED = "이 책에 대한 권한이 없습니다!"
+        const val NOT_FOUND = "시리즈를 찾을 수 없습니다."
+        const val POST_SUCCESS = "시리즈가 성공적으로 등록되었습니다!"
+        const val EDIT_SUCCESS = "시리즈가 성공적으로 수정되었습니다!"
+        const val DELETE_SUCCESS = "시리즈가 성공적으로 삭제되었습니다!"
+        const val PERMISSION_DENIED = "이 시리즈에 대한 권한이 없습니다!"
 
         object Chapter {
-            const val NOT_FOUND = "책 챕터를 찾을 수 없습니다."
-            const val CREATE_SUCCESS = "책 챕터가 성공적으로 등록되었습니다!"
-            const val IMPORT_SUCCESS = "책 챕터가 성공적으로 불러와졌습니다!"
-            const val EDIT_SUCCESS = "책 챕터가 성공적으로 수정되었습니다!"
-            const val DELETE_SUCCESS = "책 챕터가 성공적으로 삭제되었습니다!"
-            const val CHANGE_SEQUENCE_SUCCESS = "책 챕터 순서가 성공적으로 변경되었습니다!"
+            const val NOT_FOUND = "챕터를 찾을 수 없습니다."
+            const val CREATE_SUCCESS = "챕터가 성공적으로 등록되었습니다!"
+            const val IMPORT_SUCCESS = "챕터가 성공적으로 불러와졌습니다!"
+            const val EDIT_SUCCESS = "챕터가 성공적으로 수정되었습니다!"
+            const val DELETE_SUCCESS = "챕터가 성공적으로 삭제되었습니다!"
+            const val CHANGE_SEQUENCE_SUCCESS = "챕터 순서가 성공적으로 변경되었습니다!"
             const val INVALID_SEQUENCE = "챕터 순서가 유효하지 않습니다."
             const val DUPLICATED_SEQUENCE = "챕터 순서에 중복된 값이 있습니다."
             const val OUT_OF_BOUNDS_SEQUENCE = "챕터 순서가 범위를 벗어났습니다."
         }
 
         object Review {
-            const val NOT_FOUND = "책 리뷰를 찾을 수 없습니다."
-            const val POST_SUCCESS = "책 리뷰가 성공적으로 등록되었습니다!"
-            const val DELETE_SUCCESS = "책 리뷰가 성공적으로 삭제되었습니다!"
-            const val PERMISSION_DENIED = "이 책 리뷰에 대한 권한이 없습니다!"
-            const val ALREADY_EXISTS = "이미 작성한 책 리뷰가 존재합니다!"
+            const val NOT_FOUND = "리뷰를 찾을 수 없습니다."
+            const val POST_SUCCESS = "리뷰가 성공적으로 등록되었습니다!"
+            const val EDIT_SUCCESS = "리뷰가 성공적으로 수정되었습니다!"
+            const val DELETE_SUCCESS = "리뷰가 성공적으로 삭제되었습니다!"
+            const val PERMISSION_DENIED = "이 리뷰에 대한 권한이 없습니다!"
+            const val ALREADY_EXISTS = "이미 작성한 리뷰가 존재합니다!"
         }
     }
 

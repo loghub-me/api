@@ -22,6 +22,13 @@ class SeriesChapterLoggingAspect {
         logger.info { "[SeriesChapter] created: { seriesId=${seriesId}, chapterId=${chapter.id}, writerId=${writer.id}, title=\"${chapter.title}\" }" }
 
     @AfterReturning(
+        pointcut = "execution(* me.loghub.api.service.series.SeriesChapterService.importChapter(..)) && args(seriesId, articleId, writer)",
+        returning = "chapter"
+    )
+    fun afterImportChapter(seriesId: Long, articleId: Long, writer: User, chapter: SeriesChapter) =
+        logger.info { "[SeriesChapter] imported: { seriesId=${seriesId}, chapterId=${chapter.id}, writerId=${writer.id}, articleId=${articleId}, title=\"${chapter.title}\" }" }
+
+    @AfterReturning(
         pointcut = "execution(* me.loghub.api.service.series.SeriesChapterService.editChapter(..)) && args(seriesId, .., writer)",
         returning = "chapter"
     )

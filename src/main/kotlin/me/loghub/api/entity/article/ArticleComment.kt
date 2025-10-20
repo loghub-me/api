@@ -1,6 +1,7 @@
 package me.loghub.api.entity.article
 
 import jakarta.persistence.*
+import me.loghub.api.dto.article.comment.PostArticleCommentDTO
 import me.loghub.api.entity.PublicEntity
 import me.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
@@ -12,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @EntityListeners(AuditingEntityListener::class)
 class ArticleComment(
     @Column(name = "content", nullable = false, length = 512)
-    val content: String,
+    var content: String,
 
     @Column(name = "deleted", nullable = false)
     var deleted: Boolean = false,
@@ -23,10 +24,6 @@ class ArticleComment(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "article_id", nullable = false)
     val article: Article,
-
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    @OrderBy("createdAt ASC")
-    val replies: MutableList<ArticleComment> = mutableListOf(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "parent_id", nullable = true)
@@ -40,15 +37,11 @@ class ArticleComment(
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 ) : PublicEntity() {
+    fun update(requestBody: PostArticleCommentDTO) {
+        this.content = requestBody.content
+    }
+
     fun delete() {
         deleted = true
-    }
-
-    fun incrementReplyCount() {
-        replyCount++
-    }
-
-    fun decrementReplyCount() {
-        replyCount--
     }
 }

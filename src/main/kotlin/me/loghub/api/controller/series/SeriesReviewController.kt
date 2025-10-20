@@ -32,11 +32,26 @@ class SeriesReviewController(private val seriesReviewService: SeriesReviewServic
         @RequestBody @Valid requestBody: PostSeriesReviewDTO,
         @AuthenticationPrincipal writer: User,
     ): ResponseEntity<ResponseBody> {
-        val review = seriesReviewService.postReview(seriesId, requestBody, writer)
+        val postedReview = seriesReviewService.postReview(seriesId, requestBody, writer)
         return MethodResponseBody(
-            id = review.id!!,
+            id = postedReview.id!!,
             message = ResponseMessage.Series.Review.POST_SUCCESS,
             status = HttpStatus.CREATED
+        ).toResponseEntity()
+    }
+
+    @PutMapping("/{reviewId}")
+    fun editReview(
+        @PathVariable seriesId: Long,
+        @PathVariable reviewId: Long,
+        @RequestBody @Valid requestBody: PostSeriesReviewDTO,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        val editedReview = seriesReviewService.editReview(seriesId, reviewId, requestBody, writer)
+        return MethodResponseBody(
+            id = editedReview.id!!,
+            message = ResponseMessage.Series.Review.EDIT_SUCCESS,
+            status = HttpStatus.OK
         ).toResponseEntity()
     }
 

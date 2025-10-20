@@ -47,9 +47,9 @@ class SeriesController(private val seriesService: SeriesService) {
         @RequestBody @Valid requestBody: PostSeriesDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val createdSeries = seriesService.postSeries(requestBody, writer)
+        val postedSeries = seriesService.postSeries(requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/edit/series/${createdSeries.id}",
+            pathname = "/edit/series/${postedSeries.id}",
             message = ResponseMessage.Series.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -61,9 +61,9 @@ class SeriesController(private val seriesService: SeriesService) {
         @RequestBody @Valid requestBody: PostSeriesDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedSeries = seriesService.editSeries(id, requestBody, writer)
+        val editedSeries = seriesService.editSeries(id, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/series/${writer.username}/${updatedSeries.slug}",
+            pathname = "/series/${writer.username}/${editedSeries.slug}",
             message = ResponseMessage.Series.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

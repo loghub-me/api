@@ -42,9 +42,9 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         @RequestBody @Valid requestBody: PostQuestionAnswerDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val createdAnswer = questionAnswerService.postAnswer(questionId, requestBody, writer)
+        val postedAnswer = questionAnswerService.postAnswer(questionId, requestBody, writer)
         return MethodResponseBody(
-            id = createdAnswer.id!!,
+            id = postedAnswer.id!!,
             message = ResponseMessage.Question.Answer.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -57,10 +57,10 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         @RequestBody @Valid requestBody: PostQuestionAnswerDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedAnswer = questionAnswerService.editAnswer(questionId, answerId, requestBody, writer)
-        val question = updatedAnswer.question
+        val editedAnswer = questionAnswerService.editAnswer(questionId, answerId, requestBody, writer)
+        val question = editedAnswer.question
         return RedirectResponseBody(
-            pathname = "/questions/${question.writerUsername}/${question.slug}#answer-${updatedAnswer.id}",
+            pathname = "/questions/${question.writerUsername}/${question.slug}#answer-${editedAnswer.id}",
             message = ResponseMessage.Question.Answer.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

@@ -41,11 +41,26 @@ class ArticleCommentController(private val articleCommentService: ArticleComment
         @RequestBody @Valid requestBody: PostArticleCommentDTO,
         @AuthenticationPrincipal writer: User,
     ): ResponseEntity<ResponseBody> {
-        val comment = articleCommentService.postComment(articleId, requestBody, writer)
+        val postedComment = articleCommentService.postComment(articleId, requestBody, writer)
         return MethodResponseBody(
-            id = comment.id!!,
+            id = postedComment.id!!,
             message = ResponseMessage.Article.Comment.POST_SUCCESS,
             status = HttpStatus.CREATED
+        ).toResponseEntity()
+    }
+
+    @PutMapping("/{commentId}")
+    fun editComment(
+        @PathVariable articleId: Long,
+        @PathVariable commentId: Long,
+        @RequestBody @Valid requestBody: PostArticleCommentDTO,
+        @AuthenticationPrincipal writer: User
+    ): ResponseEntity<ResponseBody> {
+        val editedComment = articleCommentService.editComment(articleId, commentId, requestBody, writer)
+        return MethodResponseBody(
+            id = editedComment.id!!,
+            message = ResponseMessage.Article.Comment.EDIT_SUCCESS,
+            status = HttpStatus.OK,
         ).toResponseEntity()
     }
 

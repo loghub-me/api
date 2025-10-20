@@ -59,12 +59,29 @@ class ArticleCommentService(
     }
 
     @Transactional
+    fun editComment(
+        articleId: Long,
+        commentId: Long,
+        requestBody: PostArticleCommentDTO,
+        writer: User
+    ): ArticleComment {
+        val article = articleRepository.getReferenceById(articleId)
+        val comment = articleCommentRepository.findWithGraphByArticleAndId(article, commentId)
+            ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
+
+        checkPermission(comment.writer.id == writer.id) { ResponseMessage.Article.Comment.PERMISSION_DENIED }
+
+        comment.update(requestBody)
+        return comment
+    }
+
+    @Transactional
     fun deleteComment(articleId: Long, commentId: Long, writer: User) {
         val article = articleRepository.getReferenceById(articleId)
         val comment = articleCommentRepository.findWithGraphByArticleAndId(article, commentId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
 
-        checkPermission(comment.writer.id == writer.id) { ResponseMessage.Auth.FORBIDDEN }
+        checkPermission(comment.writer.id == writer.id) { ResponseMessage.Article.Comment.PERMISSION_DENIED }
 
         comment.delete()
         comment.parent?.let { parent -> articleCommentRepository.decrementReplyCount(parent.id!!) }

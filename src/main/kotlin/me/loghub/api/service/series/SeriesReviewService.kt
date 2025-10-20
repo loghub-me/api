@@ -53,6 +53,17 @@ class SeriesReviewService(
     }
 
     @Transactional
+    fun editReview(seriesId: Long, reviewId: Long, requestBody: PostSeriesReviewDTO, writer: User): SeriesReview {
+        val review = seriesReviewRepository.findWithGraphBySeriesIdAndId(seriesId, reviewId)
+            ?: throw EntityNotFoundException(ResponseMessage.Series.Review.NOT_FOUND)
+
+        checkPermission(review.writer == writer) { ResponseMessage.Series.Review.PERMISSION_DENIED }
+
+        review.update(requestBody)
+        return review
+    }
+
+    @Transactional
     fun deleteReview(seriesId: Long, reviewId: Long, writer: User) {
         val review = seriesReviewRepository.findWithGraphBySeriesIdAndId(seriesId, reviewId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Review.NOT_FOUND)

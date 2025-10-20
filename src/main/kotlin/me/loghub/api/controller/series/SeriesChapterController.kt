@@ -70,9 +70,9 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         @RequestBody @Valid requestBody: EditSeriesChapterDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val updatedChapter = seriesChapterService.editChapter(seriesId, sequence, requestBody, writer)
+        val editedChapter = seriesChapterService.editChapter(seriesId, sequence, requestBody, writer)
         return RedirectResponseBody(
-            pathname = "/edit/series/${updatedChapter.series.id}",
+            pathname = "/edit/series/${editedChapter.series.id}",
             message = ResponseMessage.Series.Chapter.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
