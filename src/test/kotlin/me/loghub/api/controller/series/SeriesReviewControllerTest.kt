@@ -33,6 +33,7 @@ class SeriesReviewControllerTest(@Autowired private val rest: TestRestTemplate) 
         }
 
         val bodyForPost = PostSeriesReviewDTO(content = "New review", rating = 5)
+        val bodyForDelete = PostSeriesReviewDTO(content = "Review to delete", rating = 4)
 
         @JvmStatic
         @BeforeAll
@@ -64,6 +65,24 @@ class SeriesReviewControllerTest(@Autowired private val rest: TestRestTemplate) 
     fun `postReview - created`() {
         val response = postReview<String>(2L, bodyForPost, member1)
         assertEquals(HttpStatus.CREATED, response.statusCode)
+    }
+
+    @Test
+    fun `editReview - unauthenticated`() {
+        val response = editReview<String>(1L, SeriesReviewId.BY_MEMBER1, bodyForPost)
+        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+    }
+
+    @Test
+    fun `editReview - forbidden`() {
+        val response = editReview<String>(1L, SeriesReviewId.BY_MEMBER1, bodyForPost, member2)
+        assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+    }
+
+    @Test
+    fun `editReview - ok`() {
+        val response = editReview<String>(1L, SeriesReviewId.BY_MEMBER1, bodyForPost, member1)
+        assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     @Test
@@ -99,6 +118,17 @@ class SeriesReviewControllerTest(@Autowired private val rest: TestRestTemplate) 
         token: TokenDTO? = null
     ): ResponseEntity<T> {
         val request = RequestEntity.post("/series/${seriesId}/reviews")
+        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
+        return rest.exchange(request.body(body), T::class.java)
+    }
+
+    private inline fun <reified T> editReview(
+        seriesId: Long,
+        reviewId: Long,
+        body: PostSeriesReviewDTO,
+        token: TokenDTO? = null
+    ): ResponseEntity<T> {
+        val request = RequestEntity.put("/series/${seriesId}/reviews/${reviewId}")
         token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
         return rest.exchange(request.body(body), T::class.java)
     }

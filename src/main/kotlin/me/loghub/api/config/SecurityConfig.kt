@@ -78,8 +78,9 @@ class SecurityConfig {
         .authorizeHttpRequests {
             it.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
             it.requestMatchers(HttpMethod.GET, "/*/star/*").hasRole(User.Role.MEMBER.name)
-            it.requestMatchers(HttpMethod.GET, "/*/{id}/edit").hasRole(User.Role.MEMBER.name)
-            it.requestMatchers(HttpMethod.GET, "/*/{id}/chapters/{sequence}/edit").hasRole(User.Role.MEMBER.name)
+            it.requestMatchers(HttpMethod.GET, "/users/self/articles/for-import").hasRole(User.Role.MEMBER.name)
+            it.requestMatchers(HttpMethod.GET, "/*/{id}/for-edit").hasRole(User.Role.MEMBER.name)
+            it.requestMatchers(HttpMethod.GET, "/*/{id}/chapters/{sequence}/for-edit").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.GET, "/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
             it.requestMatchers(HttpMethod.POST, "/oauth2/join/confirm").permitAll()

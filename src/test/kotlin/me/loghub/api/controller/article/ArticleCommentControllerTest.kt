@@ -33,6 +33,7 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
         }
 
         val bodyForPost = PostArticleCommentDTO(content = "New comment", parentId = null)
+        val bodyForEdit = PostArticleCommentDTO(content = "Edited comment", parentId = null)
         val bodyForPostReply = PostArticleCommentDTO(content = "New reply", parentId = ArticleCommentId.BY_MEMBER1)
 
         @JvmStatic
@@ -74,6 +75,24 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
     }
 
     @Test
+    fun `editComment - unauthenticated`() {
+        val response = editComment<String>(1L, ArticleCommentId.BY_MEMBER1, bodyForPost)
+        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+    }
+
+    @Test
+    fun `editComment - forbidden`() {
+        val response = editComment<String>(1L, ArticleCommentId.BY_MEMBER1, bodyForEdit, member2)
+        assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+    }
+
+    @Test
+    fun `editComment - ok`() {
+        val response = editComment<String>(1L, ArticleCommentId.BY_MEMBER1, bodyForEdit, member1)
+        assertEquals(HttpStatus.OK, response.statusCode)
+    }
+
+    @Test
     fun `deleteComment - unauthenticated`() {
         val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1)
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
@@ -109,6 +128,17 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
         token: TokenDTO? = null
     ): ResponseEntity<T> {
         val request = RequestEntity.post("/articles/${articleId}/comments")
+        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
+        return rest.exchange(request.body(body), T::class.java)
+    }
+
+    private inline fun <reified T> editComment(
+        articleId: Long,
+        commentId: Long,
+        body: PostArticleCommentDTO,
+        token: TokenDTO? = null
+    ): ResponseEntity<T> {
+        val request = RequestEntity.put("/articles/${articleId}/comments/${commentId}")
         token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
         return rest.exchange(request.body(body), T::class.java)
     }

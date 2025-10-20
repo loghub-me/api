@@ -203,7 +203,7 @@ class SeriesChapterControllerTest(@Autowired private val rest: TestRestTemplate)
         sequence: Int,
         token: TokenDTO? = null
     ): ResponseEntity<T> {
-        val request = RequestEntity.get("/series/$id/chapters/$sequence/edit")
+        val request = RequestEntity.get("/series/$id/chapters/$sequence/for-edit")
         token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
         return rest.exchange(request.build(), T::class.java)
     }

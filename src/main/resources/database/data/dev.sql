@@ -176,6 +176,13 @@ SET topics_flat = ( SELECT STRING_AGG(t.slug || ':' || t.name, ',')
                              JOIN topics t ON at.topic_id = t.id
                     WHERE at.article_id = articles.id )
 WHERE TRUE;
+INSERT INTO public.article_comments(content, article_id, parent_id, mention_id, writer_id)
+VALUES ('This is a comment on A Article.',
+        ( SELECT id FROM articles WHERE slug = 'a-article' ), NULL, NULL,
+        ( SELECT id FROM users WHERE username = 'member1' ));
+UPDATE public.articles
+SET comment_count = ( SELECT COUNT(*) FROM article_comments WHERE article_id = articles.id )
+WHERE TRUE;
 
 INSERT INTO public.series(slug, title, description, writer_id, writer_username)
 VALUES ('a-series', 'A Series', 'This is a description for A Series.',
@@ -201,6 +208,13 @@ SET topics_flat = ( SELECT STRING_AGG(t.slug || ':' || t.name, ',')
                     FROM series_topics at
                              JOIN topics t ON at.topic_id = t.id
                     WHERE at.series_id = series.id )
+WHERE TRUE;
+INSERT INTO public.series_reviews(content, rating, series_id, writer_id)
+VALUES ('This is a review on A Series.', 5,
+        ( SELECT id FROM series WHERE slug = 'a-series' ),
+        ( SELECT id FROM users WHERE username = 'member1' ));
+UPDATE public.series
+SET review_count = ( SELECT COUNT(*) FROM series_reviews WHERE series_id = series.id )
 WHERE TRUE;
 
 INSERT INTO public.questions(slug, title, content, writer_id, writer_username, created_at, updated_at)

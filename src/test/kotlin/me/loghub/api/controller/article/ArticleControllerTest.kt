@@ -175,7 +175,7 @@ class ArticleControllerTest(@Autowired private val rest: TestRestTemplate) {
         rest.getForEntity("/articles/@${username}/${slug}", T::class.java)
 
     private inline fun <reified T> getArticleForEdit(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.get("/articles/$id/edit")
+        val request = RequestEntity.get("/articles/$id/for-edit")
         token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
         return rest.exchange(request.build(), T::class.java)
     }
