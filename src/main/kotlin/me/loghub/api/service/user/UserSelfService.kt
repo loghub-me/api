@@ -1,6 +1,7 @@
 package me.loghub.api.service.user
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.article.ArticleSort
 import me.loghub.api.dto.user.UpdateUserPrivacyDTO
 import me.loghub.api.dto.user.UpdateUserProfileDTO
 import me.loghub.api.dto.user.UpdateUsernameDTO
@@ -8,12 +9,14 @@ import me.loghub.api.entity.user.User
 import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.mapper.user.UserMapper
 import me.loghub.api.proxy.TaskAPIProxy
+import me.loghub.api.repository.article.ArticleCustomRepository
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.requireNotEquals
+import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,14 +25,24 @@ import org.springframework.web.multipart.MultipartFile
 @Service
 class UserSelfService(
     private val userRepository: UserRepository,
+    private val articleCustomRepository: ArticleCustomRepository,
     private val articleRepository: ArticleRepository,
     private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
+    private companion object {
+        const val DEFAULT_ARTICLE_PAGE_SIZE = 20
+    }
+
     @Transactional(readOnly = true)
-    fun getArticlesForImport(user: User) = articleRepository.findAllByWriter(user)
-        .map { ArticleMapper.mapForImport(it) }
+    fun searchArticlesForImport(query: String, user: User) =
+        articleCustomRepository.search(
+            query = query,
+            sort = ArticleSort.latest,
+            pageable = PageRequest.of(0, DEFAULT_ARTICLE_PAGE_SIZE),
+            username = user.username,
+        ).toList().map { ArticleMapper.mapForImport(it) }
 
     @Transactional(readOnly = true)
     fun getProfile(user: User) = userRepository.findByUsername(user.username)

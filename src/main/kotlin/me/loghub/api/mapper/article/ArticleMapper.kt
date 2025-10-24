@@ -50,7 +50,7 @@ object ArticleMapper {
         id = article.id!!,
         slug = article.slug,
         title = article.title,
-        topicSlugs = article.topicsFlat.map { it.slug },
+        topics = article.topicsFlat,
     )
 
     private fun mapStats(article: ArticleStats) = ArticleStatsDTO(article.starCount, article.commentCount)
