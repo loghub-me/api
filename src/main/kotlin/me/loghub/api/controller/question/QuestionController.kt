@@ -3,7 +3,9 @@ package me.loghub.api.controller.question
 import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.question.*
-import me.loghub.api.dto.response.*
+import me.loghub.api.dto.response.MessageResponseBody
+import me.loghub.api.dto.response.MethodResponseBody
+import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.question.QuestionService
@@ -31,12 +33,6 @@ class QuestionController(private val questionService: QuestionService) {
     fun getQuestion(@PathVariable username: String, @PathVariable slug: String): ResponseEntity<QuestionDetailDTO> {
         val foundQuestion = questionService.getQuestion(username, slug)
         return ResponseEntity.ok(foundQuestion)
-    }
-
-    @GetMapping("/{id}/answer-generating")
-    fun getQuestionAnswerGenerating(@PathVariable id: Long): ResponseEntity<ResponseBody> {
-        val data = questionService.getQuestionAnswerGenerating(id)
-        return DataResponseBody(data, HttpStatus.OK).toResponseEntity()
     }
 
     @GetMapping("/{id}/for-edit")

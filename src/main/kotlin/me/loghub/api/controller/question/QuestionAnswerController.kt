@@ -6,9 +6,7 @@ import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
 import me.loghub.api.dto.question.answer.RequestGenerateAnswerDTO
-import me.loghub.api.dto.response.MessageResponseBody
-import me.loghub.api.dto.response.MethodResponseBody
-import me.loghub.api.dto.response.RedirectResponseBody
+import me.loghub.api.dto.response.*
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.question.QuestionAnswerService
@@ -90,6 +88,15 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
         return MethodResponseBody(
             id = acceptedAnswer.id!!,
             message = ResponseMessage.Question.Answer.ACCEPT_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
+
+    @GetMapping("/generating")
+    fun checkGeneratingAnswer(@PathVariable questionId: Long): ResponseEntity<ResponseBody> {
+        val isGenerating = questionAnswerService.checkGeneratingAnswer(questionId)
+        return DataResponseBody(
+            data = isGenerating,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }

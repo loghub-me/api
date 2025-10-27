@@ -24,6 +24,7 @@ object RedisKey {
         const val TRENDING_SCORE = "questions:trending_score"
 
         object Answer {
+            val GENERATING = ExpiringRedisKey("questions:answer:generating", 5.minutes.toJavaDuration())
             val GENERATE_COOLDOWN = ExpiringRedisKey("questions:answer:generate_cooldown", 10.minutes.toJavaDuration())
         }
     }

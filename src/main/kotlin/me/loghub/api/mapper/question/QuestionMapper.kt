@@ -35,7 +35,6 @@ object QuestionMapper {
             ),
             anchors = renderedMarkdown.anchors,
             status = question.status,
-            answerGenerating = question.answerGenerating,
             writer = UserMapper.mapDetail(question.writer),
             stats = mapStats(question.stats),
             topics = question.topicsFlat,

@@ -34,9 +34,6 @@ class Question(
     @JdbcType(PostgreSQLEnumJdbcType::class)
     var status: Status = Status.OPEN,
 
-    @Column(name = "answer_generating", nullable = true)
-    var answerGenerating: Boolean = false,
-
     @Column(name = "solved_at", nullable = true)
     var solvedAt: LocalDateTime? = null,
 

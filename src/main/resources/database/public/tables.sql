@@ -134,7 +134,6 @@ CREATE TABLE IF NOT EXISTS public.questions
     title             text                 NOT NULL,
     content           text                 NOT NULL,
     status            question_status_enum NOT NULL DEFAULT 'OPEN',
-    answer_generating boolean              NOT NULL DEFAULT FALSE,
     solved_at         timestamp(6),                             -- NULL if status is not SOLVED
     closed_at         timestamp(6),                             -- NULL if status is not CLOSED
     star_count        integer              NOT NULL DEFAULT 0,

@@ -2,6 +2,7 @@ package me.loghub.api.worker
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.message.ServerMessage
+import me.loghub.api.constant.redis.RedisKey
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.entity.question.Question
@@ -13,6 +14,7 @@ import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.ai.chat.client.ChatClient
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -24,6 +26,7 @@ class AnswerGenerateWorker(
     private val userRepository: UserRepository,
     private val questionRepository: QuestionRepository,
     private val questionAnswerRepository: QuestionAnswerRepository,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
         private val queue = ConcurrentLinkedQueue<AnswerGenerateRequest>()
@@ -67,7 +70,7 @@ class AnswerGenerateWorker(
     }
 
     fun addToQueue(dto: AnswerGenerateRequest) {
-        questionRepository.updateAnswerGeneratingById(true, dto.questionId)
+        setGeneratingStatusAndCooldown(dto.questionId)
         queue.add(dto)
     }
 
@@ -85,7 +88,7 @@ class AnswerGenerateWorker(
         val answer = createAnswer(res, question, bot)
 
         questionAnswerRepository.save(answer)
-        questionRepository.updateAnswerGeneratingById(false, req.questionId)
+        deleteGeneratingStatus(req.questionId)
     }
 
     private fun createAnswer(res: AnswerGenerateResponse, question: Question, bot: User) = when (res.rejectionReason) {
@@ -105,5 +108,20 @@ class AnswerGenerateWorker(
                 question = question,
                 writer = bot
             )
+    }
+    
+    private fun setGeneratingStatusAndCooldown(questionId: Long) {
+        for (key in listOf(
+            RedisKey.Question.Answer.GENERATING,
+            RedisKey.Question.Answer.GENERATE_COOLDOWN
+        )) {
+            val redisKey = "${key.prefix}:${questionId}"
+            redisTemplate.opsForValue().set(redisKey, true.toString(), key.ttl)
+        }
+    }
+
+    private fun deleteGeneratingStatus(questionId: Long) {
+        val redisKey = "${RedisKey.Question.Answer.GENERATING.prefix}:${questionId}"
+        redisTemplate.delete(redisKey)
     }
 }

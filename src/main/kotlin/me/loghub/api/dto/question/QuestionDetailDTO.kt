@@ -13,7 +13,6 @@ data class QuestionDetailDTO(
     val content: ContentDTO,
     val anchors: List<AnchorDTO>,
     val status: Question.Status,
-    val answerGenerating: Boolean,
     val writer: UserDetailDTO,
     val stats: QuestionStatsDTO,
     val topics: List<TopicDTO>,

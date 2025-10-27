@@ -88,6 +88,9 @@ class QuestionAnswerService(
         return answer
     }
 
+    fun checkGeneratingAnswer(questionId: Long) =
+        redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATING.prefix}:${questionId}")
+
     @Transactional
     fun requestGenerateAnswer(questionId: Long, requestBody: RequestGenerateAnswerDTO, writer: User) {
         val question = questionRepository.findWithWriterById(questionId)
@@ -101,9 +104,6 @@ class QuestionAnswerService(
 
         val request = AnswerGenerateRequest(question.id!!, question.title, question.content, requestBody.instruction)
         answerGenerateWorker.addToQueue(request)
-
-        val redisKey = "${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}"
-        redisTemplate.opsForValue().set(redisKey, "true", RedisKey.Question.Answer.GENERATE_COOLDOWN.ttl)
     }
 
     private fun findUpdatableAnswer(questionId: Long, answerId: Long): QuestionAnswer {
