@@ -102,7 +102,10 @@ class QuestionAnswerService(
             ResponseMessage.Question.Answer.COOLDOWN_NOT_ELAPSED
         }
 
-        val request = AnswerGenerateRequest(question.id!!, question.title, question.content, requestBody.instruction)
+        val request = AnswerGenerateRequest(
+            question.id!!, question.title, question.content,
+            requestBody.chatModel, requestBody.instruction
+        )
         answerGenerateWorker.addToQueue(request)
     }
 

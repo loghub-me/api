@@ -10,13 +10,13 @@ plugins {
 
 group = "me.loghub"
 
-version = "0.2.1-SNAPSHOT"
+version = "0.2.3-SNAPSHOT"
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
 repositories { mavenCentral() }
 
-extra["springAiVersion"] = "1.0.0"
+extra["springAiVersion"] = "1.0.3"
 
 val springCloudVersion by extra("2025.0.0")
 

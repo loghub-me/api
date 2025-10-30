@@ -75,41 +75,44 @@ class AnswerGenerateWorker(
     }
 
     private fun generateAnswerAndSave(req: AnswerGenerateRequest, bot: User) {
-        val res = chatClient.prompt()
+        val chatOptions = req.chatModel.toChatOptions()
+        val chatResponse = chatClient.prompt()
+            .options(chatOptions)
             .system(SYSTEM_PROMPT)
             .user("# 제목: ${req.questionTitle}\n---\n${req.questionContent}\n---\n${req.userInstruction}")
             .call()
             .entity(AnswerGenerateResponse::class.java)
 
-        checkNotNull(res) { ServerMessage.FAILED_CALL_CHAT_CLIENT }
+        checkNotNull(chatResponse) { ServerMessage.FAILED_CALL_CHAT_CLIENT }
 
         val question = questionRepository.findById(req.questionId)
             .orElseThrowNotFound { ResponseMessage.Question.NOT_FOUND }
-        val answer = createAnswer(res, question, bot)
+        val answer = createAnswer(chatResponse, question, bot)
 
         questionAnswerRepository.save(answer)
         deleteGeneratingStatus(req.questionId)
     }
 
-    private fun createAnswer(res: AnswerGenerateResponse, question: Question, bot: User) = when (res.rejectionReason) {
-        AnswerGenerateResponse.RejectionReason.NONE ->
-            QuestionAnswer(
-                title = res.title,
-                content = res.content,
-                question = question,
-                writer = bot
-            )
+    private fun createAnswer(chatResponse: AnswerGenerateResponse, question: Question, bot: User) =
+        when (chatResponse.rejectionReason) {
+            AnswerGenerateResponse.RejectionReason.NONE ->
+                QuestionAnswer(
+                    title = chatResponse.title,
+                    content = chatResponse.content,
+                    question = question,
+                    writer = bot
+                )
 
-        AnswerGenerateResponse.RejectionReason.OFF_TOPIC,
-        AnswerGenerateResponse.RejectionReason.NOT_ENOUGH_INFO ->
-            QuestionAnswer(
-                title = REJECTION_TITLE,
-                content = res.rejectionReason.message,
-                question = question,
-                writer = bot
-            )
-    }
-    
+            AnswerGenerateResponse.RejectionReason.OFF_TOPIC,
+            AnswerGenerateResponse.RejectionReason.NOT_ENOUGH_INFO ->
+                QuestionAnswer(
+                    title = REJECTION_TITLE,
+                    content = chatResponse.rejectionReason.message,
+                    question = question,
+                    writer = bot
+                )
+        }
+
     private fun setGeneratingStatusAndCooldown(questionId: Long) {
         for (key in listOf(
             RedisKey.Question.Answer.GENERATING,
