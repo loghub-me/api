@@ -12,12 +12,7 @@ services:
     ports:
       - "5432:5432/tcp"
     env_file: ./.env.postgres.test
-    command:
-      [
-        "postgres",
-        "-c", "shared_preload_libraries=pg_cron",
-        "-c", "timezone=Asia/Seoul"
-      ]
+    command: [ "postgres", "-c", "timezone=Asia/Seoul" ]
     restart: always
   loghub-me-redis:
     container_name: loghub-me-redis
