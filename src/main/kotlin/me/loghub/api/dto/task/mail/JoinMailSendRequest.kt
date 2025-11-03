@@ -41,6 +41,7 @@ class JoinMailSendRequest(
                             </p>
                             <a
                               style="line-height:1.5;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;font-size:14px;background-color:#3a97fa;color:#fff;border-radius:0.5em;padding:12px 24px;padding-top:12px;padding-right:24px;padding-bottom:12px;padding-left:24px"
+                              href="${ClientConfig.HOST}/join/confirm?email=$to&otp=$otp"
                               target="_blank"
                               ><span
                                 ><!--[if mso]><i style="mso-font-width:400%;mso-text-raise:18" hidden>&#8202;&#8202;&#8202;</i><![endif]--></span
