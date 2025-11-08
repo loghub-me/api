@@ -1,8 +1,9 @@
 package me.loghub.api.service.common
 
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
+import me.loghub.api.lib.redis.RedisKey
 import me.loghub.api.proxy.TaskAPIProxy
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -18,19 +19,19 @@ class CacheService(
     }
 
     fun findOrGenerateMarkdownCache(markdown: String): RenderedMarkdownDTO {
-        val key = "${RedisKey.MARKDOWN.prefix}:${sha256(markdown)}"
-        return redisTemplate.opsForValue().get(key) ?: generateMarkdownCache(key, markdown)
+        val redisKey = RedisKeys.MARKDOWN(sha256(markdown))
+        return redisTemplate.opsForValue().get(redisKey.key) ?: generateMarkdownCache(redisKey, markdown)
     }
 
     fun findOrGenerateMarkdownCache(markdowns: List<String>): List<RenderedMarkdownDTO> =
         markdowns.map { markdown ->
-            val key = "${RedisKey.MARKDOWN.prefix}:${sha256(markdown)}"
-            redisTemplate.opsForValue().get(key) ?: generateMarkdownCache(key, markdown)
+            val redisKey = RedisKeys.MARKDOWN(sha256(markdown))
+            redisTemplate.opsForValue().get(redisKey.key) ?: generateMarkdownCache(redisKey, markdown)
         }
 
-    private fun generateMarkdownCache(key: String, markdown: String): RenderedMarkdownDTO {
+    private fun generateMarkdownCache(redisKey: RedisKey, markdown: String): RenderedMarkdownDTO {
         val result = taskAPIProxy.renderMarkdown(MarkdownRenderRequest(markdown)).result
-        redisTemplate.opsForValue().set(key, result, RedisKey.MARKDOWN.ttl)
+        redisTemplate.opsForValue().set(redisKey.key, result, redisKey.ttl)
         return result
     }
 

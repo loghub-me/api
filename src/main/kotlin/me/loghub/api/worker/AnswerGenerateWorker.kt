@@ -2,7 +2,7 @@ package me.loghub.api.worker
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.message.ServerMessage
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.entity.question.Question
@@ -114,17 +114,16 @@ class AnswerGenerateWorker(
         }
 
     private fun setGeneratingStatusAndCooldown(questionId: Long) {
-        for (key in listOf(
-            RedisKey.Question.Answer.GENERATING,
-            RedisKey.Question.Answer.GENERATE_COOLDOWN
+        for (redisKey in listOf(
+            RedisKeys.Question.Answer.GENERATING(questionId),
+            RedisKeys.Question.Answer.GENERATE_COOLDOWN(questionId),
         )) {
-            val redisKey = "${key.prefix}:${questionId}"
-            redisTemplate.opsForValue().set(redisKey, true.toString(), key.ttl)
+            redisTemplate.opsForValue().set(redisKey.key, true.toString(), redisKey.ttl)
         }
     }
 
     private fun deleteGeneratingStatus(questionId: Long) {
-        val redisKey = "${RedisKey.Question.Answer.GENERATING.prefix}:${questionId}"
-        redisTemplate.delete(redisKey)
+        val redisKey = RedisKeys.Question.Answer.GENERATING(questionId)
+        redisTemplate.delete(redisKey.key)
     }
 }

@@ -1,6 +1,6 @@
 package me.loghub.api.aspect
 
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
@@ -22,6 +22,7 @@ class SeriesAspect(
         const val STAR = 3.toDouble()
     }
 
+    private val trendingScoreKey = RedisKeys.Series.TRENDING_SCORE()
     private val zSetOps: ZSetOperations<String, String>
         get() = redisTemplate.opsForZSet()
 
@@ -38,19 +39,19 @@ class SeriesAspect(
         userActivityRepository.save(activity)
     }
 
-    @AfterReturning("execution(* me.loghub.api.service.series.SeriesReviewService.postReview(..)) && args(seriesId, ..))")
+    @AfterReturning("execution(* me.loghub.api.service.series.SeriesReviewService.postReview(..)) && args(seriesId, ..)")
     fun afterPostReview(seriesId: Long) =
-        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), TrendingScoreDelta.REVIEW)
+        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), TrendingScoreDelta.REVIEW)
 
-    @AfterReturning("execution(* me.loghub.api.service.series.SeriesReviewService.deleteReview(..)) && args(seriesId, ..))")
+    @AfterReturning("execution(* me.loghub.api.service.series.SeriesReviewService.deleteReview(..)) && args(seriesId, ..)")
     fun afterDeleteReview(seriesId: Long) =
-        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), -TrendingScoreDelta.REVIEW)
+        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), -TrendingScoreDelta.REVIEW)
 
     @AfterReturning("execution(* me.loghub.api.service.series.SeriesStarService.addStar(..)) && args(seriesId, ..)")
     fun afterAddStar(seriesId: Long) =
-        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), TrendingScoreDelta.STAR)
 
     @AfterReturning("execution(* me.loghub.api.service.series.SeriesStarService.deleteStar(..)) && args(seriesId, ..)")
     fun afterDeleteStar(seriesId: Long) =
-        zSetOps.incrementScore(RedisKey.Series.TRENDING_SCORE, seriesId.toString(), -TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), -TrendingScoreDelta.STAR)
 }

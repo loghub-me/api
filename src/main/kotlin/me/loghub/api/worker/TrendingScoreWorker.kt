@@ -1,6 +1,6 @@
 package me.loghub.api.worker
 
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
@@ -31,17 +31,17 @@ class TrendingScoreWorker(
     @Transactional
     fun updateTrendingScores() {
         updateTrendingScore(
-            RedisKey.Article.TRENDING_SCORE,
+            RedisKeys.Article.TRENDING_SCORE().key,
             articleRepository::clearTrendingScore,
             articleRepository::updateTrendingScoreById,
         )
         updateTrendingScore(
-            RedisKey.Series.TRENDING_SCORE,
+            RedisKeys.Series.TRENDING_SCORE().key,
             seriesRepository::clearTrendingScore,
             seriesRepository::updateTrendingScoreById
         )
         updateTrendingScore(
-            RedisKey.Question.TRENDING_SCORE,
+            RedisKeys.Question.TRENDING_SCORE().key,
             questionRepository::clearTrendingScore,
             questionRepository::updateTrendingScoreById
         )

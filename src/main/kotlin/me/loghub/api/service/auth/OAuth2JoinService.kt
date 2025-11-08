@@ -2,7 +2,7 @@ package me.loghub.api.service.auth
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.oauth2.OAuth2Attribute
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.join.OAuth2JoinConfirmDTO
 import me.loghub.api.dto.auth.join.OAuth2JoinInfoDTO
 import me.loghub.api.dto.auth.token.TokenDTO
@@ -34,19 +34,20 @@ class OAuth2JoinService(
             email = user.attributes[OAuth2Attribute.EMAIL].toString(),
             provider = User.Provider.valueOf(user.attributes[OAuth2Attribute.PROVIDER].toString())
         )
-        val key = "${RedisKey.OAUTH2_JOIN_TOKEN.prefix}:${info.email}"
-        redisTemplate.opsForValue().set(key, info, RedisKey.JOIN_OTP.ttl)
+        val redisKey = RedisKeys.OAUTH2_JOIN_TOKEN(info.email)
+        redisTemplate.opsForValue().set(redisKey.key, info, redisKey.ttl)
         return info.token
     }
 
     @Transactional
     fun confirmJoin(requestBody: OAuth2JoinConfirmDTO): TokenDTO {
-        val info = redisTemplate.opsForValue().get("${RedisKey.OAUTH2_JOIN_TOKEN.prefix}:${requestBody.email}")
+        val redisKey = RedisKeys.OAUTH2_JOIN_TOKEN(requestBody.email)
+        val info = redisTemplate.opsForValue().get(redisKey.key)
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_TOKEN)
 
         when {
             requestBody.token != info.token -> throw BadOTPException(ResponseMessage.Auth.INVALID_TOKEN)
-            else -> redisTemplate.delete("${RedisKey.OAUTH2_JOIN_TOKEN.prefix}:${requestBody.email}")
+            else -> redisTemplate.delete(redisKey.key)
         }
 
         val joinedUser = userRepository.save(requestBody.toUserEntity(info.provider))

@@ -1,6 +1,6 @@
 package me.loghub.api.aspect
 
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
@@ -22,6 +22,7 @@ class ArticleAspect(
         const val STAR = 3.toDouble()
     }
 
+    private val trendingScoreKey = RedisKeys.Article.TRENDING_SCORE()
     private val zSetOps: ZSetOperations<String, String>
         get() = redisTemplate.opsForZSet()
 
@@ -38,19 +39,19 @@ class ArticleAspect(
         userActivityRepository.save(activity)
     }
 
-    @AfterReturning("execution(* me.loghub.api.service.article.ArticleCommentService.postComment(..)) && args(articleId, ..))")
+    @AfterReturning("execution(* me.loghub.api.service.article.ArticleCommentService.postComment(..)) && args(articleId, ..)")
     fun afterPostComment(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.COMMENT)
+        zSetOps.incrementScore(trendingScoreKey.key, articleId.toString(), TrendingScoreDelta.COMMENT)
 
-    @AfterReturning("execution(* me.loghub.api.service.article.ArticleCommentService.deleteComment(..)) && args(articleId, ..))")
+    @AfterReturning("execution(* me.loghub.api.service.article.ArticleCommentService.deleteComment(..)) && args(articleId, ..)")
     fun afterDeleteComment(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.COMMENT)
+        zSetOps.incrementScore(trendingScoreKey.key, articleId.toString(), -TrendingScoreDelta.COMMENT)
 
     @AfterReturning("execution(* me.loghub.api.service.article.ArticleStarService.addStar(..)) && args(articleId, ..)")
     fun afterAddStar(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(trendingScoreKey.key, articleId.toString(), TrendingScoreDelta.STAR)
 
     @AfterReturning("execution(* me.loghub.api.service.article.ArticleStarService.deleteStar(..)) && args(articleId, ..)")
     fun afterDeleteStar(articleId: Long) =
-        zSetOps.incrementScore(RedisKey.Article.TRENDING_SCORE, articleId.toString(), -TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(trendingScoreKey.key, articleId.toString(), -TrendingScoreDelta.STAR)
 }

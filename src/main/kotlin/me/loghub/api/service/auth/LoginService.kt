@@ -3,7 +3,7 @@ package me.loghub.api.service.auth
 import jakarta.transaction.Transactional
 import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.login.LoginConfirmDTO
 import me.loghub.api.dto.auth.login.LoginRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
@@ -40,12 +40,13 @@ class LoginService(
 
     @Transactional
     fun confirmLogin(requestBody: LoginConfirmDTO): TokenDTO {
-        val otp = redisTemplate.opsForValue().get("${RedisKey.LOGIN_OTP.prefix}:${requestBody.email}")
+        val redisKey = RedisKeys.LOGIN_OTP(requestBody.email)
+        val otp = redisTemplate.opsForValue().get(redisKey.key)
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
             requestBody.otp != otp -> throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
-            else -> redisTemplate.delete("${RedisKey.LOGIN_OTP.prefix}:${requestBody.email}")
+            else -> redisTemplate.delete(redisKey.key)
         }
 
         val user = userRepository.findByEmail(requestBody.email)
@@ -56,8 +57,8 @@ class LoginService(
 
     fun issueOTP(email: String): String {
         val otp = OTPBuilder.generateOTP()
-        val key = "${RedisKey.LOGIN_OTP.prefix}:${email}"
-        redisTemplate.opsForValue().set(key, otp, RedisKey.LOGIN_OTP.ttl)
+        val redisKey = RedisKeys.LOGIN_OTP(email)
+        redisTemplate.opsForValue().set(redisKey.key, otp, redisKey.ttl)
         return otp
     }
 }

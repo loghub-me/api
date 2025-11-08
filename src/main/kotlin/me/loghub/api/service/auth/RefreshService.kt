@@ -2,7 +2,7 @@ package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.exception.auth.BadRefreshTokenException
 import me.loghub.api.repository.user.UserRepository
@@ -23,9 +23,9 @@ class RefreshService(
     fun refreshToken(token: UUID?): TokenDTO {
         requireNotNull(token) { ResponseMessage.Auth.INVALID_TOKEN }
 
-        val key = "${RedisKey.REFRESH_TOKEN.prefix}:$token"
-        val userId = redisTemplate.opsForValue().get(key)
-            ?.also { redisTemplate.expire(key, 10.seconds.toJavaDuration()) }  // Grace period
+        val redisKey = RedisKeys.REFRESH_TOKEN(token)
+        val userId = redisTemplate.opsForValue().get(redisKey.key)
+            ?.also { redisTemplate.expire(redisKey.key, 10.seconds.toJavaDuration()) }  // Grace period
             ?: throw BadRefreshTokenException(ResponseMessage.Auth.INVALID_TOKEN)
         val user = userRepository.findById(userId.toLong())
             .orElseThrow { BadRefreshTokenException(ResponseMessage.Auth.INVALID_TOKEN) }

@@ -2,7 +2,7 @@ package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.join.JoinConfirmDTO
 import me.loghub.api.dto.auth.join.JoinInfoDTO
 import me.loghub.api.dto.auth.join.JoinRequestDTO
@@ -39,12 +39,13 @@ class JoinService(
 
     @Transactional
     fun confirmJoin(requestBody: JoinConfirmDTO): TokenDTO {
-        val info = redisTemplate.opsForValue().get("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
+        val redisKey = RedisKeys.JOIN_OTP(requestBody.email)
+        val info = redisTemplate.opsForValue().get(redisKey.key)
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
             requestBody.otp != info.otp -> throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
-            else -> redisTemplate.delete("${RedisKey.JOIN_OTP.prefix}:${requestBody.email}")
+            else -> redisTemplate.delete(redisKey.key)
         }
 
         val joinedUser = userRepository.save(info.toUserEntity())
@@ -65,9 +66,9 @@ class JoinService(
 
     private fun issueOTP(requestBody: JoinRequestDTO): String {
         val otp = OTPBuilder.generateOTP()
-        val key = "${RedisKey.JOIN_OTP.prefix}:${requestBody.email}"
         val info = JoinInfoDTO(otp, requestBody.email, requestBody.username, requestBody.nickname)
-        redisTemplate.opsForValue().set(key, info, RedisKey.JOIN_OTP.ttl)
+        val redisKey = RedisKeys.JOIN_OTP(requestBody.email)
+        redisTemplate.opsForValue().set(redisKey.key, info, redisKey.ttl)
         return otp
     }
 }

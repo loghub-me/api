@@ -1,7 +1,7 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKey
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
@@ -89,16 +89,17 @@ class QuestionAnswerService(
     }
 
     fun checkGeneratingAnswer(questionId: Long) =
-        redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATING.prefix}:${questionId}")
+        redisTemplate.hasKey(RedisKeys.Question.Answer.GENERATING(questionId).key)
 
     @Transactional
     fun requestGenerateAnswer(questionId: Long, requestBody: RequestGenerateAnswerDTO, writer: User) {
         val question = questionRepository.findWithWriterById(questionId)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
-
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         checkPermission(question.status === Question.Status.OPEN) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
-        checkCooldown(redisTemplate.hasKey("${RedisKey.Question.Answer.GENERATE_COOLDOWN.prefix}:${question.id}")) {
+
+        val redisKey = RedisKeys.Question.Answer.GENERATE_COOLDOWN(question.id!!)
+        checkCooldown(redisTemplate.hasKey(redisKey.key)) {
             ResponseMessage.Question.Answer.COOLDOWN_NOT_ELAPSED
         }
 
