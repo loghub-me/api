@@ -3,7 +3,9 @@ package me.loghub.api.config
 import me.loghub.api.dto.auth.join.JoinInfoDTO
 import me.loghub.api.dto.auth.join.OAuth2JoinInfoDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
+import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.lib.redis.JoinInfoRedisSerializer
+import me.loghub.api.lib.redis.NotificationRedisSerializer
 import me.loghub.api.lib.redis.OAuth2JoinInfoRedisSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -47,6 +49,15 @@ class RedisConfig {
         template.connectionFactory = redisConnectionFactory
         template.keySerializer = StringRedisSerializer()
         template.valueSerializer = Jackson2JsonRedisSerializer(RenderedMarkdownDTO::class.java)
+        return template
+    }
+
+    @Bean
+    fun notificationRedisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, NotificationDTO> {
+        val template = RedisTemplate<String, NotificationDTO>()
+        template.connectionFactory = redisConnectionFactory
+        template.keySerializer = StringRedisSerializer()
+        template.valueSerializer = NotificationRedisSerializer()
         return template
     }
 }
