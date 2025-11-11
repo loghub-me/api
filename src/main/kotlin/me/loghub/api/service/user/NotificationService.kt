@@ -30,6 +30,7 @@ class NotificationService(private val redisTemplate: RedisTemplate<String, Notif
         val redisKey = RedisKeys.NOTIFICATIONS(user.id!!)
         val removedCount =
             redisTemplate.opsForZSet().removeRangeByScore(redisKey.key, timestamp.toDouble(), timestamp.toDouble())
+
         checkExists(removedCount == null || removedCount > 0) { ResponseMessage.Notification.NOT_FOUND }
     }
 }

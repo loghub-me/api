@@ -11,8 +11,6 @@ import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ZSetOperations
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 @Aspect
 @Component
@@ -74,11 +72,11 @@ class QuestionAnswerAspect(
     private fun sendNotificationsAfterPostAnswer(postedAnswer: QuestionAnswer) {
         val question = postedAnswer.question
 
-        val href = "/questions/${question.writerUsername}/${question.slug}"
-        val timestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-
-        val message = "@${postedAnswer.writer.username}님이 회원님의 아티클에 답변을 남겼습니다."
-        val notification = NotificationDTO(href, message, timestamp)
+        val notification = NotificationDTO(
+            href = "/questions/${question.writerUsername}/${question.slug}",
+            title = question.title,
+            message = "@${postedAnswer.writer.username}님이 회원님의 질문에 답변을 남겼습니다.",
+        )
         notificationService.addNotification(question.writer.id!!, notification)
     }
 

@@ -11,8 +11,6 @@ import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ZSetOperations
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 @Aspect
 @Component
@@ -67,18 +65,18 @@ class ArticleCommentAspect(
         val article = postedComment.article
 
         val href = "/articles/${article.writerUsername}/${article.slug}"
-        val timestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val title = article.title
 
         postedComment.parent?.let { parentComment ->
             if (parentComment.writer == postedComment.writer) return
             val message = "@${postedComment.writer.username}님이 회원님의 댓글에 답글을 남겼습니다."
-            val notification = NotificationDTO(href, message, timestamp)
+            val notification = NotificationDTO(href, title, message)
             notificationService.addNotification(parentComment.writer.id!!, notification)
         }
 
         if (article.writer == postedComment.writer) return
         val message = "@${postedComment.writer.username}님이 회원님의 아티클에 댓글을 남겼습니다."
-        val notification = NotificationDTO(href, message, timestamp)
+        val notification = NotificationDTO(href, title, message)
         notificationService.addNotification(article.writer.id!!, notification)
     }
 
