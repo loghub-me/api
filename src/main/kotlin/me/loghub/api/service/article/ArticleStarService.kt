@@ -33,7 +33,8 @@ class ArticleStarService(
             articleRepository.existsById(id)
         ) { ResponseMessage.Article.NOT_FOUND }
 
-        articleRepository.incrementStarCount(id); return userStarRepository.save(
+        articleRepository.incrementStarCount(id);
+        return userStarRepository.save(
             UserStar(
                 user = user,
                 article = articleRef,

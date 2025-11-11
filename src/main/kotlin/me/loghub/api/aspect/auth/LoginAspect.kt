@@ -1,4 +1,4 @@
-package me.loghub.api.aspect.logging.auth
+package me.loghub.api.aspect.auth
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.dto.auth.login.LoginConfirmDTO
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-class LoginLoggingAspect {
+class LoginAspect {
     private companion object {
         private val logger = KotlinLogging.logger { };
     }

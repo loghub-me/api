@@ -1,4 +1,4 @@
-package me.loghub.api.aspect.logging.user
+package me.loghub.api.aspect.user
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.entity.user.User
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-class UserImageLoggingAspect {
+class UserImageAspect {
     private companion object {
         private val logger = KotlinLogging.logger { };
     }

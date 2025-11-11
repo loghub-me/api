@@ -29,7 +29,8 @@ interface ArticleCommentRepository : JpaRepository<ArticleComment, Long> {
     @EntityGraph(attributePaths = ["parent", "writer"])
     fun findWithGraphByArticleAndId(article: Article, commentId: Long): ArticleComment?
 
-    fun findByArticleAndId(article: Article, id: Long): ArticleComment?
+    @EntityGraph(attributePaths = ["writer"])
+    fun findWithWriterByArticleAndId(article: Article, id: Long): ArticleComment?
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE ArticleComment ac SET ac.replyCount = ac.replyCount + 1 WHERE ac.id = :id")

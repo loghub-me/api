@@ -144,4 +144,9 @@ object ResponseMessage {
             const val POST_SUCCESS = "문의가 성공적으로 등록되었습니다!"
         }
     }
+
+    object Notification {
+        const val NOT_FOUND = "알림을 찾을 수 없습니다."
+        const val DELETE_SUCCESS = "알림이 성공적으로 삭제되었습니다!"
+    }
 }

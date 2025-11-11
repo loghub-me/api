@@ -1,4 +1,4 @@
-package me.loghub.api.aspect.logging.user
+package me.loghub.api.aspect.user
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.dto.user.UpdateUsernameDTO
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-class UserSelfLoggingAspect {
+class UserSelfAspect {
     private companion object {
         private val logger = KotlinLogging.logger { };
     }
