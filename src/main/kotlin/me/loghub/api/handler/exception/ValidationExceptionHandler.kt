@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingRequestCookieException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 
 @RestControllerAdvice
 class ValidationExceptionHandler {
@@ -64,6 +65,14 @@ class ValidationExceptionHandler {
         return MessageResponseBody(
             message = e.message ?: ResponseMessage.Default.COOLDOWN_NOT_ELAPSED,
             status = HttpStatus.TOO_MANY_REQUESTS
+        ).toResponseEntity()
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun handleException(e: MaxUploadSizeExceededException): ResponseEntity<ResponseBody> {
+        return MessageResponseBody(
+            message = ResponseMessage.Multipart.FILE_SIZE_EXCEEDED,
+            status = HttpStatus.PAYLOAD_TOO_LARGE,
         ).toResponseEntity()
     }
 }

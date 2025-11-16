@@ -1,7 +1,6 @@
 package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
-import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.login.LoginConfirmDTO
@@ -51,7 +50,6 @@ class LoginService(
 
         val user = userRepository.findByEmail(requestBody.email)
             ?: throw EntityNotFoundFieldException(User::email.name, ResponseMessage.User.NOT_FOUND)
-        println(RefreshTokenConfig.DOMAIN)
         return tokenService.generateToken(user)
     }
 

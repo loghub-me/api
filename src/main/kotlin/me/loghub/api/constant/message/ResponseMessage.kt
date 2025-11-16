@@ -149,4 +149,8 @@ object ResponseMessage {
         const val NOT_FOUND = "알림을 찾을 수 없습니다."
         const val DELETE_SUCCESS = "알림이 성공적으로 삭제되었습니다!"
     }
+
+    object Multipart {
+        const val FILE_SIZE_EXCEEDED = "업로드 가능한 파일 크기를 초과했습니다."
+    }
 }

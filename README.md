@@ -9,7 +9,7 @@
 
 #### Repositories
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Web-f94949?style=plastic&logo=github)](https://github.com/loghub-me/web-next)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Web-f94949?style=plastic&logo=github)](https://github.com/loghub-me/web)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-API-6db240?style=plastic&logo=github)](https://github.com/loghub-me/api)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Task_API-aab2ff?style=plastic&logo=github)](https://github.com/loghub-me/task-api)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Markdown_Renderer-2d79c7?style=plastic&logo=github)](https://github.com/loghub-me/markdown-renderer)
@@ -23,32 +23,32 @@
 
 ### 환경 변수
 
-|               변수명               | 설명                  | 예시                           |
-| :--------------------------------: | --------------------- | ------------------------------ |
-| `APP_NAME` | 애플리케이션 이름 | `loghub-me-api`                 |
-|             `ACCESS_TOKEN_SECRET` | 엑세스 토큰 비밀키 | 비밀키 생성 명령어: `openssl rand -hex 3`  |
-|`CLIENT_DOMAIN` | 클라이언트 도메인 | `localhost`|
-| `CLIENT_HOST` | 클라이언트 호스트 | `http://localhost:3000` |
-| `DB_HOST` | 데이터베이스 호스트 | `localhost` |
-|`DB_PORT` | 데이터베이스 포트 | `5432` |
-| `DB_NAME` | 데이터베이스 이름 | `your_db` |
-|`DB_USERNAME` | 데이터베이스 사용자 이름 | `your_username` |
-| `DB_PASSWORD` | 데이터베이스 비밀번호 | `your_password` |
-| `DISCORD_WEBHOOK_URL` | 디스코드 웹훅 URL | `https://discord.com/api/webhooks/...` |
-| `GITHUB_CLIENT_ID` | 깃허브 OAuth 클라이언트 ID | `your_github_client_id` |
-| `GITHUB_CLIENT_SECRET` | 깃허브 OAuth 클라이언트 시크릿 | `your_github_client_secret` |
-|`GOOGLE_CLIENT_ID` | 구글 OAuth 클라이언트 ID | `your_google_client_id` |
-| `GOOGLE_CLIENT_SECRET` | 구글 OAuth 클라이언트 시크릿 | `your_google_client_secret` |
-|`OPENAI_API_KEY` | OpenAI API 키 | `your_openai_api_key` |
-|`REDIS_HOST` | 레디스 호스트 | `localhost` |
-|`REDIS_PORT` | 레디스 포트 | `6379` |
-|`REDIS_PASSWORD` | 레디스 비밀번호 | `your_redis_password` |
-|`RESEND_API_KEY` | Resend API 키 | `your_resend_api_key` |
-|`RESEND_FROM_EMAIL` | Resend 발신 이메일 | `noreply@example.org` |
-|`TASK_API_HOST` | task-api 호스트 | `http://localhost:8080` |
-|`TASK_API_INTERVAL_TOKEN` | task-api 인증 토큰 | `your_task_api_interval_token` |
-|`SERVER_PORT` | 서버 포트 | `8080` |
-|`MANAGEMENT_PORT` | 관리 포트 | `8081` |
+|            변수명            | 설명                  | 예시                                     |
+|:-------------------------:|---------------------|----------------------------------------|
+|        `APP_NAME`         | 애플리케이션 이름           | `loghub-me-api`                        |
+|   `ACCESS_TOKEN_SECRET`   | 엑세스 토큰 비밀키          | 비밀키 생성 명령어: `openssl rand -hex 3`      |
+|      `CLIENT_DOMAIN`      | 클라이언트 도메인           | `localhost`                            |
+|       `CLIENT_HOST`       | 클라이언트 호스트           | `http://localhost:3000`                |
+|         `DB_HOST`         | 데이터베이스 호스트          | `localhost`                            |
+|         `DB_PORT`         | 데이터베이스 포트           | `5432`                                 |
+|         `DB_NAME`         | 데이터베이스 이름           | `your_db`                              |
+|       `DB_USERNAME`       | 데이터베이스 사용자 이름       | `your_username`                        |
+|       `DB_PASSWORD`       | 데이터베이스 비밀번호         | `your_password`                        |
+|   `DISCORD_WEBHOOK_URL`   | 디스코드 웹훅 URL         | `https://discord.com/api/webhooks/...` |
+|    `GITHUB_CLIENT_ID`     | 깃허브 OAuth 클라이언트 ID  | `your_github_client_id`                |
+|  `GITHUB_CLIENT_SECRET`   | 깃허브 OAuth 클라이언트 시크릿 | `your_github_client_secret`            |
+|    `GOOGLE_CLIENT_ID`     | 구글 OAuth 클라이언트 ID   | `your_google_client_id`                |
+|  `GOOGLE_CLIENT_SECRET`   | 구글 OAuth 클라이언트 시크릿  | `your_google_client_secret`            |
+|     `OPENAI_API_KEY`      | OpenAI API 키        | `your_openai_api_key`                  |
+|       `REDIS_HOST`        | 레디스 호스트             | `localhost`                            |
+|       `REDIS_PORT`        | 레디스 포트              | `6379`                                 |
+|     `REDIS_PASSWORD`      | 레디스 비밀번호            | `your_redis_password`                  |
+|     `RESEND_API_KEY`      | Resend API 키        | `your_resend_api_key`                  |
+|    `RESEND_FROM_EMAIL`    | Resend 발신 이메일       | `noreply@example.org`                  |
+|      `TASK_API_HOST`      | task-api 호스트        | `http://localhost:8080`                |
+| `TASK_API_INTERVAL_TOKEN` | task-api 인증 토큰      | `your_task_api_interval_token`         |
+|       `SERVER_PORT`       | 서버 포트               | `8080`                                 |
+|     `MANAGEMENT_PORT`     | 관리 포트               | `8081`                                 |
 
 ### 의존성 프로젝트
 
