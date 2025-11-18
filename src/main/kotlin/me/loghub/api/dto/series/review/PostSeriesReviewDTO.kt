@@ -10,7 +10,7 @@ import me.loghub.api.entity.user.User
 
 data class PostSeriesReviewDTO(
     @field:NotBlank(message = "내용은 필수 입력 항목입니다.")
-    @field:Size(max = 255, message = "내용은 255자 이하이어야 합니다.")
+    @field:Size(max = 1024, message = "내용은 1024자 이하이어야 합니다.")
     val content: String,
 
     @field:Min(1, message = "평점은 1점 이상이어야 합니다.")

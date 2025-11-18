@@ -13,6 +13,6 @@ data class UpdateUserProfileDTO(
     @field:Trimmed
     val nickname: String,
 
-    @field:Size(max = 512, message = "자기소개는 최대 512자까지 입력할 수 있습니다.")
+    @field:Size(max = 1024, message = "자기소개는 최대 1024자까지 입력할 수 있습니다.")
     val readme: String,
 )

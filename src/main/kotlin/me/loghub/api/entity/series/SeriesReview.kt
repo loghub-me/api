@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
 class SeriesReview(
-    @Column(name = "content", nullable = false, length = 512)
+    @Column(name = "content", nullable = false, length = 1024)
     var content: String,
 
     @Column(name = "rating", nullable = false)
