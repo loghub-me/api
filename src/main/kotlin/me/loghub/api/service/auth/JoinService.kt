@@ -14,9 +14,9 @@ import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
+import me.loghub.api.service.common.MailService
 import me.loghub.api.util.OTPBuilder
 import me.loghub.api.util.checkConflict
-import me.loghub.api.worker.MailSendWorker
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 
@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service
 class JoinService(
     private val redisTemplate: RedisTemplate<String, JoinInfoDTO>,
     private val userRepository: UserRepository,
-    private val mailSendWorker: MailSendWorker,
     private val tokenService: TokenService,
+    private val mailService: MailService,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
     @Transactional
@@ -34,7 +34,7 @@ class JoinService(
 
         val otp = issueOTP(requestBody)
         val mail = JoinMailSendRequest(to = requestBody.email, otp = otp)
-        mailSendWorker.addToQueue(mail)
+        mailService.sendMailAsync(mail)
     }
 
     @Transactional

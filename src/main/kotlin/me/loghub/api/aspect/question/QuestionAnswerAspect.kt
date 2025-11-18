@@ -5,7 +5,7 @@ import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
-import me.loghub.api.service.user.NotificationService
+import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate

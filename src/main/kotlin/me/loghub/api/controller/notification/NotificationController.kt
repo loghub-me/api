@@ -6,7 +6,7 @@ import me.loghub.api.dto.response.DataResponseBody
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
-import me.loghub.api.service.user.NotificationService
+import me.loghub.api.service.notification.NotificationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal

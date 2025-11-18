@@ -1,4 +1,4 @@
-package me.loghub.api.service.user
+package me.loghub.api.service.notification
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.redis.RedisKeys
