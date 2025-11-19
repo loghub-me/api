@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class NotificationService(private val redisTemplate: RedisTemplate<String, NotificationDTO>) {
+    private companion object {
+        private const val PAGE_SIZE = 20L
+    }
+
     fun getNotifications(user: User): List<NotificationDTO> {
         val redisKey = RedisKeys.NOTIFICATIONS(user.id!!)
-        val notifications = redisTemplate.opsForZSet().reverseRangeWithScores(redisKey.key, 0, -1)
-        return notifications?.map { it.value!! } ?: emptyList()
+        val notifications = redisTemplate.opsForZSet().reverseRange(redisKey.key, 0, PAGE_SIZE - 1)
+        return notifications?.toList() ?: emptyList()
     }
 
     fun countNotifications(user: User): Long {
