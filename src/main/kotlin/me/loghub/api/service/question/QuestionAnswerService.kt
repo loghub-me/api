@@ -1,7 +1,6 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
@@ -19,8 +18,6 @@ import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkCooldown
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
-import me.loghub.api.worker.AnswerGenerateWorker
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,9 +25,8 @@ import org.springframework.transaction.annotation.Transactional
 class QuestionAnswerService(
     private val questionAnswerRepository: QuestionAnswerRepository,
     private val questionRepository: QuestionRepository,
+    private val questionAnswerGenerateService: QuestionAnswerGenerateService,
     private val cacheService: CacheService,
-    private val answerGenerateWorker: AnswerGenerateWorker,
-    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     @Transactional(readOnly = true)
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
@@ -59,7 +55,7 @@ class QuestionAnswerService(
         checkConflict(question.writer == writer) { ResponseMessage.Question.Answer.CANNOT_POST_SELF }
 
         val answer = requestBody.toEntity(question, writer)
-        questionRepository.incrementAnswerCount(question.id!!)
+        questionRepository.incrementAnswerCount(questionId)
         return questionAnswerRepository.save(answer)
     }
 
@@ -75,7 +71,7 @@ class QuestionAnswerService(
     fun deleteAnswer(questionId: Long, answerId: Long, writer: User) {
         val answer = findUpdatableAnswer(questionId, answerId)
         checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
-        questionRepository.decrementAnswerCount(answer.question.id!!)
+        questionRepository.decrementAnswerCount(questionId)
         questionAnswerRepository.delete(answer)
     }
 
@@ -88,9 +84,6 @@ class QuestionAnswerService(
         return answer
     }
 
-    fun checkGeneratingAnswer(questionId: Long) =
-        redisTemplate.hasKey(RedisKeys.Question.Answer.GENERATING(questionId).key)
-
     @Transactional
     fun requestGenerateAnswer(questionId: Long, requestBody: RequestGenerateAnswerDTO, writer: User) {
         val question = questionRepository.findWithWriterById(questionId)
@@ -98,16 +91,15 @@ class QuestionAnswerService(
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
         checkPermission(question.status === Question.Status.OPEN) { ResponseMessage.Question.STATUS_MUST_BE_OPEN }
 
-        val redisKey = RedisKeys.Question.Answer.GENERATE_COOLDOWN(question.id!!)
-        checkCooldown(redisTemplate.hasKey(redisKey.key)) {
+        checkCooldown(questionAnswerGenerateService.checkGenerateCooldown(questionId)) {
             ResponseMessage.Question.Answer.COOLDOWN_NOT_ELAPSED
         }
 
         val request = AnswerGenerateRequest(
-            question.id!!, question.title, question.content,
+            questionId, question.title, question.content,
             requestBody.chatModel, requestBody.instruction
         )
-        answerGenerateWorker.addToQueue(request)
+        questionAnswerGenerateService.generateAnswerAsync(request)
     }
 
     private fun findUpdatableAnswer(questionId: Long, answerId: Long): QuestionAnswer {

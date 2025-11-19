@@ -9,6 +9,7 @@ import me.loghub.api.dto.question.answer.RequestGenerateAnswerDTO
 import me.loghub.api.dto.response.*
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
+import me.loghub.api.service.question.QuestionAnswerGenerateService
 import me.loghub.api.service.question.QuestionAnswerService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/questions/{questionId}/answers")
-class QuestionAnswerController(private val questionAnswerService: QuestionAnswerService) {
+class QuestionAnswerController(
+    private val questionAnswerService: QuestionAnswerService,
+    private val questionAnswerGenerateService: QuestionAnswerGenerateService,
+) {
     @GetMapping
     fun getAnswers(@PathVariable questionId: Long): ResponseEntity<List<QuestionAnswerDTO>> {
         val answers = questionAnswerService.getAnswers(questionId)
@@ -94,7 +98,7 @@ class QuestionAnswerController(private val questionAnswerService: QuestionAnswer
 
     @GetMapping("/generating")
     fun checkGeneratingAnswer(@PathVariable questionId: Long): ResponseEntity<ResponseBody> {
-        val isGenerating = questionAnswerService.checkGeneratingAnswer(questionId)
+        val isGenerating = questionAnswerGenerateService.checkGeneratingAnswer(questionId)
         return DataResponseBody(
             data = isGenerating,
             status = HttpStatus.OK,
