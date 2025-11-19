@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size
 import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.series.SeriesReview
 import me.loghub.api.entity.user.User
+import me.loghub.api.util.collapseToDoubleNewlines
 
 data class PostSeriesReviewDTO(
     @field:NotBlank(message = "내용은 필수 입력 항목입니다.")
@@ -18,7 +19,7 @@ data class PostSeriesReviewDTO(
     val rating: Int = 5,
 ) {
     fun toEntity(series: Series, writer: User) = SeriesReview(
-        content = content,
+        content = content.trim().collapseToDoubleNewlines(),
         rating = rating,
         series = series,
         writer = writer,

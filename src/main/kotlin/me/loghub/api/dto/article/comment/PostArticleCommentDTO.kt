@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleComment
 import me.loghub.api.entity.user.User
+import me.loghub.api.util.collapseToDoubleNewlines
 
 data class PostArticleCommentDTO(
     @field:NotBlank(message = "내용은 필수 입력 항목입니다.")
@@ -16,7 +17,7 @@ data class PostArticleCommentDTO(
     val parentId: Long?,
 ) {
     fun toEntity(article: Article, parent: ArticleComment?, writer: User) = ArticleComment(
-        content = content,
+        content = content.trim().collapseToDoubleNewlines(),
         article = article,
         parent = parent,
         mention = parent?.writer,

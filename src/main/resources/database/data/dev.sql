@@ -230,6 +230,11 @@ VALUES ('a-question', 'This is the content of question A.',
         E'# Question C Content\n\nCan anyone explain topic C to me?\n\nLooking forward to your insights!',
         ( SELECT id FROM users WHERE username = 'member2' ), 'member2',
         NOW(), NOW());
+INSERT INTO public.questions (slug, title, content, writer_id, writer_username, created_at, updated_at)
+VALUES ('javascript-closure-실용적인-예제-질문', '자바스크립트 클로저(Closure)의 실용적인 예제에 대해 질문합니다.',
+        E'# 자바스크립트 클로저, 언제 어떻게 써야 할까요?\n\n안녕하세요, 자바스크립트를 공부하는 중급 개발자입니다.\n\n클로저(Closure)라는 개념이 **"함수가 선언된 렉시컬 환경을 기억하는 함수"**라는 것은 이론적으로 이해했습니다. 내부 함수가 외부 함수의 변수에 접근할 수 있다는 기본적인 예제는 수없이 봤습니다.\n\n```javascript\nfunction outer() {\n  const outerVar = ''외부 변수'';\n\n  function inner() {\n    console.log(outerVar); // 외부 함수의 변수에 접근\n  }\n\n  return inner;\n}\n\nconst innerFunc = outer();\ninnerFunc(); // "외부 변수" 출력\n```\n\n하지만 이런 교과서적인 예제를 넘어서, 실제 프로젝트에서 클로저가 **"왜 필요하고, 어떻게 유용하게 사용되는지"**에 대한 감이 잘 오지 않습니다.\n\n제가 궁금한 점은 다음과 같습니다.\n\n- **데이터 은닉(Data Encapsulation)**: 클로저를 사용해 private 변수처럼 흉내 낼 수 있다고 들었습니다. `class` 문법이 있는데도 굳이 클로저를 사용해 데이터를 은닉하는 경우가 있나요? 있다면 어떤 장점이 있을까요?\n\n- **이벤트 핸들러와 반복문**: 반복문 안에서 이벤트 리스너를 추가할 때 클로저가 잘못 사용되면 발생하는 문제와 해결책은 익히 알고 있습니다. 이것 외에 이벤트 핸들링에서 클로저가 유용하게 쓰이는 다른 패턴이 있을까요?\n\n- **성능과 메모리**: 클로저를 사용하면 외부 함수의 스코프가 메모리에 계속 남아있게 되는데, 이로 인한 메모리 누수(memory leak)의 위험은 없나요? 실제 프로젝트에서 클로저를 사용할 때 메모리 관점에서 특별히 주의해야 할 점이 있다면 알려주세요.\n\n실무에서 클로저를 유용하게 사용하셨던 경험이나 좋은 패턴이 있다면 코드 예제와 함께 공유해주시면 정말 감사하겠습니다!',
+        ( SELECT id FROM users WHERE username = 'member1' ), 'member1',
+        NOW() - INTERVAL '6 days 3 hours 15 minutes', NOW() - INTERVAL '6 days 3 hours 15 minutes');
 INSERT INTO public.question_topics(question_id, topic_id)
 VALUES (( SELECT id FROM questions WHERE slug = 'a-question' ),
         ( SELECT id FROM topics WHERE slug = 'c' )),
@@ -238,7 +243,9 @@ VALUES (( SELECT id FROM questions WHERE slug = 'a-question' ),
        (( SELECT id FROM questions WHERE slug = 'b-question' ),
         ( SELECT id FROM topics WHERE slug = 'java' )),
        (( SELECT id FROM questions WHERE slug = 'c-question' ),
-        ( SELECT id FROM topics WHERE slug = 'python' ));
+        ( SELECT id FROM topics WHERE slug = 'python' )),
+       (( SELECT id FROM questions WHERE slug = 'javascript-closure-실용적인-예제-질문' ),
+        ( SELECT id FROM topics WHERE slug = 'javascript' ));
 INSERT INTO public.question_answers(title, content, question_id, writer_id)
 VALUES ('Answer to A Question', 'This is an answer to question A.',
         ( SELECT id FROM questions WHERE slug = 'a-question' ),
