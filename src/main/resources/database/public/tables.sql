@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS public.topics
     slug           varchar(50)  NOT NULL UNIQUE,
     name           varchar(50)  NOT NULL UNIQUE,
     description    varchar(255) NOT NULL DEFAULT '',
-    trending_score integer      NOT NULL DEFAULT 0,
+    trending_score real         NOT NULL DEFAULT 0,
     created_at     timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS public.articles
     thumbnail       varchar(255) NOT NULL DEFAULT 'default/article-thumbnail.webp',
     star_count      integer      NOT NULL DEFAULT 0,
     comment_count   integer      NOT NULL DEFAULT 0,
-    trending_score  integer      NOT NULL DEFAULT 0,
+    trending_score  real         NOT NULL DEFAULT 0,
     created_at      timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     writer_id       bigint       NOT NULL
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS public.series
     thumbnail       varchar(255) NOT NULL DEFAULT 'default/series-thumbnail.webp',
     star_count      integer      NOT NULL DEFAULT 0,
     review_count    integer      NOT NULL DEFAULT 0,
-    trending_score  integer      NOT NULL DEFAULT 0,
+    trending_score  real         NOT NULL DEFAULT 0,
     created_at      timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     writer_id       bigint       NOT NULL
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS public.questions
     closed_at         timestamp(6),                             -- NULL if status is not CLOSED
     star_count        integer              NOT NULL DEFAULT 0,
     answer_count      integer              NOT NULL DEFAULT 0,
-    trending_score    integer              NOT NULL DEFAULT 0,
+    trending_score    real                 NOT NULL DEFAULT 0,
     created_at        timestamp(6)         NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        timestamp(6)         NOT NULL DEFAULT CURRENT_TIMESTAMP,
     writer_id         bigint               NOT NULL

@@ -13,5 +13,5 @@ class TrendingTopic(
     val topic: Topic,
 
     @Column(name = "trending_score", nullable = false)
-    val trendingScore: Int,
+    val trendingScore: Double,
 )

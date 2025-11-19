@@ -87,6 +87,7 @@ VALUES ('docker', 'Docker', '컨테이너 기반 가상화 플랫폼. 환경 차
        ('terraform', 'Terraform', '인프라를 코드로 관리하는 IaC 도구. 클라우드 자원을 선언적으로 배포 가능.'),
        ('ansible', 'Ansible', '자동화 구성 관리 도구. SSH 기반으로 서버 설정과 배포를 간단하게.'),
        ('jenkins', 'Jenkins', '오픈소스 CI/CD 서버. 파이프라인 자동화로 반복 작업을 줄인다.'),
+       ('git', 'Git', 'Git 분산 버전 관리 시스템. 협업과 코드 이력을 체계적으로 관리 가능.'),
        ('github-actions', 'GitHub Actions', 'GitHub 내에서 실행되는 CI/CD 툴. 워크플로우 자동화가 쉽다.'),
        ('gitlab-ci', 'GitLab CI/CD', 'GitLab 통합 CI/CD 시스템. 프로젝트와 파이프라인을 한 곳에서 관리.'),
        ('circle-ci', 'CircleCI', '클라우드 기반 CI/CD 서비스. 빠른 빌드와 배포 지원.'),

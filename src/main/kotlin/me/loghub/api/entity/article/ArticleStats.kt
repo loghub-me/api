@@ -12,5 +12,5 @@ class ArticleStats(
     var commentCount: Int = 0,
 
     @Column(name = "trending_score", nullable = false)
-    var trendingScore: Int = 0,
+    var trendingScore: Double = 0.0,
 )
