@@ -22,6 +22,7 @@ class TrendingScoreWorker(
     private companion object {
         const val CRON = "0 0 */6 * * *" // Every 6 hours
         const val MAX_SIZE = 49L
+        const val DECAY_FACTOR = 0.85
     }
 
     private val zSetOps: ZSetOperations<String, String>
@@ -32,17 +33,17 @@ class TrendingScoreWorker(
     fun updateTrendingScores() {
         updateTrendingScore(
             RedisKeys.Article.TRENDING_SCORE().key,
-            articleRepository::clearTrendingScore,
+            articleRepository::decayTrendingScore,
             articleRepository::updateTrendingScoreById,
         )
         updateTrendingScore(
             RedisKeys.Series.TRENDING_SCORE().key,
-            seriesRepository::clearTrendingScore,
+            seriesRepository::decayTrendingScore,
             seriesRepository::updateTrendingScoreById
         )
         updateTrendingScore(
             RedisKeys.Question.TRENDING_SCORE().key,
-            questionRepository::clearTrendingScore,
+            questionRepository::decayTrendingScore,
             questionRepository::updateTrendingScoreById
         )
 
@@ -52,10 +53,10 @@ class TrendingScoreWorker(
 
     private fun updateTrendingScore(
         trendingScoreKey: String,
-        clearTrendingScore: () -> Unit,
+        decayTrendingScore: (factor: Double) -> Unit,
         updateTrendingScoreById: (Double, Long) -> Int
     ) {
-        clearTrendingScore()
+        decayTrendingScore(DECAY_FACTOR)
 
         if (!redisTemplate.hasKey(trendingScoreKey)) {
             return

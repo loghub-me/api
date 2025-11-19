@@ -37,8 +37,8 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.trendingScore = 0")
-    fun clearTrendingScore(): Int
+    @Query("UPDATE Article a SET a.stats.trendingScore = a.stats.trendingScore * :factor")
+    fun decayTrendingScore(@Param("factor") factor: Double): Int
 
     @Modifying
     @Query("UPDATE Article a SET a.writerUsername = :newUsername WHERE a.writerUsername = :oldUsername")
