@@ -143,6 +143,10 @@ object ResponseMessage {
         object Inquiry {
             const val POST_SUCCESS = "문의가 성공적으로 등록되었습니다!"
         }
+
+        object TopicRequest {
+            const val POST_SUCCESS = "토픽 요청이 성공적으로 등록되었습니다!"
+        }
     }
 
     object Notification {
