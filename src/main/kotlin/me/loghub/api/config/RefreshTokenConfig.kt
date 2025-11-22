@@ -17,7 +17,7 @@ class RefreshTokenConfig {
         const val NAME = "refresh_token"
         const val PATH = "/"
         val SAME_SITE = Cookie.SameSite.NONE.name
-        val MAX_AGE = 30.days.toJavaDuration()
+        val MAX_AGE = 14.days.toJavaDuration()
     }
 
     @PostConstruct

@@ -10,7 +10,7 @@ object RedisKeys {
     val JOIN_OTP = RedisKeySpec("join_otp:%s", 3.minutes.toJavaDuration())
     val LOGIN_OTP = RedisKeySpec("login_otp:%s", 3.minutes.toJavaDuration())
     val OAUTH2_JOIN_TOKEN = RedisKeySpec("oauth2_join_token:%s", 10.minutes.toJavaDuration())
-    val REFRESH_TOKEN = RedisKeySpec("refresh_token:%s", 30.days.toJavaDuration())
+    val REFRESH_TOKEN = RedisKeySpec("refresh_token:%s", 14.days.toJavaDuration())
     val MARKDOWN = RedisKeySpec("markdown:%s", 1.days.toJavaDuration())
     val NOTIFICATIONS = RedisKeySpec("notifications:%s", 1.days.toJavaDuration())
 
