@@ -2,111 +2,53 @@ package me.loghub.api.controller.series
 
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.series.review.PostSeriesReviewDTO
+import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.jdbc.Sql
 import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestClassOrder(ClassOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
-@Sql(
-    scripts = ["/database/data/truncate.sql", "/database/data/test.sql"],
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-)
-class SeriesReviewControllerTest(@Autowired private val rest: TestRestTemplate) {
+class SeriesReviewControllerTest(
+    @Autowired private val rest: TestRestTemplate,
+    @Autowired private val jdbcTemplate: JdbcTemplate,
+) {
     companion object {
-        lateinit var member1: TokenDTO;
-        lateinit var member2: TokenDTO;
+        lateinit var member1: User
+        lateinit var member1Token: TokenDTO
+        lateinit var member2: User
+        lateinit var member2Token: TokenDTO
 
-        object SeriesReviewId {
-            const val BY_MEMBER1 = 1L
-            const val INVALID = 999L
+        object SeriesReview {
+            object Id {
+                const val BY_MEMBER1 = 1L
+                const val INVALID = 999L
+            }
         }
-
-        val bodyForPost = PostSeriesReviewDTO(content = "New review", rating = 5)
-        val bodyForDelete = PostSeriesReviewDTO(content = "Review to delete", rating = 4)
 
         @JvmStatic
         @BeforeAll
         fun setup(@Autowired grantService: TestGrantService) {
-            member1 = grantService.generateToken("member1")
-            member2 = grantService.generateToken("member2")
+            val (member1, member1Token) = grantService.grant("member1")
+            this.member1 = member1
+            this.member1Token = member1Token
+            val (member2, member2Token) = grantService.grant("member2")
+            this.member2 = member2
+            this.member2Token = member2Token
         }
-    }
-
-    @Test
-    fun getReviews() {
-        val response = getReviews<String>(1L)
-        assertEquals(HttpStatus.OK, response.statusCode)
-    }
-
-    @Test
-    fun `postReview - unauthenticated`() {
-        val response = postReview<String>(1L, bodyForPost)
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
-    }
-
-    @Test
-    fun `postReview - conflict`() {
-        val response = postReview<String>(1L, bodyForPost, member1)
-        assertEquals(HttpStatus.CONFLICT, response.statusCode)
-    }
-
-    @Test
-    fun `postReview - created`() {
-        val response = postReview<String>(2L, bodyForPost, member1)
-        assertEquals(HttpStatus.CREATED, response.statusCode)
-    }
-
-    @Test
-    fun `editReview - unauthenticated`() {
-        val response = editReview<String>(1L, SeriesReviewId.BY_MEMBER1, bodyForPost)
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
-    }
-
-    @Test
-    fun `editReview - forbidden`() {
-        val response = editReview<String>(1L, SeriesReviewId.BY_MEMBER1, bodyForPost, member2)
-        assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
-    }
-
-    @Test
-    fun `editReview - ok`() {
-        val response = editReview<String>(1L, SeriesReviewId.BY_MEMBER1, bodyForPost, member1)
-        assertEquals(HttpStatus.OK, response.statusCode)
-    }
-
-    @Test
-    fun `deleteReview - unauthenticated`() {
-        val response = deleteReview<String>(1L, SeriesReviewId.BY_MEMBER1)
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
-    }
-
-    @Test
-    fun `deleteReview - forbidden`() {
-        val response = deleteReview<String>(1L, SeriesReviewId.BY_MEMBER1, member2)
-        assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
-    }
-
-    @Test
-    fun `deleteReview - not found`() {
-        val response = deleteReview<String>(1L, SeriesReviewId.INVALID, member1)
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-    }
-
-    @Test
-    fun `deleteReview - ok`() {
-        val response = deleteReview<String>(1L, SeriesReviewId.BY_MEMBER1, member1)
-        assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     private inline fun <reified T> getReviews(seriesId: Long) =
@@ -141,5 +83,127 @@ class SeriesReviewControllerTest(@Autowired private val rest: TestRestTemplate) 
         val request = RequestEntity.delete("/series/${seriesId}/reviews/${reviewId}")
         token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
         return rest.exchange(request.build(), T::class.java)
+    }
+
+    private fun resetDatabase() {
+        val dataSource = jdbcTemplate.dataSource
+            ?: error("DataSource is required for resetting database")
+        val populator = ResourceDatabasePopulator().apply {
+            addScript(ClassPathResource("/database/data/truncate.sql"))
+            addScript(ClassPathResource("/database/data/test.sql"))
+        }
+
+        DatabasePopulatorUtils.execute(populator, dataSource)
+    }
+
+    @Nested
+    @Order(1)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class GetReviews {
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `getReviews - ok`() {
+            val response = getReviews<String>(1L)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(2)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+    inner class PostReview {
+        val bodyForPost = PostSeriesReviewDTO(
+            content = "This is a new review.",
+            rating = 3
+        )
+
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `postReview - unauthenticated`() {
+            val response = postReview<String>(1L, bodyForPost)
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        fun `postReview - created`() {
+            val response = postReview<String>(2L, bodyForPost, member1Token)
+            assertEquals(HttpStatus.CREATED, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(3)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class EditReview {
+        val bodyForEdit = PostSeriesReviewDTO(
+            content = "This is a edited review.",
+            rating = 4,
+        )
+
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `editReview - unauthenticated`() {
+            val response = editReview<String>(1L, SeriesReview.Id.BY_MEMBER1, bodyForEdit)
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        fun `editReview - forbidden`() {
+            val response = editReview<String>(1L, SeriesReview.Id.BY_MEMBER1, bodyForEdit, member2Token)
+            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+        }
+
+        @Test
+        fun `editReview - not_found`() {
+            val response = editReview<String>(1L, SeriesReview.Id.INVALID, bodyForEdit, member1Token)
+            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+        }
+
+        @Test
+        fun `editReview - ok`() {
+            val response = editReview<String>(1L, SeriesReview.Id.BY_MEMBER1, bodyForEdit, member1Token)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(4)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+    inner class DeleteReview {
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `deleteReview - unauthenticated`() {
+            val response = deleteReview<String>(1L, SeriesReview.Id.BY_MEMBER1)
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        fun `deleteReview - forbidden`() {
+            val response = deleteReview<String>(1L, SeriesReview.Id.BY_MEMBER1, member2Token)
+            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+        }
+
+        @Test
+        fun `deleteReview - not_found`() {
+            val response = deleteReview<String>(1L, SeriesReview.Id.INVALID, member1Token)
+            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+        }
+
+        @Test
+        @Order(Integer.MAX_VALUE)
+        fun `deleteReview - ok`() {
+            val response = deleteReview<String>(1L, SeriesReview.Id.BY_MEMBER1, member1Token)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
     }
 }

@@ -2,118 +2,53 @@ package me.loghub.api.controller.article
 
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
 import me.loghub.api.dto.auth.token.TokenDTO
+import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.jdbc.Sql
 import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestClassOrder(ClassOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
-@Sql(
-    scripts = ["/database/data/truncate.sql", "/database/data/test.sql"],
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-)
-class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate) {
+class ArticleCommentControllerTest(
+    @Autowired private val rest: TestRestTemplate,
+    @Autowired private val jdbcTemplate: JdbcTemplate,
+) {
     companion object {
-        lateinit var member1: TokenDTO;
-        lateinit var member2: TokenDTO;
+        lateinit var member1: User
+        lateinit var member1Token: TokenDTO
+        lateinit var member2: User
+        lateinit var member2Token: TokenDTO
 
-        object ArticleCommentId {
-            const val BY_MEMBER1 = 1L
-            const val INVALID = 999L
+        object ArticleComment {
+            object Id {
+                const val BY_MEMBER1 = 1L
+                const val INVALID = 999L
+            }
         }
-
-        val bodyForPost = PostArticleCommentDTO(content = "New comment", parentId = null)
-        val bodyForEdit = PostArticleCommentDTO(content = "Edited comment", parentId = null)
-        val bodyForPostReply = PostArticleCommentDTO(content = "New reply", parentId = ArticleCommentId.BY_MEMBER1)
 
         @JvmStatic
         @BeforeAll
         fun setup(@Autowired grantService: TestGrantService) {
-            member1 = grantService.generateToken("member1")
-            member2 = grantService.generateToken("member2")
+            val (member1, member1Token) = grantService.grant("member1")
+            this.member1 = member1
+            this.member1Token = member1Token
+            val (member2, member2Token) = grantService.grant("member2")
+            this.member2 = member2
+            this.member2Token = member2Token
         }
-    }
-
-    @Test
-    fun getComments() {
-        val response = getComments<String>(1L)
-        assertEquals(HttpStatus.OK, response.statusCode)
-    }
-
-    @Test
-    fun getReplies() {
-        val response = getReplies<String>(1L, ArticleCommentId.BY_MEMBER1)
-        assertEquals(HttpStatus.OK, response.statusCode)
-    }
-
-    @Test
-    fun `postComment - unauthenticated`() {
-        val response = postComment<String>(1L, bodyForPost)
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
-    }
-
-    @Test
-    fun `postComment - created 1`() {
-        val response = postComment<String>(1L, bodyForPost, member1)
-        assertEquals(HttpStatus.CREATED, response.statusCode)
-    }
-
-    @Test
-    fun `postComment - created 2`() {
-        val response = postComment<String>(1L, bodyForPostReply, member1)
-        assertEquals(HttpStatus.CREATED, response.statusCode)
-    }
-
-    @Test
-    fun `editComment - unauthenticated`() {
-        val response = editComment<String>(1L, ArticleCommentId.BY_MEMBER1, bodyForPost)
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
-    }
-
-    @Test
-    fun `editComment - forbidden`() {
-        val response = editComment<String>(1L, ArticleCommentId.BY_MEMBER1, bodyForEdit, member2)
-        assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
-    }
-
-    @Test
-    fun `editComment - ok`() {
-        val response = editComment<String>(1L, ArticleCommentId.BY_MEMBER1, bodyForEdit, member1)
-        assertEquals(HttpStatus.OK, response.statusCode)
-    }
-
-    @Test
-    fun `deleteComment - unauthenticated`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1)
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
-    }
-
-    @Test
-    fun `deleteComment - forbidden`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1, member2)
-        assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
-    }
-
-    @Test
-    fun `deleteComment - not found`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.INVALID, member1)
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-    }
-
-    @Test
-    fun `deleteComment - ok`() {
-        val response = deleteComment<String>(1L, ArticleCommentId.BY_MEMBER1, member1)
-        assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     private inline fun <reified T> getComments(articleId: Long) =
@@ -151,5 +86,148 @@ class ArticleCommentControllerTest(@Autowired private val rest: TestRestTemplate
         val request = RequestEntity.delete("/articles/${articleId}/comments/${commentId}")
         token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
         return rest.exchange(request.build(), T::class.java)
+    }
+
+    private fun resetDatabase() {
+        val dataSource = jdbcTemplate.dataSource
+            ?: error("DataSource is required for resetting database")
+        val populator = ResourceDatabasePopulator().apply {
+            addScript(ClassPathResource("/database/data/truncate.sql"))
+            addScript(ClassPathResource("/database/data/test.sql"))
+        }
+
+        DatabasePopulatorUtils.execute(populator, dataSource)
+    }
+
+    @Nested
+    @Order(1)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class GetComments {
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `getComments - ok`() {
+            val response = getComments<String>(1L)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
+    }
+
+
+    @Nested
+    @Order(2)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class GetReplies {
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `getReplies - ok`() {
+            val response = getReplies<String>(1L, ArticleComment.Id.BY_MEMBER1)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(3)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class PostComment {
+        val bodyForPost = PostArticleCommentDTO(
+            content = "This is a new comment.",
+            parentId = null
+        )
+
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `postComment - unauthenticated`() {
+            val response = postComment<String>(1L, bodyForPost)
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        fun `postComment - created - without parentId`() {
+            val response = postComment<String>(1L, bodyForPost, member1Token)
+            assertEquals(HttpStatus.CREATED, response.statusCode)
+        }
+
+        @Test
+        fun `postComment - created - with parentId`() {
+            val bodyForPostWithParentId = bodyForPost.copy(parentId = ArticleComment.Id.BY_MEMBER1)
+            val response = postComment<String>(1L, bodyForPostWithParentId, member1Token)
+            assertEquals(HttpStatus.CREATED, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(4)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class EditComment {
+        val bodyForEdit = PostArticleCommentDTO(
+            content = "This is a edited comment.",
+            parentId = null
+        )
+
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `editComment - unauthenticated`() {
+            val response = editComment<String>(1L, ArticleComment.Id.BY_MEMBER1, bodyForEdit)
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        fun `editComment - forbidden`() {
+            val response = editComment<String>(1L, ArticleComment.Id.BY_MEMBER1, bodyForEdit, member2Token)
+            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+        }
+
+        @Test
+        fun `editComment - not_found`() {
+            val response = editComment<String>(1L, ArticleComment.Id.INVALID, bodyForEdit, member1Token)
+            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+        }
+
+        @Test
+        fun `editComment - ok`() {
+            val response = editComment<String>(1L, ArticleComment.Id.BY_MEMBER1, bodyForEdit, member1Token)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(5)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+    inner class DeleteComment {
+        @BeforeAll
+        fun setupDatabase() = resetDatabase()
+
+        @Test
+        fun `deleteComment - unauthenticated`() {
+            val response = deleteComment<String>(1L, ArticleComment.Id.BY_MEMBER1)
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        fun `deleteComment - forbidden`() {
+            val response = deleteComment<String>(1L, ArticleComment.Id.BY_MEMBER1, member2Token)
+            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+        }
+
+        @Test
+        fun `deleteComment - not_found`() {
+            val response = deleteComment<String>(1L, ArticleComment.Id.INVALID, member1Token)
+            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+        }
+
+        @Test
+        @Order(Integer.MAX_VALUE)
+        fun `deleteComment - ok`() {
+            val response = deleteComment<String>(1L, ArticleComment.Id.BY_MEMBER1, member1Token)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
     }
 }
