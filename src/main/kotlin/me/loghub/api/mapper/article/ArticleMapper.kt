@@ -38,10 +38,11 @@ object ArticleMapper {
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
-    fun mapForEdit(article: Article) = ArticleForEditDTO(
+    fun mapForEdit(article: Article, draft: String?) = ArticleForEditDTO(
         id = article.id!!,
         title = article.title,
         content = article.content,
+        draft = draft,
         thumbnail = article.thumbnail,
         topicSlugs = article.topicsFlat.map { it.slug },
     )

@@ -1,6 +1,7 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.question.*
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.user.User
@@ -16,9 +17,9 @@ import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 class QuestionService(
@@ -26,6 +27,7 @@ class QuestionService(
     private val questionCustomRepository: QuestionCustomRepository,
     private val topicRepository: TopicRepository,
     private val cacheService: CacheService,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
         private const val PAGE_SIZE = 20
@@ -59,7 +61,9 @@ class QuestionService(
 
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        return QuestionMapper.mapForEdit(question)
+        val draftRedisKey = RedisKeys.Question.DRAFT(questionId)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        return QuestionMapper.mapForEdit(question, draft)
     }
 
     @Transactional
@@ -116,13 +120,5 @@ class QuestionService(
 
         question.close()
         return question
-    }
-
-    private fun generateUniqueSlug(username: String, title: String): String {
-        var slug = title.toSlug()
-        while (questionRepository.existsByCompositeKey(username, slug)) {
-            slug = "$slug-${UUID.randomUUID()}"
-        }
-        return slug
     }
 }

@@ -1,6 +1,7 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
@@ -18,6 +19,7 @@ import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkCooldown
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -27,6 +29,7 @@ class QuestionAnswerService(
     private val questionRepository: QuestionRepository,
     private val questionAnswerGenerateService: QuestionAnswerGenerateService,
     private val cacheService: CacheService,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     @Transactional(readOnly = true)
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
@@ -44,7 +47,9 @@ class QuestionAnswerService(
 
         checkPermission(answer.writer == writer) { ResponseMessage.Question.Answer.PERMISSION_DENIED }
 
-        return QuestionAnswerMapper.mapForEdit(answer)
+        val draftRedisKey = RedisKeys.Question.Answer.DRAFT(questionId, answerId)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        return QuestionAnswerMapper.mapForEdit(answer, draft)
     }
 
     @Transactional

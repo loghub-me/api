@@ -1,6 +1,7 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.series.chapter.EditSeriesChapterDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
@@ -16,6 +17,7 @@ import me.loghub.api.service.common.CacheService
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.orElseThrowNotFound
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,6 +27,7 @@ class SeriesChapterService(
     private val seriesChapterRepository: SeriesChapterRepository,
     private val articleRepository: ArticleRepository,
     private val cacheService: CacheService,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
         private const val DEFAULT_CHAPTER_TITLE = "새 챕터"
@@ -47,7 +50,9 @@ class SeriesChapterService(
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        return SeriesChapterMapper.mapForEdit(chapter)
+        val draftRedisKey = RedisKeys.Series.Chapter.DRAFT(seriesId, chapter.id!!)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        return SeriesChapterMapper.mapForEdit(chapter, draft)
     }
 
     @Transactional

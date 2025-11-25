@@ -11,6 +11,7 @@ import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
 import me.loghub.api.dto.series.chapter.UpdateSeriesChapterSequenceDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.service.series.SeriesChapterDraftService
 import me.loghub.api.service.series.SeriesChapterService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/series/{seriesId}/chapters")
-class SeriesChapterController(private val seriesChapterService: SeriesChapterService) {
+class SeriesChapterController(
+    private val seriesChapterService: SeriesChapterService,
+    private val seriesChapterDraftService: SeriesChapterDraftService
+) {
     @GetMapping("/{sequence}")
     fun getChapter(@PathVariable seriesId: Long, @PathVariable sequence: Int): ResponseEntity<SeriesChapterDetailDTO> {
         val chapter = seriesChapterService.getChapter(seriesId, sequence)
@@ -71,6 +75,7 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val editedChapter = seriesChapterService.editChapter(seriesId, chapterId, requestBody, writer)
+        seriesChapterDraftService.deleteChapterDraft(seriesId, chapterId, writer)
         return RedirectResponseBody(
             pathname = "/edit/series/${editedChapter.series.id}",
             message = ResponseMessage.Series.Chapter.EDIT_SUCCESS,

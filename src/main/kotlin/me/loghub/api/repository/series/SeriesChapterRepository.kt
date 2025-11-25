@@ -2,6 +2,7 @@ package me.loghub.api.repository.series
 
 import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.series.SeriesChapter
+import me.loghub.api.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -28,6 +29,8 @@ interface SeriesChapterRepository : JpaRepository<SeriesChapter, Long> {
     fun findWithWriterAllBySeriesOrderBySequenceAsc(series: Series): List<SeriesChapter>
 
     fun findAllBySeriesIdAndSequenceGreaterThanOrderBySequenceAsc(seriesId: Long, sequence: Int): List<SeriesChapter>
+
+    fun existsBySeriesAndIdAndWriter(series: Series, id: Long, writer: User): Boolean
 
     fun countBySeries(series: Series): Int
 }

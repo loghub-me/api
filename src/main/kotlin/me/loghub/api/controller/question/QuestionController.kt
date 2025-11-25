@@ -8,6 +8,7 @@ import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
+import me.loghub.api.service.question.QuestionDraftService
 import me.loghub.api.service.question.QuestionService
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/questions")
-class QuestionController(private val questionService: QuestionService) {
+class QuestionController(
+    private val questionService: QuestionService,
+    private val questionDraftService: QuestionDraftService
+) {
     @GetMapping
     fun searchQuestions(
         @RequestParam(defaultValue = "") query: String,
@@ -64,6 +68,7 @@ class QuestionController(private val questionService: QuestionService) {
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val editedQuestion = questionService.editQuestion(id, requestBody, writer)
+        questionDraftService.deleteQuestionDraft(id, writer)
         return RedirectResponseBody(
             pathname = "/questions/${writer.username}/${editedQuestion.slug}",
             message = ResponseMessage.Question.EDIT_SUCCESS,

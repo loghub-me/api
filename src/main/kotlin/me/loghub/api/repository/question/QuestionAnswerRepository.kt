@@ -1,6 +1,8 @@
 package me.loghub.api.repository.question
 
+import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
+import me.loghub.api.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -18,4 +20,6 @@ interface QuestionAnswerRepository : JpaRepository<QuestionAnswer, Long> {
     @Query("$SELECT_ANSWER WHERE $BY_ID AND $BY_QUESTION_ID")
     @EntityGraph(attributePaths = ["writer", "question"])
     fun findWithWriterByIdAndQuestionId(id: Long, questionId: Long): QuestionAnswer?
+
+    fun existsByQuestionAndIdAndWriter(question: Question, id: Long, writer: User): Boolean
 }

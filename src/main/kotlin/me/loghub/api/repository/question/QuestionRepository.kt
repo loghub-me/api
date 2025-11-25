@@ -1,6 +1,7 @@
 package me.loghub.api.repository.question
 
 import me.loghub.api.entity.question.Question
+import me.loghub.api.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -25,6 +26,8 @@ interface QuestionRepository : JpaRepository<Question, Long> {
 
     @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>
+
+    fun existsByIdAndWriter(id: Long, writer: User): Boolean
 
     @Query("$EXISTS_QUESTION WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean

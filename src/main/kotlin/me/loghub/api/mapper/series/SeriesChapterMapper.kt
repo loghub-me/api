@@ -30,10 +30,11 @@ object SeriesChapterMapper {
         updatedAt = chapter.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
-    fun mapForEdit(chapter: SeriesChapter) = SeriesChapterForEditDTO(
+    fun mapForEdit(chapter: SeriesChapter, draft: String?) = SeriesChapterForEditDTO(
         id = chapter.id!!,
         title = chapter.title,
         content = chapter.content,
+        draft = draft,
         sequence = chapter.sequence,
     )
 }

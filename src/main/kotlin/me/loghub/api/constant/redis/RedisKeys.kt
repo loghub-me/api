@@ -15,17 +15,24 @@ object RedisKeys {
     val NOTIFICATIONS = RedisKeySpec("notifications:%s", 1.days.toJavaDuration())
 
     object Article {
+        val DRAFT = RedisKeySpec("articles:%s:draft", 7.days.toJavaDuration())
         val TRENDING_SCORE = RedisKeySpec("articles:trending_score", 6.hours.toJavaDuration())
     }
 
     object Series {
         val TRENDING_SCORE = RedisKeySpec("series:trending_score", 6.hours.toJavaDuration())
+
+        object Chapter {
+            val DRAFT = RedisKeySpec("series:%s:chapter:%s:draft", 7.days.toJavaDuration())
+        }
     }
 
     object Question {
+        val DRAFT = RedisKeySpec("questions:%s:draft", 7.days.toJavaDuration())
         val TRENDING_SCORE = RedisKeySpec("questions:trending_score", 6.hours.toJavaDuration())
 
         object Answer {
+            val DRAFT = RedisKeySpec("questions:%s:answer:%s:draft", 7.days.toJavaDuration())
             val GENERATING = RedisKeySpec("questions:%s:answer:generating", 5.minutes.toJavaDuration())
             val GENERATE_COOLDOWN = RedisKeySpec("questions:%s:answer:generate_cooldown", 10.minutes.toJavaDuration())
         }

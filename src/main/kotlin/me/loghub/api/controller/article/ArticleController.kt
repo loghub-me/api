@@ -7,6 +7,7 @@ import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.RedirectResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.entity.user.User
+import me.loghub.api.service.article.ArticleDraftService
 import me.loghub.api.service.article.ArticleService
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/articles")
-class ArticleController(private val articleService: ArticleService) {
+class ArticleController(
+    private val articleService: ArticleService,
+    private val articleDraftService: ArticleDraftService
+) {
     @GetMapping
     fun searchArticles(
         @RequestParam(defaultValue = "") query: String,
@@ -62,6 +66,7 @@ class ArticleController(private val articleService: ArticleService) {
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val editedArticle = articleService.editArticle(id, requestBody, writer)
+        articleDraftService.deleteArticleDraft(id, writer)
         return RedirectResponseBody(
             pathname = "/articles/${writer.username}/${editedArticle.slug}",
             message = ResponseMessage.Article.EDIT_SUCCESS,

@@ -42,10 +42,11 @@ object QuestionMapper {
             updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
         )
 
-    fun mapForEdit(question: Question) = QuestionForEditDTO(
+    fun mapForEdit(question: Question, draft: String?) = QuestionForEditDTO(
         id = question.id!!,
         title = question.title,
         content = question.content,
+        draft = draft,
         topicSlugs = question.topicsFlat.map { it.slug },
     )
 

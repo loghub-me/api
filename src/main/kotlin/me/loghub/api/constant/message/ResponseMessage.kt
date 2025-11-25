@@ -66,6 +66,11 @@ object ResponseMessage {
         const val DELETE_SUCCESS = "아티클이 성공적으로 삭제되었습니다!"
         const val PERMISSION_DENIED = "이 아티클에 대한 권한이 없습니다!"
 
+        object Draft {
+            const val UPDATE_SUCCESS = "아티클이 성공적으로 임시 저장되었습니다!"
+            const val DELETE_SUCCESS = "아티클 임시 저장본이 성공적으로 삭제되었습니다!"
+        }
+
         object Comment {
             const val NOT_FOUND = "아티클의 댓글을 찾을 수 없습니다."
             const val POST_SUCCESS = "댓글이 성공적으로 등록되었습니다!"
@@ -93,6 +98,11 @@ object ResponseMessage {
             const val INVALID_SEQUENCE = "챕터 순서가 유효하지 않습니다."
             const val DUPLICATED_SEQUENCE = "챕터 순서에 중복된 값이 있습니다."
             const val OUT_OF_BOUNDS_SEQUENCE = "챕터 순서가 범위를 벗어났습니다."
+
+            object Draft {
+                const val UPDATE_SUCCESS = "챕터가 성공적으로 임시 저장되었습니다!"
+                const val DELETE_SUCCESS = "챕터 임시 저장본이 성공적으로 삭제되었습니다!"
+            }
         }
 
         object Review {
@@ -114,6 +124,11 @@ object ResponseMessage {
         const val PERMISSION_DENIED = "이 질문에 대한 권한이 없습니다!"
         const val STATUS_MUST_BE_OPEN = "질문 상태는 OPEN이어야 합니다!"
 
+        object Draft {
+            const val UPDATE_SUCCESS = "질문이 성공적으로 임시 저장되었습니다!"
+            const val DELETE_SUCCESS = "질문 임시 저장본이 성공적으로 삭제되었습니다!"
+        }
+
         object Answer {
             const val NOT_FOUND = "답변을 찾을 수 없습니다."
             const val POST_SUCCESS = "답변이 성공적으로 등록되었습니다!"
@@ -125,6 +140,11 @@ object ResponseMessage {
             const val PERMISSION_DENIED = "이 답변에 대한 권한이 없습니다!"
             const val REQUEST_GENERATE_SUCCESS = "답변 생성 요청이 성공적으로 처리되었습니다!"
             const val COOLDOWN_NOT_ELAPSED = "답변 생성 요청은 10분에 한 번만 가능합니다!"
+
+            object Draft {
+                const val UPDATE_SUCCESS = "답변이 성공적으로 임시 저장되었습니다!"
+                const val DELETE_SUCCESS = "답변 임시 저장본이 성공적으로 삭제되었습니다!"
+            }
         }
     }
 

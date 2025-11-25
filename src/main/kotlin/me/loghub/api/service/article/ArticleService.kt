@@ -1,6 +1,7 @@
 package me.loghub.api.service.article
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.article.*
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
@@ -16,6 +17,7 @@ import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,6 +27,7 @@ class ArticleService(
     private val articleCustomRepository: ArticleCustomRepository,
     private val topicRepository: TopicRepository,
     private val cacheService: CacheService,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
         private const val PAGE_SIZE = 20
@@ -56,7 +59,9 @@ class ArticleService(
 
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        return ArticleMapper.mapForEdit(article)
+        val draftRedisKey = RedisKeys.Article.DRAFT(articleId)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        return ArticleMapper.mapForEdit(article, draft)
     }
 
     @Transactional
