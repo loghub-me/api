@@ -208,7 +208,7 @@ class ArticleControllerTest(
         val bodyForPost = PostArticleDTO(
             title = "New Article",
             content = "This is a new article.",
-            thumbnail = "default/article-thumbnail.webp",
+            thumbnail = "0/default-article-thumbnail.webp",
             topicSlugs = listOf("java", "spring"),
         )
 
@@ -253,7 +253,7 @@ class ArticleControllerTest(
         val bodyForEdit = PostArticleDTO(
             title = "Edited Article",
             content = "This is an edited article.",
-            thumbnail = "default/article-thumbnail.webp",
+            thumbnail = "0/default-article-thumbnail.webp",
             topicSlugs = listOf("kotlin", "spring-boot"),
         )
 

@@ -208,7 +208,7 @@ class SeriesControllerTest(
         val bodyForPost = PostSeriesDTO(
             title = "New Series",
             description = "This is a new series.",
-            thumbnail = "default/series-thumbnail.webp",
+            thumbnail = "0/default-series-thumbnail.webp",
             topicSlugs = listOf("java", "spring"),
         )
 
@@ -253,7 +253,7 @@ class SeriesControllerTest(
         val bodyForEdit = PostSeriesDTO(
             title = "Edited Series",
             description = "This is an edited series.",
-            thumbnail = "default/series-thumbnail.webp",
+            thumbnail = "0/default-series-thumbnail.webp",
             topicSlugs = listOf("kotlin", "spring-boot"),
         )
 
