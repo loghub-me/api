@@ -40,9 +40,9 @@ class SeriesChapterService(
     }
 
     @Transactional(readOnly = true)
-    fun getChapterForEdit(seriesId: Long, sequence: Int, writer: User): SeriesChapterForEditDTO {
+    fun getChapterForEdit(seriesId: Long, chapterId: Long, writer: User): SeriesChapterForEditDTO {
         val series = seriesRepository.getReferenceById(seriesId)
-        val chapter = seriesChapterRepository.findWithWriterBySeriesAndSequence(series, sequence)
+        val chapter = seriesChapterRepository.findWithWriterBySeriesAndId(series, chapterId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
@@ -91,11 +91,9 @@ class SeriesChapterService(
     }
 
     @Transactional
-    fun editChapter(
-        seriesId: Long, sequence: Int, requestBody: EditSeriesChapterDTO, writer: User
-    ): SeriesChapter {
+    fun editChapter(seriesId: Long, chapterId: Long, requestBody: EditSeriesChapterDTO, writer: User): SeriesChapter {
         val series = seriesRepository.getReferenceById(seriesId)
-        val chapter = seriesChapterRepository.findWithWriterBySeriesAndSequence(series, sequence)
+        val chapter = seriesChapterRepository.findWithWriterBySeriesAndId(series, chapterId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
@@ -105,12 +103,14 @@ class SeriesChapterService(
     }
 
     @Transactional
-    fun deleteChapter(seriesId: Long, sequence: Int, writer: User) {
+    fun deleteChapter(seriesId: Long, chapterId: Long, writer: User) {
         val series = seriesRepository.getReferenceById(seriesId)
-        val chapter = seriesChapterRepository.findWithWriterBySeriesAndSequence(series, sequence)
+        val chapter = seriesChapterRepository.findWithWriterBySeriesAndId(series, chapterId)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
-        val chaptersToShift =
-            seriesChapterRepository.findAllBySeriesIdAndSequenceGreaterThanOrderBySequenceAsc(seriesId, sequence)
+        val chaptersToShift = seriesChapterRepository.findAllBySeriesIdAndSequenceGreaterThanOrderBySequenceAsc(
+            seriesId,
+            chapter.sequence
+        )
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 

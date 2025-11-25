@@ -26,13 +26,13 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         return ResponseEntity.ok(chapter)
     }
 
-    @GetMapping("/{sequence}/for-edit")
+    @GetMapping("/{chapterId}/for-edit")
     fun getChapterForEdit(
         @PathVariable seriesId: Long,
-        @PathVariable sequence: Int,
+        @PathVariable chapterId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<SeriesChapterForEditDTO> {
-        val foundSeries = seriesChapterService.getChapterForEdit(seriesId, sequence, writer)
+        val foundSeries = seriesChapterService.getChapterForEdit(seriesId, chapterId, writer)
         return ResponseEntity.ok(foundSeries)
     }
 
@@ -63,14 +63,14 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         ).toResponseEntity()
     }
 
-    @PutMapping("/{sequence}")
+    @PutMapping("/{chapterId}")
     fun editChapter(
         @PathVariable seriesId: Long,
-        @PathVariable sequence: Int,
+        @PathVariable chapterId: Long,
         @RequestBody @Valid requestBody: EditSeriesChapterDTO,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        val editedChapter = seriesChapterService.editChapter(seriesId, sequence, requestBody, writer)
+        val editedChapter = seriesChapterService.editChapter(seriesId, chapterId, requestBody, writer)
         return RedirectResponseBody(
             pathname = "/edit/series/${editedChapter.series.id}",
             message = ResponseMessage.Series.Chapter.EDIT_SUCCESS,
@@ -78,13 +78,13 @@ class SeriesChapterController(private val seriesChapterService: SeriesChapterSer
         ).toResponseEntity()
     }
 
-    @DeleteMapping("/{sequence}")
+    @DeleteMapping("/{chapterId}")
     fun deleteChapter(
         @PathVariable seriesId: Long,
-        @PathVariable sequence: Int,
+        @PathVariable chapterId: Long,
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
-        seriesChapterService.deleteChapter(seriesId, sequence, writer)
+        seriesChapterService.deleteChapter(seriesId, chapterId, writer)
         return MessageResponseBody(
             message = ResponseMessage.Series.Chapter.DELETE_SUCCESS,
             status = HttpStatus.OK,

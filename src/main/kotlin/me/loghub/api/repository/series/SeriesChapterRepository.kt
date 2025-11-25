@@ -8,11 +8,16 @@ import org.springframework.data.jpa.repository.Query
 
 interface SeriesChapterRepository : JpaRepository<SeriesChapter, Long> {
     private companion object {
-        const val SELECT_CHAPTER = "SELECT bc FROM SeriesChapter bc"
-        const val BY_SERIES = "bc.series = :series"
-        const val BY_SEQUENCE = "bc.sequence = :sequence"
-        const val SEQUENCE_ASC = "bc.sequence ASC"
+        const val SELECT_CHAPTER = "SELECT sc FROM SeriesChapter sc"
+        const val BY_ID = "sc.id = :id"
+        const val BY_SERIES = "sc.series = :series"
+        const val BY_SEQUENCE = "sc.sequence = :sequence"
+        const val SEQUENCE_ASC = "sc.sequence ASC"
     }
+
+    @Query("$SELECT_CHAPTER WHERE $BY_SERIES AND $BY_ID")
+    @EntityGraph(attributePaths = ["writer"])
+    fun findWithWriterBySeriesAndId(series: Series, id: Long): SeriesChapter?
 
     @Query("$SELECT_CHAPTER WHERE $BY_SERIES AND $BY_SEQUENCE")
     @EntityGraph(attributePaths = ["writer"])
