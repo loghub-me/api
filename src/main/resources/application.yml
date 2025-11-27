@@ -11,6 +11,8 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
+  jpa:
+    open-in-view: false
   security:
     oauth2:
       client:
