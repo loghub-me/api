@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
 
 @RestController
 @RequestMapping("/auth/refresh")
@@ -22,7 +21,7 @@ class RefreshController(private val refreshService: RefreshService) {
         @CookieValue(
             RefreshTokenConfig.NAME,
             required = false
-        ) refreshToken: UUID?
+        ) refreshToken: String?
     ): ResponseEntity<ResponseBody> {
         val token = refreshService.refreshToken(refreshToken)
         val responseBody = MessageResponseBody(

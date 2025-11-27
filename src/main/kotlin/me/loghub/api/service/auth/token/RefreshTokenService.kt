@@ -8,8 +8,8 @@ import java.util.*
 
 @Service
 class RefreshTokenService(private val redisTemplate: RedisTemplate<String, String>) {
-    fun generateToken(user: User): UUID {
-        val token = UUID.randomUUID()
+    fun generateToken(user: User): String {
+        val token = "${user.id}:${UUID.randomUUID()}"
         val redisKey = RedisKeys.REFRESH_TOKEN(token)
         redisTemplate.opsForValue().set(redisKey.key, user.id.toString(), redisKey.ttl)
         return token

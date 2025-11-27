@@ -9,7 +9,6 @@ import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import java.util.*
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -20,7 +19,7 @@ class RefreshService(
     private val tokenService: TokenService,
 ) {
     @Transactional
-    fun refreshToken(token: UUID?): TokenDTO {
+    fun refreshToken(token: String?): TokenDTO {
         requireNotNull(token) { ResponseMessage.Auth.INVALID_TOKEN }
 
         val redisKey = RedisKeys.REFRESH_TOKEN(token)

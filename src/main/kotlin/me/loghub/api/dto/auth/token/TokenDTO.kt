@@ -2,11 +2,10 @@ package me.loghub.api.dto.auth.token
 
 import me.loghub.api.config.RefreshTokenConfig
 import org.springframework.http.ResponseCookie
-import java.util.*
 
 data class TokenDTO(
     val accessToken: String,
-    val refreshToken: UUID,
+    val refreshToken: String,
 ) {
     val authorization get() = "Bearer $accessToken"
     val cookie
