@@ -6,7 +6,6 @@ import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.exception.auth.BadRefreshTokenException
 import me.loghub.api.exception.auth.PermissionDeniedException
-import org.springframework.boot.web.server.Cookie
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -44,10 +43,11 @@ class AuthExceptionHandler {
 
     private fun generateEmptyRefreshTokenCookie() = ResponseCookie
         .from(RefreshTokenConfig.NAME, "")
+        .domain(RefreshTokenConfig.DOMAIN)
         .httpOnly(true)
         .secure(true)
-        .sameSite(Cookie.SameSite.NONE.name)
-        .path("/")
+        .path(RefreshTokenConfig.PATH)
+        .sameSite(RefreshTokenConfig.SAME_SITE)
         .maxAge(0)
         .build()
 }
