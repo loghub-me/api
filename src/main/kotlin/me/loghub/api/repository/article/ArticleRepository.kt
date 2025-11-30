@@ -36,12 +36,16 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.trendingScore = :trendingScore WHERE $BY_ID")
-    fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
+    @Query("UPDATE Article a SET a.stats.trendingScore = a.stats.trendingScore + :trendingScore WHERE $BY_ID")
+    fun incrementTrendingScoreById(@Param("trendingScore") trendingScore: Double, @Param("id") id: Long): Int
 
     @Modifying
     @Query("UPDATE Article a SET a.stats.trendingScore = a.stats.trendingScore * :factor")
-    fun decayTrendingScore(@Param("factor") factor: Double): Int
+    fun decayTrendingScores(@Param("factor") factor: Double): Int
+
+    @Modifying
+    @Query("UPDATE Article a SET a.stats.trendingScore = 0 WHERE a.stats.trendingScore < :threshold")
+    fun clearLowTrendingScores(@Param("threshold") threshold: Double): Int
 
     @Modifying
     @Query("UPDATE Article a SET a.writerUsername = :newUsername WHERE a.writerUsername = :oldUsername")

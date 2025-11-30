@@ -37,12 +37,16 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
 
     @Modifying
-    @Query("UPDATE Series s SET s.stats.trendingScore = :trendingScore WHERE $BY_ID")
-    fun updateTrendingScoreById(trendingScore: Double, id: Long): Int
+    @Query("UPDATE Series s SET s.stats.trendingScore = s.stats.trendingScore + :trendingScore WHERE $BY_ID")
+    fun incrementTrendingScoreById(@Param("trendingScore") trendingScore: Double, @Param("id") id: Long): Int
 
     @Modifying
     @Query("UPDATE Series s SET s.stats.trendingScore = s.stats.trendingScore * :factor")
-    fun decayTrendingScore(@Param("factor") factor: Double): Int
+    fun decayTrendingScores(@Param("factor") factor: Double): Int
+
+    @Modifying
+    @Query("UPDATE Series s SET s.stats.trendingScore = 0 WHERE s.stats.trendingScore < :threshold")
+    fun clearLowTrendingScores(@Param("threshold") threshold: Double): Int
 
     @Modifying
     @Query("UPDATE Series s SET s.writerUsername = :newUsername WHERE s.writerUsername = :oldUsername")

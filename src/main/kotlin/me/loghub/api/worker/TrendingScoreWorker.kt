@@ -23,6 +23,7 @@ class TrendingScoreWorker(
         const val CRON = "0 0 */6 * * *" // Every 6 hours
         const val MAX_SIZE = 49L
         const val DECAY_FACTOR = 0.85
+        const val LOW_SCORE_THRESHOLD = 0.1
     }
 
     private val zSetOps: ZSetOperations<String, String>
@@ -33,18 +34,21 @@ class TrendingScoreWorker(
     fun updateTrendingScores() {
         updateTrendingScore(
             RedisKeys.Article.TRENDING_SCORE().key,
-            articleRepository::decayTrendingScore,
-            articleRepository::updateTrendingScoreById,
+            articleRepository::decayTrendingScores,
+            articleRepository::clearLowTrendingScores,
+            articleRepository::incrementTrendingScoreById,
         )
         updateTrendingScore(
             RedisKeys.Series.TRENDING_SCORE().key,
-            seriesRepository::decayTrendingScore,
-            seriesRepository::updateTrendingScoreById
+            seriesRepository::decayTrendingScores,
+            seriesRepository::clearLowTrendingScores,
+            seriesRepository::incrementTrendingScoreById
         )
         updateTrendingScore(
             RedisKeys.Question.TRENDING_SCORE().key,
-            questionRepository::decayTrendingScore,
-            questionRepository::updateTrendingScoreById
+            questionRepository::decayTrendingScores,
+            questionRepository::clearLowTrendingScores,
+            questionRepository::incrementTrendingScoreById
         )
 
         topicRepository.updateTrendingScoresFromTrendingTopic()
@@ -52,22 +56,24 @@ class TrendingScoreWorker(
     }
 
     private fun updateTrendingScore(
-        trendingScoreKey: String,
-        decayTrendingScore: (factor: Double) -> Unit,
-        updateTrendingScoreById: (Double, Long) -> Int
+        key: String,
+        decay: (factor: Double) -> Int,
+        clear: (threshold: Double) -> Int,
+        increment: (Double, Long) -> Int
     ) {
-        decayTrendingScore(DECAY_FACTOR)
+        decay(DECAY_FACTOR)
+        clear(LOW_SCORE_THRESHOLD)
 
-        if (!redisTemplate.hasKey(trendingScoreKey)) {
+        if (!redisTemplate.hasKey(key)) {
             return
         }
 
-        val tempKey = "${trendingScoreKey}_temp"
-        redisTemplate.rename(trendingScoreKey, tempKey)  // to avoid race condition
+        val tempKey = "${key}_temp"
+        redisTemplate.rename(key, tempKey)  // to avoid race condition
         zSetOps.reverseRangeWithScores(tempKey, 0, MAX_SIZE)?.forEach { entry ->
             val articleId = entry.value?.toLong() ?: return@forEach
             val score = entry.score ?: 0.0
-            updateTrendingScoreById(score, articleId)
+            increment(score, articleId)
         }
 
         redisTemplate.delete(tempKey)
