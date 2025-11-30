@@ -1,9 +1,9 @@
 package me.loghub.api.worker
 
 import me.loghub.api.constant.redis.RedisKeys
-import me.loghub.api.repository.article.ArticleRepository
-import me.loghub.api.repository.question.QuestionRepository
-import me.loghub.api.repository.series.SeriesRepository
+import me.loghub.api.repository.article.ArticleTrendingScoreRepository
+import me.loghub.api.repository.question.QuestionTrendingScoreRepository
+import me.loghub.api.repository.series.SeriesTrendingScoreRepository
 import me.loghub.api.repository.topic.TopicRepository
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ZSetOperations
@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 class TrendingScoreWorker(
-    private val articleRepository: ArticleRepository,
-    private val seriesRepository: SeriesRepository,
-    private val questionRepository: QuestionRepository,
+    private val articleTrendingScoreRepository: ArticleTrendingScoreRepository,
+    private val seriesTrendingScoreRepository: SeriesTrendingScoreRepository,
+    private val questionTrendingScoreRepository: QuestionTrendingScoreRepository,
     private val redisTemplate: RedisTemplate<String, String>,
     private val topicRepository: TopicRepository,
 ) {
@@ -34,21 +34,21 @@ class TrendingScoreWorker(
     fun updateTrendingScores() {
         updateTrendingScore(
             RedisKeys.Article.TRENDING_SCORE().key,
-            articleRepository::decayTrendingScores,
-            articleRepository::clearLowTrendingScores,
-            articleRepository::incrementTrendingScoreById,
+            articleTrendingScoreRepository::decayTrendingScores,
+            articleTrendingScoreRepository::clearLowTrendingScores,
+            articleTrendingScoreRepository::incrementTrendingScoreById,
         )
         updateTrendingScore(
             RedisKeys.Series.TRENDING_SCORE().key,
-            seriesRepository::decayTrendingScores,
-            seriesRepository::clearLowTrendingScores,
-            seriesRepository::incrementTrendingScoreById
+            seriesTrendingScoreRepository::decayTrendingScores,
+            seriesTrendingScoreRepository::clearLowTrendingScores,
+            seriesTrendingScoreRepository::incrementTrendingScoreById
         )
         updateTrendingScore(
             RedisKeys.Question.TRENDING_SCORE().key,
-            questionRepository::decayTrendingScores,
-            questionRepository::clearLowTrendingScores,
-            questionRepository::incrementTrendingScoreById
+            questionTrendingScoreRepository::decayTrendingScores,
+            questionTrendingScoreRepository::clearLowTrendingScores,
+            questionTrendingScoreRepository::incrementTrendingScoreById
         )
 
         topicRepository.updateTrendingScoresFromTrendingTopic()

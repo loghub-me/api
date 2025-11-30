@@ -36,47 +36,9 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
 
     @Modifying
-    @Query("UPDATE Question q SET q.stats.trendingScore = q.stats.trendingScore + :trendingScore WHERE $BY_ID")
-    fun incrementTrendingScoreById(@Param("trendingScore") trendingScore: Double, @Param("id") id: Long): Int
-
-    @Modifying
-    @Query("UPDATE Question q SET q.stats.trendingScore = q.stats.trendingScore * :factor")
-    fun decayTrendingScores(@Param("factor") factor: Double): Int
-
-    @Modifying
-    @Query("UPDATE Question q SET q.stats.trendingScore = 0 WHERE q.stats.trendingScore < :threshold")
-    fun clearLowTrendingScores(@Param("threshold") threshold: Double): Int
-
-    @Modifying
     @Query("UPDATE Question q SET q.writerUsername = :newUsername WHERE q.writerUsername = :oldUsername")
     fun updateWriterUsernameByWriterUsername(
         @Param("oldUsername") oldUsername: String,
         @Param("newUsername") newUsername: String
     ): Int
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Question q SET q.stats.starCount = q.stats.starCount + 1 WHERE q.id = :id")
-    fun incrementStarCount(id: Long)
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Question q SET q.stats.answerCount = q.stats.answerCount + 1 WHERE q.id = :id")
-    fun incrementAnswerCount(id: Long)
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(
-        """
-        UPDATE Question q
-        SET q.stats.starCount = CASE WHEN q.stats.starCount > 0 THEN q.stats.starCount - 1 ELSE 0 END
-        WHERE q.id = :id"""
-    )
-    fun decrementStarCount(id: Long)
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(
-        """
-        UPDATE Question q
-        SET q.stats.answerCount = CASE WHEN q.stats.answerCount > 0 THEN q.stats.answerCount - 1 ELSE 0 END
-        WHERE q.id = :id"""
-    )
-    fun decrementAnswerCount(id: Long)
 }

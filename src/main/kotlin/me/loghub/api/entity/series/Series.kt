@@ -79,12 +79,4 @@ class Series(
         this.topics = topics.toMutableSet()
         this.topicsFlat = TopicsFlatConverter.toFlat(topics)
     }
-
-    fun incrementReviewCount() {
-        stats.reviewCount++
-    }
-
-    fun decrementReviewCount() {
-        stats.reviewCount--
-    }
 }

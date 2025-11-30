@@ -10,6 +10,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.article.ArticleCommentMapper
 import me.loghub.api.repository.article.ArticleCommentRepository
 import me.loghub.api.repository.article.ArticleRepository
+import me.loghub.api.repository.article.ArticleStatsRepository
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ArticleCommentService(
     private val articleRepository: ArticleRepository,
+    private val articleStatsRepository: ArticleStatsRepository,
     private val articleCommentRepository: ArticleCommentRepository,
 ) {
     private companion object {
@@ -54,7 +56,7 @@ class ArticleCommentService(
         val comment = requestBody.toEntity(article, parent, writer)
         val savedComment = articleCommentRepository.save(comment)
 
-        articleRepository.incrementCommentCount(articleId)
+        articleStatsRepository.incrementCommentCount(articleId)
         parent?.let { articleCommentRepository.incrementReplyCount(it.id!!) }
 
         return savedComment
@@ -86,7 +88,7 @@ class ArticleCommentService(
         checkPermission(comment.writer.id == writer.id) { ResponseMessage.Article.Comment.PERMISSION_DENIED }
 
         comment.parent?.let { articleCommentRepository.decrementReplyCount(it.id!!) }
-        articleRepository.decrementCommentCount(articleId)
+        articleStatsRepository.decrementCommentCount(articleId)
         comment.delete()
     }
 

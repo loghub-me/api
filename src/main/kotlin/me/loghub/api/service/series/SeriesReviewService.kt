@@ -9,6 +9,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.series.SeriesReviewMapper
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.series.SeriesReviewRepository
+import me.loghub.api.repository.series.SeriesStatsRepository
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.orElseThrowNotFound
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class SeriesReviewService(
     private val seriesRepository: SeriesRepository,
+    private val seriesStatsRepository: SeriesStatsRepository,
     private val seriesReviewRepository: SeriesReviewRepository,
 ) {
     private companion object {
@@ -48,8 +50,11 @@ class SeriesReviewService(
         }
 
         val review = requestBody.toEntity(series, writer)
-        series.incrementReviewCount()
-        return seriesReviewRepository.save(review)
+        val savedReview = seriesReviewRepository.save(review)
+
+        seriesStatsRepository.incrementReviewCount(seriesId)
+        
+        return savedReview
     }
 
     @Transactional
@@ -70,7 +75,7 @@ class SeriesReviewService(
 
         checkPermission(review.writer == writer) { ResponseMessage.Series.Review.PERMISSION_DENIED }
 
-        review.series.decrementReviewCount()
+        seriesStatsRepository.decrementReviewCount(seriesId)
         seriesReviewRepository.delete(review)
     }
 }

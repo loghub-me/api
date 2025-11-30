@@ -4,6 +4,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserStar
 import me.loghub.api.repository.series.SeriesRepository
+import me.loghub.api.repository.series.SeriesStatsRepository
 import me.loghub.api.repository.user.UserStarRepository
 import me.loghub.api.service.common.IStarService
 import me.loghub.api.util.checkConflict
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class SeriesStarService(
     private val userStarRepository: UserStarRepository,
     private val seriesRepository: SeriesRepository,
+    private val seriesStatsRepository: SeriesStatsRepository,
 ) : IStarService {
     @Transactional(readOnly = true)
     override fun existsStar(id: Long, user: User): Boolean {
@@ -33,7 +35,7 @@ class SeriesStarService(
             seriesRepository.existsById(id)
         ) { ResponseMessage.Series.NOT_FOUND }
 
-        seriesRepository.incrementStarCount(id)
+        seriesStatsRepository.incrementStarCount(id)
         return userStarRepository.save(UserStar(user = user, series = seriesRef, target = UserStar.Target.SERIES))
     }
 
@@ -44,6 +46,6 @@ class SeriesStarService(
 
         checkExists(deletedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 
-        seriesRepository.decrementStarCount(id)
+        seriesStatsRepository.decrementStarCount(id)
     }
 }

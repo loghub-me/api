@@ -36,47 +36,9 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
 
     @Modifying
-    @Query("UPDATE Article a SET a.stats.trendingScore = a.stats.trendingScore + :trendingScore WHERE $BY_ID")
-    fun incrementTrendingScoreById(@Param("trendingScore") trendingScore: Double, @Param("id") id: Long): Int
-
-    @Modifying
-    @Query("UPDATE Article a SET a.stats.trendingScore = a.stats.trendingScore * :factor")
-    fun decayTrendingScores(@Param("factor") factor: Double): Int
-
-    @Modifying
-    @Query("UPDATE Article a SET a.stats.trendingScore = 0 WHERE a.stats.trendingScore < :threshold")
-    fun clearLowTrendingScores(@Param("threshold") threshold: Double): Int
-
-    @Modifying
     @Query("UPDATE Article a SET a.writerUsername = :newUsername WHERE a.writerUsername = :oldUsername")
     fun updateWriterUsernameByWriterUsername(
         @Param("oldUsername") oldUsername: String,
         @Param("newUsername") newUsername: String
     ): Int
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Article a SET a.stats.starCount = a.stats.starCount + 1 WHERE a.id = :id")
-    fun incrementStarCount(id: Long)
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(
-        """
-        UPDATE Article a
-        SET a.stats.starCount = CASE WHEN a.stats.starCount > 0 THEN a.stats.starCount - 1 ELSE 0 END
-        WHERE a.id = :id"""
-    )
-    fun decrementStarCount(id: Long)
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Article a SET a.stats.commentCount = a.stats.commentCount + 1 WHERE a.id = :id")
-    fun incrementCommentCount(id: Long)
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(
-        """
-        UPDATE Article a
-        SET a.stats.commentCount = CASE WHEN a.stats.commentCount > 0 THEN a.stats.commentCount - 1 ELSE 0 END
-        WHERE a.id = :id"""
-    )
-    fun decrementCommentCount(id: Long)
 }

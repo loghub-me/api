@@ -14,6 +14,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.question.QuestionAnswerMapper
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
+import me.loghub.api.repository.question.QuestionStatsRepository
 import me.loghub.api.service.common.CacheService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkCooldown
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional
 class QuestionAnswerService(
     private val questionAnswerRepository: QuestionAnswerRepository,
     private val questionRepository: QuestionRepository,
+    private val questionStatsRepository: QuestionStatsRepository,
     private val questionAnswerGenerateService: QuestionAnswerGenerateService,
     private val cacheService: CacheService,
     private val redisTemplate: RedisTemplate<String, String>,
@@ -60,8 +62,11 @@ class QuestionAnswerService(
         checkConflict(question.writer == writer) { ResponseMessage.Question.Answer.CANNOT_POST_SELF }
 
         val answer = requestBody.toEntity(question, writer)
-        questionRepository.incrementAnswerCount(questionId)
-        return questionAnswerRepository.save(answer)
+        val savedAnswer = questionAnswerRepository.save(answer)
+
+        questionStatsRepository.incrementAnswerCount(questionId)
+
+        return savedAnswer
     }
 
     @Transactional
@@ -75,8 +80,10 @@ class QuestionAnswerService(
     @Transactional
     fun deleteAnswer(questionId: Long, answerId: Long, writer: User) {
         val answer = findUpdatableAnswer(questionId, answerId)
+
         checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
-        questionRepository.decrementAnswerCount(questionId)
+
+        questionStatsRepository.decrementAnswerCount(questionId)
         questionAnswerRepository.delete(answer)
     }
 
