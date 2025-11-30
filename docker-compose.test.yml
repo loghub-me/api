@@ -1,13 +1,13 @@
 services:
   loghub-me-task-api:
     container_name: loghub-me-task-api
-    image: ghcr.io/loghub-me/task-api:0.1.6
+    image: ghcr.io/loghub-me/task-api:0.1.7
     ports:
       - "8082:8082/tcp"
     env_file: ./.env.task-api.test
   loghub-me-postgres:
     container_name: loghub-me-postgres
-    image: ghcr.io/loghub-me/postgres:0.1.0
+    image: ghcr.io/loghub-me/postgres:0.2.0
     shm_size: 128mb
     ports:
       - "5432:5432/tcp"

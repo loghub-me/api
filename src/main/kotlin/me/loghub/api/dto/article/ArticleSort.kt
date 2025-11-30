@@ -3,6 +3,7 @@ package me.loghub.api.dto.article
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.Expressions
 import me.loghub.api.entity.article.QArticle
+import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
 
 enum class ArticleSort(val order: OrderSpecifier<*>) {
     latest(QArticle.article.createdAt.desc()),
@@ -10,8 +11,8 @@ enum class ArticleSort(val order: OrderSpecifier<*>) {
     relevant(
         Expressions.numberTemplate(
             Double::class.java,
-            "pgroonga_score({0}, {1})",
-            QArticle.article.tableoid, QArticle.article.ctid
+            PGroongaHibernateFunction.PGROONGA_SCORE.template,
+            QArticle.article.tableoid, QArticle.article.ctid,
         ).desc()
     ),
     trending(QArticle.article.stats.trendingScore.desc());

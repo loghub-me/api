@@ -3,10 +3,10 @@ package me.loghub.api.repository.series
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
-import me.loghub.api.constant.hibernate.HibernateFunction
 import me.loghub.api.dto.series.SeriesSort
 import me.loghub.api.entity.series.QSeries
 import me.loghub.api.entity.series.Series
+import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -25,7 +25,7 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
         username: String? = null
     ): Page<Series> {
         val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
-            HibernateFunction.SERIES_FTS.template,
+            PGroongaHibernateFunction.SERIES_FTS.template,
             query,
         ) else null
         val usernameFilter = if (username.isNullOrBlank()) null else series.writerUsername.eq(username)
