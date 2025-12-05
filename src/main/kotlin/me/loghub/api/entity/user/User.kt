@@ -1,8 +1,6 @@
 package me.loghub.api.entity.user
 
 import jakarta.persistence.*
-import me.loghub.api.dto.user.UpdateUserPrivacyDTO
-import me.loghub.api.dto.user.UpdateUserProfileDTO
 import me.loghub.api.entity.PublicEntity
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcType
@@ -58,14 +56,11 @@ class User(
         this.username = username
     }
 
-    fun updateProfile(requestBody: UpdateUserProfileDTO) {
-        this.profile = UserProfile(
-            nickname = requestBody.nickname,
-            readme = requestBody.readme,
-        )
+    fun updateProfile(profile: UserProfile) {
+        this.profile = profile
     }
 
-    fun updatePrivacy(requestBody: UpdateUserPrivacyDTO) {
-        this.privacy = UserPrivacy(emailPublic = requestBody.emailPublic)
+    fun updatePrivacy(privacy: UserPrivacy) {
+        this.privacy = privacy
     }
 }

@@ -9,32 +9,20 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-class UserSelfAspect {
+class UserAspect {
     private companion object {
         private val logger = KotlinLogging.logger { };
     }
 
     @AfterReturning(
-        pointcut = "execution(* me.loghub.api.service.user.UserSelfService.updateUsername(..)) && args(requestBody, user)",
+        pointcut = "execution(* me.loghub.api.service.user.UserService.updateUsername(..)) && args(requestBody, user)",
     )
     fun afterUpdateUsername(requestBody: UpdateUsernameDTO, user: User) =
         logger.info { "[User] update username: { userId=${user.id}, oldUsername=\"${user.username}\", newUsername=\"${requestBody.newUsername}\" }" }
 
     @AfterReturning(
-        pointcut = "execution(* me.loghub.api.service.user.UserSelfService.updateAvatar(..)) && args(.., user)",
+        pointcut = "execution(* me.loghub.api.service.user.UserService.updateAvatar(..)) && args(.., user)",
     )
     fun afterUpdateAvatar(user: User) =
         logger.info { "[User] update avatar: { userId=${user.id} }" }
-
-    @AfterReturning(
-        pointcut = "execution(* me.loghub.api.service.user.UserSelfService.updateProfile(..)) && args(.., user)",
-    )
-    fun afterUpdateProfile(user: User) =
-        logger.info { "[User] update profile: { userId=${user.id} }" }
-
-    @AfterReturning(
-        pointcut = "execution(* me.loghub.api.service.user.UserSelfService.updatePrivacy(..)) && args(.., user)",
-    )
-    fun afterUpdatePrivacy(user: User) =
-        logger.info { "[User] update privacy: { userId=${user.id} }" }
 }

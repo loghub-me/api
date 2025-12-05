@@ -5,6 +5,7 @@ import me.loghub.api.dto.user.UserDetailDTO
 import me.loghub.api.dto.user.UserPrivacyDTO
 import me.loghub.api.dto.user.UserProfileDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.entity.user.UserPrivacy
 
 object UserMapper {
     fun map(user: User) = UserDTO(
@@ -26,5 +27,5 @@ object UserMapper {
         readme = user.profile.readme
     )
 
-    fun mapPrivacy(user: User) = UserPrivacyDTO(emailPublic = user.privacy.emailPublic)
+    fun mapPrivacy(privacy: UserPrivacy) = UserPrivacyDTO(emailPublic = privacy.emailPublic)
 }
