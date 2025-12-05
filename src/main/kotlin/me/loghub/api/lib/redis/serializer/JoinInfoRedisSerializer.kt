@@ -1,4 +1,4 @@
-package me.loghub.api.lib.redis
+package me.loghub.api.lib.redis.serializer
 
 import me.loghub.api.dto.auth.join.JoinInfoDTO
 import org.springframework.data.redis.serializer.RedisSerializer

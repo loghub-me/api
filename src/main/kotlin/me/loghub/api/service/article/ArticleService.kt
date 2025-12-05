@@ -1,11 +1,11 @@
 package me.loghub.api.service.article
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.article.*
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.repository.article.ArticleCustomRepository
 import me.loghub.api.repository.article.ArticleRepository

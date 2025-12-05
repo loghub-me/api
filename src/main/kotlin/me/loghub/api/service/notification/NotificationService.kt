@@ -1,9 +1,9 @@
 package me.loghub.api.service.notification
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.util.checkExists
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service

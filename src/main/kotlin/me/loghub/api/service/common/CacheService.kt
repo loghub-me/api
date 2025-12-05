@@ -1,9 +1,9 @@
 package me.loghub.api.service.common
 
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
-import me.loghub.api.lib.redis.RedisKey
+import me.loghub.api.lib.redis.key.RedisKey
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.proxy.TaskAPIProxy
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service

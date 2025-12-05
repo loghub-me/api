@@ -4,9 +4,9 @@ import me.loghub.api.dto.auth.join.JoinInfoDTO
 import me.loghub.api.dto.auth.join.OAuth2JoinInfoDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.notification.NotificationDTO
-import me.loghub.api.lib.redis.JoinInfoRedisSerializer
-import me.loghub.api.lib.redis.NotificationRedisSerializer
-import me.loghub.api.lib.redis.OAuth2JoinInfoRedisSerializer
+import me.loghub.api.lib.redis.serializer.JoinInfoRedisSerializer
+import me.loghub.api.lib.redis.serializer.NotificationRedisSerializer
+import me.loghub.api.lib.redis.serializer.OAuth2JoinInfoRedisSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory

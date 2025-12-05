@@ -1,6 +1,5 @@
-package me.loghub.api.constant.redis
+package me.loghub.api.lib.redis.key
 
-import me.loghub.api.lib.redis.RedisKeySpec
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes

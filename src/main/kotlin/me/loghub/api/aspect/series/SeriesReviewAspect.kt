@@ -1,10 +1,10 @@
 package me.loghub.api.aspect.series
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.series.SeriesReview
 import me.loghub.api.entity.user.User
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect

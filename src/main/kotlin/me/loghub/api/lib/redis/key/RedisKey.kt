@@ -1,4 +1,4 @@
-package me.loghub.api.lib.redis
+package me.loghub.api.lib.redis.key
 
 import java.time.Duration
 

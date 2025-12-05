@@ -1,9 +1,9 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.common.UpdateDraftDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.util.checkPermission

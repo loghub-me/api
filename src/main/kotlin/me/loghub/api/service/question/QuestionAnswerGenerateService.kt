@@ -5,13 +5,13 @@ import me.loghub.api.constant.ai.Bot
 import me.loghub.api.constant.ai.SystemPrompt
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.message.ServerMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.user.UserRepository

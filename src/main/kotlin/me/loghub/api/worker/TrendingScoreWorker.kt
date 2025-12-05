@@ -1,6 +1,6 @@
 package me.loghub.api.worker
 
-import me.loghub.api.constant.redis.RedisKeys
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.repository.article.ArticleTrendingScoreRepository
 import me.loghub.api.repository.question.QuestionTrendingScoreRepository
 import me.loghub.api.repository.series.SeriesTrendingScoreRepository

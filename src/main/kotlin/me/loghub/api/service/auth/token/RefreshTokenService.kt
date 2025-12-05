@@ -1,7 +1,7 @@
 package me.loghub.api.service.auth.token
 
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.entity.user.User
+import me.loghub.api.lib.redis.key.RedisKeys
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import java.util.*

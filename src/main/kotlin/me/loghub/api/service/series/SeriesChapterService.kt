@@ -1,7 +1,6 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.series.chapter.EditSeriesChapterDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
@@ -9,6 +8,7 @@ import me.loghub.api.dto.series.chapter.UpdateSeriesChapterSequenceDTO
 import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.mapper.series.SeriesChapterMapper
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.series.SeriesChapterRepository

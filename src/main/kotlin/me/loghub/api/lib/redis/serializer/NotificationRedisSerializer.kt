@@ -1,4 +1,4 @@
-package me.loghub.api.lib.redis
+package me.loghub.api.lib.redis.serializer
 
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.dto.notification.NotificationType

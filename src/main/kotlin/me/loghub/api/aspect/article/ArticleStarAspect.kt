@@ -1,6 +1,6 @@
 package me.loghub.api.aspect.article
 
-import me.loghub.api.constant.redis.RedisKeys
+import me.loghub.api.lib.redis.key.RedisKeys
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate

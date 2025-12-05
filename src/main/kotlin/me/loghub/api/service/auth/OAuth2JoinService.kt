@@ -2,13 +2,13 @@ package me.loghub.api.service.auth
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.oauth2.OAuth2Attribute
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.join.OAuth2JoinConfirmDTO
 import me.loghub.api.dto.auth.join.OAuth2JoinInfoDTO
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.auth.BadOTPException
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService

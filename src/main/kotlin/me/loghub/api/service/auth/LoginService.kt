@@ -2,7 +2,6 @@ package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.redis.RedisKeys
 import me.loghub.api.dto.auth.login.LoginConfirmDTO
 import me.loghub.api.dto.auth.login.LoginRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
@@ -10,6 +9,7 @@ import me.loghub.api.dto.task.mail.LoginMailSendRequest
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.exception.entity.EntityNotFoundFieldException
+import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import me.loghub.api.service.common.MailService
