@@ -4,15 +4,15 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import me.loghub.api.dto.task.discord.DiscordEmbed
+import me.loghub.api.lib.validation.TitleValidation
 import me.loghub.api.lib.validation.Trimmed
 
 data class PostSupportInquiryDTO(
     @field:Email(message = "올바르지 않은 이메일 형식입니다.")
+    @field:Trimmed
     val email: String?,
 
-    @field:NotBlank(message = "제목은 필수 입력 항목입니다.")
-    @field:Size(min = 2, max = 56, message = "제목은 2자 이상 56자 이하이어야 합니다.")
-    @field:Trimmed
+    @field:TitleValidation
     val title: String,
 
     @field:NotBlank(message = "내용은 필수 입력 항목입니다.")

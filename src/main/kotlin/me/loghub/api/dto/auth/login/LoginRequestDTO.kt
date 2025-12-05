@@ -1,13 +1,9 @@
 package me.loghub.api.dto.auth.login
 
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import me.loghub.api.lib.validation.Trimmed
+import me.loghub.api.lib.validation.EmailValidation
 
 data class LoginRequestDTO(
-    @field:Email(message = "올바르지 않은 이메일 형식입니다.")
-    @field:NotBlank(message = "이메일은 필수 입력 항목입니다.")
-    @field:Trimmed
+    @field:EmailValidation
     val email: String,
 ) {
 }
