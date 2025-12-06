@@ -87,9 +87,9 @@ class ArticleCommentService(
 
         checkPermission(comment.writer.id == writer.id) { ResponseMessage.Article.Comment.PERMISSION_DENIED }
 
+        comment.delete()
         comment.parent?.let { articleCommentRepository.decrementReplyCount(it.id!!) }
         articleStatsRepository.decrementCommentCount(articleId)
-        comment.delete()
     }
 
     private fun getAvailableParent(article: Article, parentId: Long?): ArticleComment? =
