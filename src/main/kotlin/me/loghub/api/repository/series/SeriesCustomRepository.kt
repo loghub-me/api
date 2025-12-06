@@ -38,7 +38,7 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
             .from(series)
             .leftJoin(series.writer).fetchJoin()
             .where(*conditions)
-            .orderBy(resolvedSort.order)
+            .orderBy(*resolvedSort.order)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
 

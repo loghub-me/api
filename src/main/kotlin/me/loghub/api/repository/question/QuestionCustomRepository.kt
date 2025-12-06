@@ -40,7 +40,7 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
             .from(question)
             .leftJoin(question.writer).fetchJoin()
             .where(*conditions)
-            .orderBy(resolvedSort.order)
+            .orderBy(*resolvedSort.order)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
 

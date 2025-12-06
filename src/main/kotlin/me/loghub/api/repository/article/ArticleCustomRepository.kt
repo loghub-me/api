@@ -38,7 +38,7 @@ class ArticleCustomRepository(private val entityManager: EntityManager) {
             .from(article)
             .where(*conditions)
             .leftJoin(article.writer).fetchJoin()
-            .orderBy(resolvedSort.order)
+            .orderBy(*resolvedSort.order)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
 
