@@ -4,51 +4,48 @@ import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
+import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
 class QuestionAnswerControllerTest(
     @Autowired private val rest: TestRestTemplate,
     @Autowired private val jdbcTemplate: JdbcTemplate,
 ) {
-    companion object {
-        lateinit var member1: User
-        lateinit var member1Token: TokenDTO
-        lateinit var member2: User
-        lateinit var member2Token: TokenDTO
+    lateinit var member1: User
+    lateinit var member1Token: TokenDTO
+    lateinit var member2: User
+    lateinit var member2Token: TokenDTO
 
-        object QuestionAnswer {
-            object Id {
-                const val BY_MEMBER2 = 1L
-                const val INVALID = 999L
-            }
+    object QuestionAnswer {
+        object Id {
+            const val BY_MEMBER2 = 1L
+            const val INVALID = 999L
         }
+    }
 
-        @JvmStatic
-        @BeforeAll
-        fun setup(@Autowired grantService: TestGrantService) {
-            val (member1, member1Token) = grantService.grant("member1")
-            this.member1 = member1
-            this.member1Token = member1Token
-            val (member2, member2Token) = grantService.grant("member2")
-            this.member2 = member2
-            this.member2Token = member2Token
-        }
+    @BeforeAll
+    fun setup(@Autowired grantService: TestGrantService) {
+        resetDatabase(jdbcTemplate)
+        val (member1, member1Token) = grantService.grant("member1")
+        this.member1 = member1
+        this.member1Token = member1Token
+        val (member2, member2Token) = grantService.grant("member2")
+        this.member2 = member2
+        this.member2Token = member2Token
     }
 
     private inline fun <reified T> getAnswers(questionId: Long) =
@@ -95,23 +92,12 @@ class QuestionAnswerControllerTest(
         return rest.exchange(request.build(), T::class.java)
     }
 
-    private fun resetDatabase() {
-        val dataSource = jdbcTemplate.dataSource
-            ?: error("DataSource is required for resetting database")
-        val populator = ResourceDatabasePopulator().apply {
-            addScript(ClassPathResource("/database/data/truncate.sql"))
-            addScript(ClassPathResource("/database/data/test.sql"))
-        }
-
-        DatabasePopulatorUtils.execute(populator, dataSource)
-    }
-
     @Nested
     @Order(1)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetAnswers {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `getAnswers - ok`() {
@@ -130,7 +116,7 @@ class QuestionAnswerControllerTest(
         )
 
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `postAnswer - unauthenticated`() {
@@ -161,7 +147,7 @@ class QuestionAnswerControllerTest(
         )
 
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `editAnswer - unauthenticated`() {
@@ -194,7 +180,7 @@ class QuestionAnswerControllerTest(
     @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
     inner class DeleteAnswer {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `deleteAnswer - unauthenticated`() {
@@ -228,7 +214,7 @@ class QuestionAnswerControllerTest(
     @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
     inner class AcceptAnswer {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `acceptAnswer - unauthenticated`() {

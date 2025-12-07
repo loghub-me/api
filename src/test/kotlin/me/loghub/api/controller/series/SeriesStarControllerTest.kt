@@ -4,53 +4,50 @@ import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.response.DataResponseBody
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
+import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.Test
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
 class SeriesStarControllerTest(
     @Autowired private val rest: TestRestTemplate,
     @Autowired private val jdbcTemplate: JdbcTemplate,
 ) {
-    companion object {
-        lateinit var member1: User
-        lateinit var member1Token: TokenDTO
-        lateinit var member2: User
-        lateinit var member2Token: TokenDTO
+    lateinit var member1: User
+    lateinit var member1Token: TokenDTO
+    lateinit var member2: User
+    lateinit var member2Token: TokenDTO
 
-        object Series {
-            object Id {
-                const val BY_MEMBER1 = 1L
-                const val BY_MEMBER2 = 2L
-                const val INVALID = 999L
-            }
+    object Series {
+        object Id {
+            const val BY_MEMBER1 = 1L
+            const val BY_MEMBER2 = 2L
+            const val INVALID = 999L
         }
+    }
 
-        @JvmStatic
-        @BeforeAll
-        fun setup(@Autowired grantService: TestGrantService) {
-            val (member1, member1Token) = grantService.grant("member1")
-            this.member1 = member1
-            this.member1Token = member1Token
-            val (member2, member2Token) = grantService.grant("member2")
-            this.member2 = member2
-            this.member2Token = member2Token
-        }
+    @BeforeAll
+    fun setup(@Autowired grantService: TestGrantService) {
+        resetDatabase(jdbcTemplate)
+        val (member1, member1Token) = grantService.grant("member1")
+        this.member1 = member1
+        this.member1Token = member1Token
+        val (member2, member2Token) = grantService.grant("member2")
+        this.member2 = member2
+        this.member2Token = member2Token
     }
 
     private inline fun <reified T> existsSeriesStar(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
@@ -71,23 +68,12 @@ class SeriesStarControllerTest(
         return rest.exchange(request.build(), T::class.java)
     }
 
-    private fun resetDatabase() {
-        val dataSource = jdbcTemplate.dataSource
-            ?: error("DataSource is required for resetting database")
-        val populator = ResourceDatabasePopulator().apply {
-            addScript(ClassPathResource("/database/data/truncate.sql"))
-            addScript(ClassPathResource("/database/data/test.sql"))
-        }
-
-        DatabasePopulatorUtils.execute(populator, dataSource)
-    }
-
     @Nested
     @Order(1)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class ExistsSeriesStar {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `existsSeriesStar - unauthorized`() {
@@ -115,7 +101,7 @@ class SeriesStarControllerTest(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class AddSeriesStar {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `addSeriesStar - unauthorized`() {
@@ -149,7 +135,7 @@ class SeriesStarControllerTest(
     @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
     inner class DeleteSeriesStar {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `deleteSeriesStar - unauthorized`() {

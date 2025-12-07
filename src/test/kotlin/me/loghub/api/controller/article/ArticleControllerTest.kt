@@ -4,59 +4,56 @@ import me.loghub.api.dto.article.*
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
+import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.core.io.ClassPathResource
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
 class ArticleControllerTest(
     @Autowired private val rest: TestRestTemplate,
     @Autowired private val jdbcTemplate: JdbcTemplate,
 ) {
-    companion object {
-        lateinit var member1: User
-        lateinit var member1Token: TokenDTO
-        lateinit var member2: User
-        lateinit var member2Token: TokenDTO
+    lateinit var member1: User
+    lateinit var member1Token: TokenDTO
+    lateinit var member2: User
+    lateinit var member2Token: TokenDTO
 
-        object Article {
-            object Id {
-                const val BY_MEMBER1 = 1L
-                const val INVALID = 999L
-            }
-
-            object Slug {
-                const val BY_MEMBER1 = "article-1"
-                const val INVALID = "unknown-article"
-            }
+    object Article {
+        object Id {
+            const val BY_MEMBER1 = 1L
+            const val INVALID = 999L
         }
 
-        @JvmStatic
-        @BeforeAll
-        fun setup(@Autowired grantService: TestGrantService) {
-            val (member1, member1Token) = grantService.grant("member1")
-            this.member1 = member1
-            this.member1Token = member1Token
-            val (member2, member2Token) = grantService.grant("member2")
-            this.member2 = member2
-            this.member2Token = member2Token
+        object Slug {
+            const val BY_MEMBER1 = "article-1"
+            const val INVALID = "unknown-article"
         }
+    }
+
+    @BeforeAll
+    fun setup(@Autowired grantService: TestGrantService) {
+        resetDatabase(jdbcTemplate)
+        val (member1, member1Token) = grantService.grant("member1")
+        this.member1 = member1
+        this.member1Token = member1Token
+        val (member2, member2Token) = grantService.grant("member2")
+        this.member2 = member2
+        this.member2Token = member2Token
     }
 
     private inline fun <reified T> searchArticles(uri: String) =
@@ -93,23 +90,12 @@ class ArticleControllerTest(
         return rest.exchange(request.build(), T::class.java)
     }
 
-    private fun resetDatabase() {
-        val dataSource = jdbcTemplate.dataSource
-            ?: error("DataSource is required for resetting database")
-        val populator = ResourceDatabasePopulator().apply {
-            addScript(ClassPathResource("/database/data/truncate.sql"))
-            addScript(ClassPathResource("/database/data/test.sql"))
-        }
-
-        DatabasePopulatorUtils.execute(populator, dataSource)
-    }
-
     @Nested
     @Order(1)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class SearchArticles {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `searchArticles - ok - no params`() {
@@ -152,7 +138,7 @@ class ArticleControllerTest(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetArticle {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `getArticle - not_found`() {
@@ -173,7 +159,7 @@ class ArticleControllerTest(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetArticleForEdit {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `getArticleForEdit - unauthorized`() {
@@ -213,7 +199,7 @@ class ArticleControllerTest(
         )
 
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `postArticle - unauthorized`() {
@@ -258,7 +244,7 @@ class ArticleControllerTest(
         )
 
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `editArticle - unauthorized`() {
@@ -297,7 +283,7 @@ class ArticleControllerTest(
     @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
     inner class DeleteArticle {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `deleteArticle - unauthorized`() {

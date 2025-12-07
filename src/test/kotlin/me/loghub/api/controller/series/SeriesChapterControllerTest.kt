@@ -6,58 +6,55 @@ import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.UpdateSeriesChapterSequenceDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
+import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
 class SeriesChapterControllerTest(
     @Autowired private val rest: TestRestTemplate,
     @Autowired private val jdbcTemplate: JdbcTemplate,
 ) {
-    companion object {
-        lateinit var member1: User
-        lateinit var member1Token: TokenDTO
-        lateinit var member2: User
-        lateinit var member2Token: TokenDTO
+    lateinit var member1: User
+    lateinit var member1Token: TokenDTO
+    lateinit var member2: User
+    lateinit var member2Token: TokenDTO
 
-        object Series {
-            object Id {
-                const val BY_MEMBER1 = 1L
-                const val INVALID = 999L
-            }
+    object Series {
+        object Id {
+            const val BY_MEMBER1 = 1L
+            const val INVALID = 999L
         }
+    }
 
-        object SeriesChapter {
-            object Sequence {
-                const val BY_MEMBER1 = 1
-                const val INVALID = 999
-            }
+    object SeriesChapter {
+        object Sequence {
+            const val BY_MEMBER1 = 1
+            const val INVALID = 999
         }
+    }
 
-        @JvmStatic
-        @BeforeAll
-        fun setup(@Autowired grantService: TestGrantService) {
-            val (member1, member1Token) = grantService.grant("member1")
-            this.member1 = member1
-            this.member1Token = member1Token
-            val (member2, member2Token) = grantService.grant("member2")
-            this.member2 = member2
-            this.member2Token = member2Token
-        }
+    @BeforeAll
+    fun setup(@Autowired grantService: TestGrantService) {
+        resetDatabase(jdbcTemplate)
+        val (member1, member1Token) = grantService.grant("member1")
+        this.member1 = member1
+        this.member1Token = member1Token
+        val (member2, member2Token) = grantService.grant("member2")
+        this.member2 = member2
+        this.member2Token = member2Token
     }
 
     private inline fun <reified T> getChapter(seriesId: Long, sequence: Int): ResponseEntity<T> =
@@ -110,23 +107,12 @@ class SeriesChapterControllerTest(
         return rest.exchange(request.body(body), T::class.java)
     }
 
-    private fun resetDatabase() {
-        val dataSource = jdbcTemplate.dataSource
-            ?: error("DataSource is required for resetting database")
-        val populator = ResourceDatabasePopulator().apply {
-            addScript(ClassPathResource("/database/data/truncate.sql"))
-            addScript(ClassPathResource("/database/data/test.sql"))
-        }
-
-        DatabasePopulatorUtils.execute(populator, dataSource)
-    }
-
     @Nested
     @Order(1)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetChapter {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `getChapter - not found`() {
@@ -147,7 +133,7 @@ class SeriesChapterControllerTest(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetChapterForEdit {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `getChapterForEdit - unauthorized`() {
@@ -181,7 +167,7 @@ class SeriesChapterControllerTest(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class CreateChapter {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `createChapter - unauthorized`() {
@@ -213,7 +199,7 @@ class SeriesChapterControllerTest(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class EditChapter {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         val bodyForEdit = EditSeriesChapterDTO(
             title = "Edited Chapter",
@@ -254,7 +240,7 @@ class SeriesChapterControllerTest(
     @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
     inner class DeleteChapter {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
         fun `deleteChapter - unauthorized`() {
@@ -288,7 +274,7 @@ class SeriesChapterControllerTest(
     @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
     inner class UpdateChapterSequence {
         @BeforeAll
-        fun setupDatabase() = resetDatabase()
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         val bodyForUpdateSequence = UpdateSeriesChapterSequenceDTO(sequences = listOf(2, 1))
 
