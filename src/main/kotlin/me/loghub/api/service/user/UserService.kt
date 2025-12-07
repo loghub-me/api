@@ -30,11 +30,6 @@ class UserService(
         ?.let { UserMapper.mapDetail(it) }
         ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
 
-    @Transactional(readOnly = true)
-    fun getUserProfile(username: String) = userRepository.findByUsername(username)
-        ?.let { UserMapper.mapProfile(it) }
-        ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
-
     @Transactional
     fun updateUsername(requestBody: UpdateUsernameDTO, user: User) {
         requireNotEquals(

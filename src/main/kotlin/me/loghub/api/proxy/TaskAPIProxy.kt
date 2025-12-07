@@ -6,6 +6,7 @@ import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
 import me.loghub.api.dto.task.markdown.MarkdownRenderResponse
 import me.loghub.api.dto.task.markdown.MarkdownsRenderRequest
 import me.loghub.api.dto.task.markdown.MarkdownsRenderResponse
+import me.loghub.api.proxy.config.TaskAPIConfig
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile
 @FeignClient(
     name = "task-api",
     url = "\${task-api.host}",
-    configuration = [TaskAPIConfiguration::class],
+    configuration = [TaskAPIConfig::class],
 )
 interface TaskAPIProxy {
     @PostMapping("/markdown/render")

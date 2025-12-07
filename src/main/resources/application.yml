@@ -53,6 +53,8 @@ server:
 task-api:
   host: ${TASK_API_HOST}
   interval-token: ${TASK_API_INTERVAL_TOKEN}
+github-api:
+  host: https://api.github.com
 discord-webhook:
   url: ${DISCORD_WEBHOOK_URL}
 management:

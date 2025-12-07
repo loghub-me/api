@@ -1,11 +1,10 @@
 package me.loghub.api.mapper.user
 
-import me.loghub.api.dto.user.UserDTO
-import me.loghub.api.dto.user.UserDetailDTO
-import me.loghub.api.dto.user.UserPrivacyDTO
-import me.loghub.api.dto.user.UserProfileDTO
+import me.loghub.api.dto.user.*
 import me.loghub.api.entity.user.User
+import me.loghub.api.entity.user.UserGitHub
 import me.loghub.api.entity.user.UserPrivacy
+import me.loghub.api.entity.user.UserProfile
 
 object UserMapper {
     fun map(user: User) = UserDTO(
@@ -17,15 +16,20 @@ object UserMapper {
         id = user.id!!,
         email = if (user.privacy.emailPublic) user.email else null,
         username = user.username,
-        nickname = user.profile.nickname,
+        profile = mapProfile(user.profile),
+        github = mapGitHub(user.github),
         role = user.role
     )
 
-    fun mapProfile(user: User) = UserProfileDTO(
-        id = user.id!!,
-        nickname = user.profile.nickname,
-        readme = user.profile.readme
+    fun mapProfile(profile: UserProfile) = UserProfileDTO(
+        nickname = profile.nickname,
+        readme = profile.readme
     )
 
     fun mapPrivacy(privacy: UserPrivacy) = UserPrivacyDTO(emailPublic = privacy.emailPublic)
+
+    fun mapGitHub(github: UserGitHub) = UserGitHubDTO(
+        username = github.username,
+        verified = github.verified
+    )
 }

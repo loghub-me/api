@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserProfileService(private val userRepository: UserRepository) {
     @Transactional(readOnly = true)
     fun getProfile(user: User) = userRepository.findByUsername(user.username)
-        ?.let { UserMapper.mapProfile(it) }
+        ?.let { UserMapper.mapProfile(it.profile) }
         ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
 
     @Transactional

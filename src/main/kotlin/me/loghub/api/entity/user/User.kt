@@ -37,6 +37,9 @@ class User(
     @Embedded
     var privacy: UserPrivacy,
 
+    @Embedded
+    var github: UserGitHub,
+
     id: Long? = null,
 ) : PublicEntity(id), UserDetails {
     enum class Provider { LOCAL, GOOGLE, GITHUB }
@@ -62,5 +65,9 @@ class User(
 
     fun updatePrivacy(privacy: UserPrivacy) {
         this.privacy = privacy
+    }
+
+    fun updateGitHub(gitHub: UserGitHub) {
+        this.github = gitHub
     }
 }

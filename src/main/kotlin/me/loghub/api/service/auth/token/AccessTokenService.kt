@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.DecodedJWT
 import me.loghub.api.entity.user.User
+import me.loghub.api.entity.user.UserGitHub
 import me.loghub.api.entity.user.UserPrivacy
 import me.loghub.api.entity.user.UserProfile
 import org.springframework.beans.factory.annotation.Value
@@ -64,6 +65,7 @@ class AccessTokenService(
             provider = User.Provider.valueOf(claims["provider"]!!.asString()),
             profile = UserProfile(nickname = claims["nickname"]!!.asString()),
             privacy = UserPrivacy(),
+            github = UserGitHub(),
             role = User.Role.valueOf(claims["role"]!!.asString()),
         )
     }

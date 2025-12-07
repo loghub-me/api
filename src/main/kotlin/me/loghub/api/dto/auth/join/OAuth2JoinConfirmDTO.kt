@@ -2,6 +2,7 @@ package me.loghub.api.dto.auth.join
 
 import jakarta.validation.constraints.Size
 import me.loghub.api.entity.user.User
+import me.loghub.api.entity.user.UserGitHub
 import me.loghub.api.entity.user.UserPrivacy
 import me.loghub.api.entity.user.UserProfile
 import me.loghub.api.lib.validation.EmailValidation
@@ -28,6 +29,7 @@ data class OAuth2JoinConfirmDTO(
         username = this.username,
         profile = UserProfile(nickname = nickname),
         privacy = UserPrivacy(),
+        github = UserGitHub(),
         provider = provider,
     )
 }
