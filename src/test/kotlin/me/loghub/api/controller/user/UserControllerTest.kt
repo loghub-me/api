@@ -3,7 +3,6 @@ package me.loghub.api.controller.user
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.user.UpdateUsernameDTO
 import me.loghub.api.dto.user.UserDetailDTO
-import me.loghub.api.dto.user.UserProfileDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
 import org.junit.jupiter.api.*
@@ -100,27 +99,6 @@ class UserControllerTest(
 
     @Nested
     @Order(2)
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    inner class GetUserProfile {
-        @BeforeAll
-        fun setupDatabase() = resetDatabase()
-
-        @Test
-        fun `getUserProfile - not_found`() {
-            val response = getUserProfile<String>(Username.INVALID)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-        }
-
-        @Test
-        fun `getUserProfile - ok`() {
-            val response = getUserProfile<UserProfileDTO>(member1.username)
-            assertEquals(HttpStatus.OK, response.statusCode)
-            assertEquals(member1.profile.nickname, response.body?.nickname)
-        }
-    }
-
-    @Nested
-    @Order(3)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class UpdateUsername {
         @BeforeAll

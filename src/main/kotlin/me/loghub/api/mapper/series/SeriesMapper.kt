@@ -28,7 +28,7 @@ object SeriesMapper {
         title = series.title,
         description = series.description,
         thumbnail = series.thumbnail,
-        writer = UserMapper.mapDetail(series.writer),
+        writer = UserMapper.map(series.writer),
         stats = mapStats(series.stats),
         topics = series.topicsFlat,
         chapters = series.chapters.map(SeriesChapterMapper::map),

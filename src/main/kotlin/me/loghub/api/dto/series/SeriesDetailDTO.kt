@@ -2,7 +2,7 @@ package me.loghub.api.dto.series
 
 import me.loghub.api.dto.series.chapter.SeriesChapterDTO
 import me.loghub.api.dto.topic.TopicDTO
-import me.loghub.api.dto.user.UserDetailDTO
+import me.loghub.api.dto.user.UserDTO
 
 data class SeriesDetailDTO(
     val id: Long,
@@ -10,7 +10,7 @@ data class SeriesDetailDTO(
     val title: String,
     val description: String,
     val thumbnail: String,
-    val writer: UserDetailDTO,
+    val writer: UserDTO,
     val stats: SeriesStatsDTO,
     val topics: List<TopicDTO>,
     val chapters: List<SeriesChapterDTO>,

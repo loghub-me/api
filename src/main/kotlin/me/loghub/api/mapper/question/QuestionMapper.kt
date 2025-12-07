@@ -35,7 +35,7 @@ object QuestionMapper {
             ),
             anchors = renderedMarkdown.anchors,
             status = question.status,
-            writer = UserMapper.mapDetail(question.writer),
+            writer = UserMapper.map(question.writer),
             stats = mapStats(question.stats),
             topics = question.topicsFlat,
             createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),

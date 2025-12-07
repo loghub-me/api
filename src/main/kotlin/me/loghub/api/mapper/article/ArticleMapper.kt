@@ -31,7 +31,7 @@ object ArticleMapper {
         ),
         anchors = renderedMarkdown.anchors,
         thumbnail = article.thumbnail,
-        writer = UserMapper.mapDetail(article.writer),
+        writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
