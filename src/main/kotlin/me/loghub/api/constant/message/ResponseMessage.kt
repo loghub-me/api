@@ -63,6 +63,7 @@ object ResponseMessage {
             const val ALREADY_VERIFIED = "이미 GitHub 인증이 완료되었습니다."
             const val USER_NOT_FOUND = "GitHub 사용자를 찾을 수 없습니다."
             const val UPDATE_SUCCESS = "GitHub 정보가 성공적으로 업데이트되었습니다!"
+            const val DELETE_SUCCESS = "GitHub 정보가 성공적으로 삭제되었습니다!"
             const val VERIFICATION_SUCCESS = "GitHub 인증이 성공적으로 완료되었습니다!"
             const val VERIFICATION_FAILED = "GitHub 프로필 인증에 실패했습니다. LogHub 프로필 링크가 포함되어 있는지 확인해주세요."
         }

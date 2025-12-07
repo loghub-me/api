@@ -33,6 +33,15 @@ class UserGitHubController(private val userGitHubService: UserGitHubService) {
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
+    
+    @DeleteMapping
+    fun deleteGitHub(@AuthenticationPrincipal user: User): ResponseEntity<ResponseBody> {
+        userGitHubService.deleteGitHub(user)
+        return MessageResponseBody(
+            message = ResponseMessage.User.GitHub.DELETE_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
 
     @PostMapping("/verify")
     fun verifyGitHub(@AuthenticationPrincipal user: User): ResponseEntity<ResponseBody> {

@@ -39,6 +39,13 @@ class UserGitHubService(
     }
 
     @Transactional
+    fun deleteGitHub(user: User) {
+        val foundUser = userRepository.findById(user.id!!)
+            .orElseThrowNotFound { ResponseMessage.User.NOT_FOUND }
+        foundUser.updateGitHub(UserGitHub())
+    }
+
+    @Transactional
     fun verifyGitHub(user: User) {
         val foundUser = userRepository.findById(user.id!!)
             .orElseThrowNotFound { ResponseMessage.User.NOT_FOUND }

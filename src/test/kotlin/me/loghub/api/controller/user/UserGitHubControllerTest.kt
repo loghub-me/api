@@ -59,6 +59,12 @@ class UserGitHubControllerTest(
         return rest.exchange(request.body(body), T::class.java)
     }
 
+    private inline fun <reified T> deleteGitHub(token: TokenDTO? = null): ResponseEntity<T> {
+        val request = RequestEntity.delete("/users/github")
+        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
+        return rest.exchange(request.build(), T::class.java)
+    }
+
     @Nested
     @Order(1)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -107,6 +113,27 @@ class UserGitHubControllerTest(
         @Order(Integer.MAX_VALUE)
         fun `updateGitHub - ok`() {
             val response = updateGitHub<String>(bodyForUpdate, member1Token)
+            assertEquals(HttpStatus.OK, response.statusCode)
+        }
+    }
+
+    @Nested
+    @Order(3)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class DeleteGitHub {
+        @BeforeAll
+        fun setupDatabase() = resetDatabase(jdbcTemplate)
+
+        @Test
+        fun `deleteGitHub - unauthorized`() {
+            val response = deleteGitHub<String>()
+            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        }
+
+        @Test
+        @Order(Integer.MAX_VALUE)
+        fun `deleteGitHub - ok`() {
+            val response = deleteGitHub<String>(member1Token)
             assertEquals(HttpStatus.OK, response.statusCode)
         }
     }
