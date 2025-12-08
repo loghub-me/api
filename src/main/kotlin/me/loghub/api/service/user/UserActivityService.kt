@@ -1,7 +1,7 @@
 package me.loghub.api.service.user
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.dto.user.activity.UserActivityDTO
+import me.loghub.api.dto.user.activity.UserActivityProjection
 import me.loghub.api.dto.user.activity.UserActivitySummaryDTO
 import me.loghub.api.repository.user.UserActivityRepository
 import me.loghub.api.repository.user.UserRepository
@@ -24,10 +24,10 @@ class UserActivityService(
     }
 
     @Transactional(readOnly = true)
-    fun getActivities(userId: Long, date: LocalDate): List<UserActivityDTO> {
+    fun getActivities(userId: Long, date: LocalDate): List<UserActivityProjection> {
         checkField("date", !date.isAfter(LocalDate.now())) { ResponseMessage.User.INVALID_DATE_RANGE }
 
         val user = userRepository.getReferenceById(userId)
-        return userActivityRepository.findDTOByUserAndCreatedDate(user, date)
+        return userActivityRepository.findProjectionByUserIdAndCreatedDate(userId, date)
     }
 }

@@ -200,8 +200,12 @@ CREATE TABLE IF NOT EXISTS public.user_activities
         CONSTRAINT user_activities_article_id_fk REFERENCES public.articles ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
     series_id    bigint
         CONSTRAINT user_activities_series_id_fk REFERENCES public.series ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
+    series_chapter_id bigint
+        CONSTRAINT user_activities_series_chapter_id_fk REFERENCES public.series_chapters ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
     question_id  bigint
         CONSTRAINT user_activities_question_id_fk REFERENCES public.questions ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
+    question_answer_id bigint
+        CONSTRAINT user_activities_question_answer_id_fk REFERENCES public.question_answers ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
     user_id      bigint           NOT NULL
         CONSTRAINT user_activities_user_id_fk REFERENCES public.users ON DELETE CASCADE
 );

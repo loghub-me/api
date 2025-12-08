@@ -1,6 +1,6 @@
 package me.loghub.api.controller.user
 
-import me.loghub.api.dto.user.activity.UserActivityDTO
+import me.loghub.api.dto.user.activity.UserActivityProjection
 import me.loghub.api.dto.user.activity.UserActivitySummaryDTO
 import me.loghub.api.service.user.UserActivityService
 import org.springframework.http.ResponseEntity
@@ -24,7 +24,7 @@ class UserActivityController(private val userActivityService: UserActivityServic
     fun getActivity(
         @PathVariable userId: Long,
         @PathVariable date: LocalDate
-    ): ResponseEntity<List<UserActivityDTO>> {
+    ): ResponseEntity<List<UserActivityProjection>> {
         val activities = userActivityService.getActivities(userId, date)
         return ResponseEntity.ok(activities)
     }

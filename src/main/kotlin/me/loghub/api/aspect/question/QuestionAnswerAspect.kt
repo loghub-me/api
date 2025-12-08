@@ -4,7 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
+import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.repository.user.UserActivityRepository
 import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component
 class QuestionAnswerAspect(
     private val redisTemplate: RedisTemplate<String, String>,
     private val notificationService: NotificationService,
+    private val userActivityRepository: UserActivityRepository,
 ) {
     private object TrendingScoreDelta {
         const val ANSWER = 1.toDouble()
@@ -38,6 +41,7 @@ class QuestionAnswerAspect(
         val questionId = postedAnswer.question.id!!
         updateTrendingScoreAfterPostAnswer(questionId)
         sendNotificationsAfterPostAnswer(postedAnswer)
+        addUserActivityAfterPostAnswer(postedAnswer)
         logAfterPostAnswer(postedAnswer)
     }
 
@@ -78,6 +82,16 @@ class QuestionAnswerAspect(
             message = "@${postedAnswer.writer.username}님이 회원님의 질문에 답변을 남겼습니다.",
         )
         notificationService.addNotification(question.writer.id!!, notification)
+    }
+
+    private fun addUserActivityAfterPostAnswer(postedAnswer: QuestionAnswer) {
+        val activity = UserActivity(
+            action = UserActivity.Action.POST_QUESTION_ANSWER,
+            user = postedAnswer.writer,
+            question = postedAnswer.question,
+            questionAnswer = postedAnswer
+        )
+        userActivityRepository.save(activity)
     }
 
     private fun logAfterPostAnswer(postedAnswer: QuestionAnswer) =

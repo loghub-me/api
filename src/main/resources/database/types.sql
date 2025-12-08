@@ -1,5 +1,5 @@
 DO 'BEGIN IF NOT EXISTS ( SELECT 1 FROM pg_type WHERE typname = ''user_role_enum'' ) THEN CREATE TYPE user_role_enum AS ENUM (''MEMBER'',''ADMIN'',''BOT''); END IF; END' LANGUAGE plpgsql;
 DO 'BEGIN IF NOT EXISTS ( SELECT 1 FROM pg_type WHERE typname = ''user_provider_enum'' ) THEN CREATE TYPE user_provider_enum AS ENUM (''LOCAL'',''GOOGLE'',''GITHUB''); END IF; END' LANGUAGE plpgsql;
 DO 'BEGIN IF NOT EXISTS ( SELECT 1 FROM pg_type WHERE typname = ''user_star_target_enum'' ) THEN CREATE TYPE user_star_target_enum AS ENUM (''ARTICLE'',''SERIES'',''QUESTION''); END IF; END' LANGUAGE plpgsql;
-DO 'BEGIN IF NOT EXISTS ( SELECT 1 FROM pg_type WHERE typname = ''user_action_enum'' ) THEN CREATE TYPE user_action_enum AS ENUM (''POST_ARTICLE'',''POST_SERIES'',''POST_QUESTION''); END IF; END' LANGUAGE plpgsql;
+DO 'BEGIN IF NOT EXISTS ( SELECT 1 FROM pg_type WHERE typname = ''user_action_enum'' ) THEN CREATE TYPE user_action_enum AS ENUM (''POST_ARTICLE'',''POST_SERIES'',''POST_SERIES_CHAPTER'',''POST_QUESTION'',''POST_QUESTION_ANSWER''); END IF; END' LANGUAGE plpgsql;
 DO 'BEGIN IF NOT EXISTS ( SELECT 1 FROM pg_type WHERE typname = ''question_status_enum'' ) THEN CREATE TYPE question_status_enum AS ENUM (''OPEN'', ''CLOSED'', ''SOLVED''); END IF; END' LANGUAGE plpgsql;
