@@ -38,6 +38,7 @@ object SeriesMapper {
 
     fun mapForEdit(series: Series) = SeriesForEditDTO(
         id = series.id!!,
+        slug = series.slug,
         title = series.title,
         description = series.description,
         thumbnail = series.thumbnail,
