@@ -60,7 +60,7 @@ class JoinService(
         ) { ResponseMessage.User.EMAIL_ALREADY_EXISTS }
         checkConflict(
             User::username.name,
-            userRepository.existsByUsername(username),
+            userRepository.existsByUsernameIgnoreCase(username),
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
     }
 

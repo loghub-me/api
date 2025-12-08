@@ -38,7 +38,7 @@ class UserService(
         ) { ResponseMessage.User.USERNAME_NOT_CHANGED }
         checkConflict(
             UpdateUsernameDTO::newUsername.name,
-            userRepository.existsByUsername(requestBody.newUsername)
+            userRepository.existsByUsernameIgnoreCase(requestBody.newUsername)
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
 
         val foundUser = userRepository.findByUsername(user.username)
