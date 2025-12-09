@@ -4,6 +4,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.user.UpdateUsernameDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
+import me.loghub.api.lib.validation.isReservedUsername
 import me.loghub.api.mapper.user.UserMapper
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.article.ArticleRepository
@@ -11,6 +12,7 @@ import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.checkConflict
+import me.loghub.api.util.checkField
 import me.loghub.api.util.requireNotEquals
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
@@ -32,18 +34,23 @@ class UserService(
 
     @Transactional
     fun updateUsername(requestBody: UpdateUsernameDTO, user: User) {
+        val (oldUsername, newUsername) = Pair(user.username, requestBody.newUsername)
+
         requireNotEquals(
             UpdateUsernameDTO::newUsername.name,
-            user.username, requestBody.newUsername,
+            user.username, newUsername,
         ) { ResponseMessage.User.USERNAME_NOT_CHANGED }
+        checkField(
+            UpdateUsernameDTO::newUsername.name,
+            !newUsername.isReservedUsername(),
+        ) { ResponseMessage.User.USERNAME_NOT_ALLOWED }
         checkConflict(
             UpdateUsernameDTO::newUsername.name,
-            userRepository.existsByUsernameIgnoreCase(requestBody.newUsername)
+            userRepository.existsByUsernameIgnoreCase(newUsername)
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
 
         val foundUser = userRepository.findByUsername(user.username)
             ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
-        val (oldUsername, newUsername) = Pair(foundUser.username, requestBody.newUsername)
 
         foundUser.updateUsername(newUsername)
         articleRepository.updateWriterUsernameByWriterUsername(oldUsername, newUsername)

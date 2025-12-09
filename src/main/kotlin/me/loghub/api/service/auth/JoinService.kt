@@ -11,12 +11,14 @@ import me.loghub.api.dto.task.mail.JoinMailSendRequest
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.validation.isReservedUsername
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import me.loghub.api.service.common.MailService
 import me.loghub.api.util.OTPBuilder
 import me.loghub.api.util.checkConflict
+import me.loghub.api.util.checkField
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 
@@ -54,6 +56,10 @@ class JoinService(
     }
 
     private fun checkJoinable(email: String, username: String) {
+        checkField(
+            User::username.name,
+            !username.isReservedUsername(),
+        ) { ResponseMessage.User.USERNAME_NOT_ALLOWED }
         checkConflict(
             User::email.name,
             userRepository.existsByEmail(email),

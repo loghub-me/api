@@ -56,6 +56,7 @@ object ResponseMessage {
         const val PRIVACY_UPDATE_SUCCESS = "정보 공개 설정이 성공적으로 업데이트되었습니다!"
         const val USERNAME_UPDATE_SUCCESS = "아이디가 성공적으로 변경되었습니다!"
         const val USERNAME_NOT_CHANGED = "유저네임이 변경되지 않았습니다."
+        const val USERNAME_NOT_ALLOWED = "유저네임에 허용되지 않는 단어가 포함되어 있습니다."
         const val INVALID_DATE_RANGE = "날짜 범위가 유효하지 않습니다."
 
         object GitHub {
