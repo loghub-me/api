@@ -2,6 +2,7 @@ package me.loghub.api.repository.article
 
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleComment
+import me.loghub.api.entity.user.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
@@ -15,6 +16,7 @@ interface ArticleCommentRepository : JpaRepository<ArticleComment, Long> {
         const val BY_ARTICLE = "ac.article = :article"
         const val BY_PARENT = "ac.parent = :parent"
         const val BY_PARENT_IS_NULL = "ac.parent IS NULL"
+        const val CREATED_AT_ASC = "ac.createdAt ASC"
         const val CREATED_AT_DESC = "ac.createdAt DESC"
     }
 
@@ -23,14 +25,16 @@ interface ArticleCommentRepository : JpaRepository<ArticleComment, Long> {
     fun findRootComments(article: Article, pageable: Pageable): Page<ArticleComment>
 
     @EntityGraph(attributePaths = ["writer"])
-    @Query("$SELECT_COMMENT WHERE $BY_ARTICLE AND $BY_PARENT ORDER BY $CREATED_AT_DESC")
+    @Query("$SELECT_COMMENT WHERE $BY_ARTICLE AND $BY_PARENT ORDER BY $CREATED_AT_ASC")
     fun findLeafComments(article: Article, parent: ArticleComment): List<ArticleComment>
 
     @EntityGraph(attributePaths = ["parent", "writer"])
     fun findWithGraphByArticleAndId(article: Article, commentId: Long): ArticleComment?
 
-    @EntityGraph(attributePaths = ["writer"])
-    fun findWithWriterByArticleAndId(article: Article, id: Long): ArticleComment?
+    fun findByArticleAndId(article: Article, id: Long): ArticleComment?
+
+    @Query("SELECT ac.writer FROM ArticleComment ac WHERE ac.id = :id")
+    fun findWriterById(id: Long): User?
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE ArticleComment ac SET ac.replyCount = ac.replyCount + 1 WHERE ac.id = :id")

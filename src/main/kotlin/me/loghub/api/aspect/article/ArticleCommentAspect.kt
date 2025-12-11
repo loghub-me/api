@@ -63,21 +63,25 @@ class ArticleCommentAspect(
 
     private fun sendNotificationsAfterPostComment(postedComment: ArticleComment) {
         val article = postedComment.article
-
         val href = "/articles/${article.writerUsername}/${article.slug}"
         val title = article.title
 
-        postedComment.parent?.let { parentComment ->
-            if (parentComment.writer == postedComment.writer) return
+        postedComment.mention?.let { mention ->
+            if (mention == postedComment.writer) return@let
+
             val message = "@${postedComment.writer.username}님이 회원님의 댓글에 답글을 남겼습니다."
             val notification = NotificationDTO(href, title, message)
-            notificationService.addNotification(parentComment.writer.id!!, notification)
+            notificationService.addNotification(mention.id!!, notification)
         }
 
-        if (article.writer == postedComment.writer) return
-        val message = "@${postedComment.writer.username}님이 회원님의 아티클에 댓글을 남겼습니다."
-        val notification = NotificationDTO(href, title, message)
-        notificationService.addNotification(article.writer.id!!, notification)
+        if (article.writer == postedComment.mention) return
+
+        postedComment.writer.let { commentWriter ->
+            if (article.writer == commentWriter) return@let
+            val message = "@${postedComment.writer.username}님이 회원님의 아티클에 댓글을 남겼습니다."
+            val notification = NotificationDTO(href, title, message)
+            notificationService.addNotification(article.writer.id!!, notification)
+        }
     }
 
     private fun logAfterPostComment(postedComment: ArticleComment) =

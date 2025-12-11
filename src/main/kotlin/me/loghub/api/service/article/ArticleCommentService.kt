@@ -52,8 +52,9 @@ class ArticleCommentService(
         val article = articleRepository.findWithWriterById(articleId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
         val parent = getAvailableParent(article, requestBody.parentId)
+        val mention = requestBody.parentId?.let { it -> articleCommentRepository.findWriterById(it) }
 
-        val comment = requestBody.toEntity(article, parent, writer)
+        val comment = requestBody.toEntity(article, parent, mention, writer)
         val savedComment = articleCommentRepository.save(comment)
 
         articleStatsRepository.incrementCommentCount(articleId)
@@ -94,7 +95,7 @@ class ArticleCommentService(
 
     private fun getAvailableParent(article: Article, parentId: Long?): ArticleComment? =
         parentId?.let { id ->
-            articleCommentRepository.findWithWriterByArticleAndId(article, id)
+            articleCommentRepository.findByArticleAndId(article, id)
                 ?: throw EntityNotFoundException(ResponseMessage.Article.Comment.NOT_FOUND)
         }?.also {
             checkField(
