@@ -11,6 +11,7 @@ object ResponseMessage {
         const val CONFLICT = "요청이 현재 상태와 충돌합니다."
         const val CONFLICT_FIELD = "필드 값이 충돌합니다."
         const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
+        const val TOO_MANY_REQUESTS = "너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요."
         const val COOLDOWN_NOT_ELAPSED = "쿨타임이 지나지 않았습니다."
         const val INTERNAL_SERVER_ERROR = "알 수 없는 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     }

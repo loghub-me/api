@@ -12,6 +12,7 @@ object RedisKeys {
     val REFRESH_TOKEN = RedisKeySpec("refresh_token:%s", 14.days.toJavaDuration())
     val MARKDOWN = RedisKeySpec("markdown:%s", 1.days.toJavaDuration())
     val NOTIFICATIONS = RedisKeySpec("notifications:%s", 1.days.toJavaDuration())
+    val RATE_LIMIT = RedisKeySpec("rate_limit:%s:%s.%s", 1.days.toJavaDuration())
 
     object Article {
         val DRAFT = RedisKeySpec("articles:%s:draft", 7.days.toJavaDuration())

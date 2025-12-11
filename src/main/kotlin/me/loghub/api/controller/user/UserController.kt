@@ -7,12 +7,14 @@ import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.dto.user.UpdateUsernameDTO
 import me.loghub.api.dto.user.UserDetailDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.lib.ratelimit.RateLimit
 import me.loghub.api.service.user.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.time.temporal.ChronoUnit
 
 @RestController
 @RequestMapping("/users")
@@ -24,6 +26,7 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/username")
+    @RateLimit(limit = 3, window = 8, unit = ChronoUnit.HOURS)
     fun updateUsername(
         @RequestBody @Valid requestBody: UpdateUsernameDTO,
         @AuthenticationPrincipal user: User
@@ -36,6 +39,7 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/avatar")
+    @RateLimit(limit = 5, window = 1, unit = ChronoUnit.HOURS)
     fun updateAvatar(
         @RequestPart("file") file: MultipartFile,
         @AuthenticationPrincipal user: User,
