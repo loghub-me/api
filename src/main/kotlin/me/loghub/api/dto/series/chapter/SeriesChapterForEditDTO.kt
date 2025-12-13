@@ -6,4 +6,5 @@ data class SeriesChapterForEditDTO(
     val content: String,
     val draft: String?,
     val sequence: Int,
+    val published: Boolean,
 )

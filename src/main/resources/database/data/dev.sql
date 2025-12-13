@@ -150,16 +150,16 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
        ('member1@loghub.me', 'member1', '멤버1', 'MEMBER'),
        ('member2@loghub.me', 'member2', '멤버2', 'MEMBER');
 
-INSERT INTO public.articles(slug, title, content, writer_id, writer_username)
+INSERT INTO public.articles(slug, title, content, writer_id, writer_username, published, published_at)
 VALUES ('a-article', 'A Article',
         E'### A Content\n\nThis is a sample article content for A Article.\n\n- Point 1\n- Point 2\n- Point 3\n\nEnjoy reading!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
+        ( SELECT id FROM users WHERE username = 'member1' ), 'member1', TRUE, NOW()),
        ('b-article', 'B Article',
         E'### B Content\n\nThis is a sample article content for B Article.\n\n- Point A\n- Point B\n- Point C\n\nHappy coding!',
-        ( SELECT id FROM users WHERE username = 'member1' ), 'member1'),
+        ( SELECT id FROM users WHERE username = 'member1' ), 'member1', TRUE, NOW()),
        ('c-article', 'C Article',
         E'### C Content\n\nThis is a sample article content for C Article.\n\n- Item X\n- Item Y\n- Item Z\n\nKeep learning!',
-        ( SELECT id FROM users WHERE username = 'member2' ), 'member2');
+        ( SELECT id FROM users WHERE username = 'member2' ), 'member2', TRUE, NOW());
 INSERT INTO public.article_topics(article_id, topic_id)
 VALUES (( SELECT id FROM articles WHERE slug = 'a-article' ),
         ( SELECT id FROM topics WHERE slug = 'c' )),
@@ -190,13 +190,13 @@ VALUES ('a-series', 'A Series', 'This is a description for A Series.',
         ( SELECT id FROM users WHERE username = 'admin' ), 'admin'),
        ('b-series', 'B Series', 'This is a description for B Series.',
         ( SELECT id FROM users WHERE username = 'member1' ), 'member1');
-INSERT INTO public.series_chapters(title, content, sequence, series_id, writer_id)
+INSERT INTO public.series_chapters(title, content, sequence, series_id, writer_id, published, published_at)
 VALUES ('Chapter 1 of A Series', 'Content for Chapter 1 of A Series.', 1,
-        ( SELECT id FROM series WHERE slug = 'a-series' ), ( SELECT id FROM users WHERE username = 'admin' )),
+        ( SELECT id FROM series WHERE slug = 'a-series' ), ( SELECT id FROM users WHERE username = 'admin' ), TRUE, NOW()),
        ('Chapter 2 of A Series', 'Content for Chapter 2 of A Series.', 2,
-        ( SELECT id FROM series WHERE slug = 'a-series' ), ( SELECT id FROM users WHERE username = 'admin' )),
+        ( SELECT id FROM series WHERE slug = 'a-series' ), ( SELECT id FROM users WHERE username = 'admin' ), TRUE, NOW()),
        ('Chapter 1 of B Series', 'Content for Chapter 1 of B Series.', 1,
-        ( SELECT id FROM series WHERE slug = 'b-series' ), ( SELECT id FROM users WHERE username = 'member1' ));
+        ( SELECT id FROM series WHERE slug = 'b-series' ), ( SELECT id FROM users WHERE username = 'member1' ), TRUE, NOW());
 INSERT INTO public.series_topics(series_id, topic_id)
 VALUES (( SELECT id FROM series WHERE slug = 'a-series' ),
         ( SELECT id FROM topics WHERE slug = 'c' )),

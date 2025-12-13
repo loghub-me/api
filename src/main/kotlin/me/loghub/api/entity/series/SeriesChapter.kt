@@ -6,6 +6,7 @@ import me.loghub.api.entity.PublicEntity
 import me.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "series_chapters")
@@ -20,6 +21,12 @@ class SeriesChapter(
 
     @Column(name = "sequence", nullable = false)
     var sequence: Int,
+
+    @Column(name = "published", nullable = false)
+    var published: Boolean,
+
+    @Column(name = "published_at")
+    var publishedAt: LocalDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "series_id", nullable = false)
@@ -36,5 +43,14 @@ class SeriesChapter(
 
     fun updateSequence(newSequence: Int) {
         this.sequence = newSequence
+    }
+
+    fun publish() {
+        this.published = true
+        publishedAt = publishedAt ?: LocalDateTime.now()
+    }
+
+    fun unpublish() {
+        this.published = false
     }
 }

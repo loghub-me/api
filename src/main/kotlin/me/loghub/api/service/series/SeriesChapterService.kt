@@ -16,6 +16,7 @@ import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.service.common.CacheService
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
+import me.loghub.api.util.checkPublished
 import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -38,6 +39,9 @@ class SeriesChapterService(
         val series = seriesRepository.getReferenceById(seriesId)
         val chapter = seriesChapterRepository.findWithWriterBySeriesAndSequence(series, sequence)
             ?: throw EntityNotFoundException(ResponseMessage.Series.Chapter.NOT_FOUND)
+
+        checkPublished(chapter.published) { ResponseMessage.Series.NOT_FOUND }
+
         val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(chapter.content)
         return SeriesChapterMapper.mapDetail(chapter, renderedMarkdown)
     }
@@ -68,6 +72,7 @@ class SeriesChapterService(
             sequence = chapterSize + 1,
             series = series,
             writer = writer,
+            published = false,
         )
         return seriesChapterRepository.save(chapter)
     }
@@ -91,6 +96,7 @@ class SeriesChapterService(
             sequence = chapterSize + 1,
             series = series,
             writer = writer,
+            published = false,
         )
         return seriesChapterRepository.save(chapter)
     }
@@ -104,6 +110,8 @@ class SeriesChapterService(
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
         chapter.update(requestBody)
+        if (requestBody.published) chapter.publish() else chapter.unpublish()
+
         return chapter
     }
 

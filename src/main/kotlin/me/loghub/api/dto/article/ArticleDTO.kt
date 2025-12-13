@@ -11,6 +11,5 @@ data class ArticleDTO(
     val stats: ArticleStatsDTO,
     val writer: UserDTO,
     val topics: List<TopicDTO>,
-    val createdAt: String,
-    val updatedAt: String,
+    val publishedAt: String,
 )

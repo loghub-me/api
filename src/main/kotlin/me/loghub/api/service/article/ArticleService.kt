@@ -11,10 +11,7 @@ import me.loghub.api.repository.article.ArticleCustomRepository
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.topic.TopicRepository
 import me.loghub.api.service.common.CacheService
-import me.loghub.api.util.SlugBuilder
-import me.loghub.api.util.checkField
-import me.loghub.api.util.checkPermission
-import me.loghub.api.util.toSlug
+import me.loghub.api.util.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.redis.core.RedisTemplate
@@ -48,6 +45,9 @@ class ArticleService(
     fun getArticle(username: String, slug: String): ArticleDetailDTO {
         val article = articleRepository.findWithWriterByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
+
+        checkPublished(article.published) { ResponseMessage.Article.NOT_FOUND }
+
         val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(article.content)
         return ArticleMapper.mapDetail(article, renderedMarkdown)
     }
@@ -92,6 +92,8 @@ class ArticleService(
         article.update(requestBody)
         article.updateSlug(slug)
         article.updateTopics(topics)
+        if (requestBody.published) article.publish() else article.unpublish()
+
         return article
     }
 

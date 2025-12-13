@@ -5,7 +5,7 @@ import com.querydsl.core.types.dsl.Expressions
 import me.loghub.api.entity.series.QSeries
 import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
 
-enum class SeriesSort(vararg val order: OrderSpecifier<*>) {
+enum class SeriesSort(vararg val orders: OrderSpecifier<*>) {
     latest(QSeries.series.createdAt.desc()),
     oldest(QSeries.series.createdAt.asc()),
     relevant(

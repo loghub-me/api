@@ -5,8 +5,8 @@ import com.querydsl.core.types.dsl.Expressions
 import me.loghub.api.entity.article.QArticle
 import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
 
-enum class ArticleSort(vararg val order: OrderSpecifier<*>) {
-    latest(QArticle.article.createdAt.desc()),
+enum class ArticleSort(vararg val orders: OrderSpecifier<*>) {
+    latest(QArticle.article.publishedAt.desc()),
     oldest(QArticle.article.createdAt.asc()),
     relevant(
         Expressions.numberTemplate(

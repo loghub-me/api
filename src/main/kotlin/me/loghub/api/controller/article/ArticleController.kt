@@ -52,8 +52,11 @@ class ArticleController(
         @AuthenticationPrincipal writer: User
     ): ResponseEntity<ResponseBody> {
         val postedArticle = articleService.postArticle(requestBody, writer)
+        val pathname =
+            if (postedArticle.published) "/articles/${writer.username}/${postedArticle.slug}" else "/edit/articles/${postedArticle.id}"
+
         return RedirectResponseBody(
-            pathname = "/articles/${writer.username}/${postedArticle.slug}",
+            pathname = pathname,
             message = ResponseMessage.Article.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -67,8 +70,11 @@ class ArticleController(
     ): ResponseEntity<ResponseBody> {
         val editedArticle = articleService.editArticle(id, requestBody, writer)
         articleDraftService.deleteArticleDraft(id, writer)
+        val pathname =
+            if (editedArticle.published) "/articles/${writer.username}/${editedArticle.slug}" else "/unpublished/articles"
+
         return RedirectResponseBody(
-            pathname = "/articles/${writer.username}/${editedArticle.slug}",
+            pathname = pathname,
             message = ResponseMessage.Article.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

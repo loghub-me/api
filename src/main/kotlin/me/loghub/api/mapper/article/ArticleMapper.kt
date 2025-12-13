@@ -17,8 +17,7 @@ object ArticleMapper {
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
-        createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        publishedAt = article.publishedAt!!.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
     fun mapDetail(article: Article, renderedMarkdown: RenderedMarkdownDTO) = ArticleDetailDTO(
@@ -34,7 +33,7 @@ object ArticleMapper {
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
-        createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        publishedAt = article.publishedAt!!.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
@@ -45,6 +44,7 @@ object ArticleMapper {
         draft = draft,
         thumbnail = article.thumbnail,
         topicSlugs = article.topicsFlat.map { it.slug },
+        published = article.published,
     )
 
     fun mapForImport(article: Article) = ArticleForImportDTO(

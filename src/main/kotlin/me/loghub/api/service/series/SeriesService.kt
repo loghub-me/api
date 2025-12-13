@@ -40,10 +40,12 @@ class SeriesService(
     }
 
     @Transactional(readOnly = true)
-    fun getSeries(username: String, slug: String): SeriesDetailDTO =
-        seriesRepository.findWithGraphByCompositeKey(username, slug)
-            ?.let { SeriesMapper.mapDetail(it) }
+    fun getSeries(username: String, slug: String): SeriesDetailDTO {
+        val series = seriesRepository.findWithGraphByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Series.NOT_FOUND)
+        val chapters = series.chapters.filter { it.published }
+        return SeriesMapper.mapDetail(series, chapters)
+    }
 
     @Transactional(readOnly = true)
     fun getSeriesForEdit(seriesId: Long, writer: User): SeriesForEditDTO {

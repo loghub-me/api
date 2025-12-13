@@ -12,5 +12,4 @@ data class SeriesDTO(
     val writer: UserDTO,
     val topics: List<TopicDTO>,
     val createdAt: String,
-    val updatedAt: String,
 )

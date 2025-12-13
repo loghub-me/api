@@ -8,8 +8,8 @@ CREATE OR REPLACE FUNCTION archive.archive_user_on_delete () RETURNS TRIGGER AS 
 
 CREATE OR REPLACE FUNCTION archive.archive_article_on_delete () RETURNS TRIGGER AS '
     BEGIN
-        INSERT INTO archive.articles (id, slug, title, content, thumbnail, star_count, comment_count, trending_score, created_at, updated_at, writer_id, writer_username, topics_flat) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.id, OLD.slug, OLD.title, OLD.content, OLD.thumbnail, OLD.star_count, OLD.comment_count, OLD.trending_score, OLD.created_at, OLD.updated_at, OLD.writer_id, OLD.writer_username, OLD.topics_flat);
+        INSERT INTO archive.articles (id, slug, title, content, thumbnail, published, published_at, star_count, comment_count, trending_score, created_at, updated_at, writer_id, writer_username, topics_flat) OVERRIDING SYSTEM VALUE
+        VALUES (OLD.id, OLD.slug, OLD.title, OLD.content, OLD.thumbnail, OLD.published, OLD.published_at, OLD.star_count, OLD.comment_count, OLD.trending_score, OLD.created_at, OLD.updated_at, OLD.writer_id, OLD.writer_username, OLD.topics_flat);
         RETURN OLD;
     END
 ' LANGUAGE plpgsql;
@@ -32,8 +32,8 @@ CREATE OR REPLACE FUNCTION archive.archive_series_on_delete () RETURNS TRIGGER A
 
 CREATE OR REPLACE FUNCTION archive.archive_series_chapter_on_delete () RETURNS TRIGGER AS '
     BEGIN
-        INSERT INTO archive.series_chapters (id, title, content, sequence, created_at, updated_at, series_id, writer_id) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.id, OLD.title, OLD.content, OLD.sequence, OLD.created_at, OLD.updated_at, OLD.series_id, OLD.writer_id);
+        INSERT INTO archive.series_chapters (id, title, content, sequence, published, published_at, created_at, updated_at, series_id, writer_id) OVERRIDING SYSTEM VALUE
+        VALUES (OLD.id, OLD.title, OLD.content, OLD.sequence, OLD.published, OLD.published_at, OLD.created_at, OLD.updated_at, OLD.series_id, OLD.writer_id);
         RETURN OLD;
     END
 ' LANGUAGE plpgsql;

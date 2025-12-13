@@ -1,5 +1,7 @@
 package me.loghub.api.repository.article
 
+import com.querydsl.core.types.OrderSpecifier
+import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
@@ -15,33 +17,45 @@ import org.springframework.stereotype.Repository
 @Repository
 class ArticleCustomRepository(private val entityManager: EntityManager) {
     private companion object {
-        val article = QArticle.article
+        val article = QArticle.article;
     }
 
     fun search(
         query: String,
         sort: ArticleSort,
         pageable: Pageable,
-        username: String? = null
+        username: String? = null,
+        published: Boolean? = true,
     ): Page<Article> {
-        val fullTextSearch = if (query.isNotBlank()) Expressions.booleanTemplate(
-            PGroongaHibernateFunction.ARTICLES_FTS.template,
-            query,
-        ) else null
-        val usernameFilter = if (username.isNullOrBlank()) null else article.writerUsername.eq(username)
-        val conditions = listOfNotNull(fullTextSearch, usernameFilter).toTypedArray()
-        val resolvedSort = sort.takeUnless { fullTextSearch == null && it == ArticleSort.relevant }
+        val ftsCondition = query.takeIf { it.isNotBlank() }
+            ?.let(::createFullTextSearchCondition)
+        val writerCondition = username.takeIf { !it.isNullOrBlank() }
+            ?.let(::createWriterCondition)
+        val publishedCondition = article.published.eq(published)
+        val conditions = listOfNotNull(ftsCondition, writerCondition, publishedCondition).toTypedArray()
+        val resolvedSort = sort.takeUnless { ftsCondition == null && it == ArticleSort.relevant }
             ?: ArticleSort.latest
 
+        return runQueryAndWrapPage(conditions = conditions, orders = resolvedSort.orders, pageable = pageable)
+    }
+
+    private fun createWriterCondition(username: String) = article.writerUsername.eq(username)
+    private fun createFullTextSearchCondition(query: String) =
+        Expressions.booleanTemplate(PGroongaHibernateFunction.ARTICLES_FTS.template, query)
+
+    private fun runQueryAndWrapPage(
+        conditions: Array<BooleanExpression>,
+        orders: Array<out OrderSpecifier<*>>,
+        pageable: Pageable,
+    ): Page<Article> {
         val searchQuery = JPAQuery<Article>(entityManager)
             .select(article)
             .from(article)
             .where(*conditions)
             .leftJoin(article.writer).fetchJoin()
-            .orderBy(*resolvedSort.order)
+            .orderBy(*orders)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-
         val countQuery = JPAQuery<Long>(entityManager)
             .select(article.count())
             .from(article)

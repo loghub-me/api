@@ -94,6 +94,7 @@ private val RESERVED_USERNAMES: Set<String> = setOf(
     "tag", "tags",
     "comment", "comments",
     "search", "post", "edit",
+    "unpublish", "unpublished",
 
     // Additional conflict-prone words
     "new", "create", "update", "delete",

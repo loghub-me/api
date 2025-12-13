@@ -7,4 +7,5 @@ data class ArticleForEditDTO(
     val draft: String?,
     val thumbnail: String,
     val topicSlugs: List<String>,
+    val published: Boolean,
 )

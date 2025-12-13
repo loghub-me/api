@@ -15,6 +15,16 @@ class UserArticleService(private val articleCustomRepository: ArticleCustomRepos
     }
 
     @Transactional(readOnly = true)
+    fun searchUnpublishedArticles(query: String, user: User) =
+        articleCustomRepository.search(
+            query = query,
+            sort = ArticleSort.latest,
+            pageable = PageRequest.of(0, DEFAULT_ARTICLE_PAGE_SIZE),
+            username = user.username,
+            published = false,
+        ).toList().map { ArticleMapper.map(it) }
+
+    @Transactional(readOnly = true)
     fun searchArticlesForImport(query: String, user: User) =
         articleCustomRepository.search(
             query = query,

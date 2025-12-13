@@ -13,8 +13,6 @@ object SeriesChapterMapper {
         id = chapter.id!!,
         title = chapter.title,
         sequence = chapter.sequence,
-        createdAt = chapter.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = chapter.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
     fun mapDetail(chapter: SeriesChapter, renderedMarkdown: RenderedMarkdownDTO) = SeriesChapterDetailDTO(
@@ -26,7 +24,7 @@ object SeriesChapterMapper {
         ),
         anchors = renderedMarkdown.anchors,
         sequence = chapter.sequence,
-        createdAt = chapter.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        publishedAt = chapter.publishedAt?.format(DateTimeFormatter.ISO_DATE_TIME),
         updatedAt = chapter.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
@@ -36,5 +34,6 @@ object SeriesChapterMapper {
         content = chapter.content,
         draft = draft,
         sequence = chapter.sequence,
+        published = chapter.published,
     )
 }

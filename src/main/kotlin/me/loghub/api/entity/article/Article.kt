@@ -10,6 +10,7 @@ import me.loghub.api.lib.jpa.TopicsFlatConverter
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.Formula
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "articles")
@@ -27,6 +28,12 @@ class Article(
 
     @Column(name = "thumbnail", nullable = false)
     var thumbnail: String,
+
+    @Column(name = "published", nullable = false)
+    var published: Boolean,
+
+    @Column(name = "published_at")
+    var publishedAt: LocalDateTime? = null,
 
     @Embedded
     var stats: ArticleStats = ArticleStats(),
@@ -70,5 +77,14 @@ class Article(
         this.topics.clear()
         this.topics = topics.toMutableSet()
         this.topicsFlat = TopicsFlatConverter.toFlat(topics)
+    }
+
+    fun publish() {
+        this.published = true
+        publishedAt = publishedAt ?: LocalDateTime.now()
+    }
+
+    fun unpublish() {
+        this.published = false
     }
 }

@@ -9,6 +9,6 @@ data class SeriesChapterDetailDTO(
     val content: ContentDTO,
     val anchors: List<AnchorDTO>,
     val sequence: Int,
-    val createdAt: String,
+    val publishedAt: String?,
     val updatedAt: String,
 )

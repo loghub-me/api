@@ -1,6 +1,7 @@
 CREATE INDEX IF NOT EXISTS topics_trending_idx ON public.topics (trending_score DESC);
 
 CREATE INDEX IF NOT EXISTS articles_writer_id_idx ON public.articles (writer_id);
+CREATE INDEX IF NOT EXISTS articles_published_idx ON public.articles (published);
 CREATE INDEX IF NOT EXISTS articles_fts_idx ON public.articles USING pgroonga ((ARRAY [title, content, topics_flat])) WITH (tokenizer='TokenMecab', normalizer='NormalizerAuto');
 CREATE INDEX IF NOT EXISTS articles_created_at_idx ON public.articles (created_at);
 CREATE INDEX IF NOT EXISTS articles_trending_idx ON public.articles (trending_score DESC, star_count DESC);

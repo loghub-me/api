@@ -41,6 +41,16 @@ inline fun checkExists(
     }
 }
 
+inline fun checkPublished(
+    condition: Boolean,
+    lazyMessage: () -> String,
+) {
+    if (!condition) {
+        val message = lazyMessage()
+        throw EntityNotFoundException(message)
+    }
+}
+
 inline fun checkConflict(
     condition: Boolean,
     lazyMessage: () -> String,

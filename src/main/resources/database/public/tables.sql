@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS public.articles
     title           text         NOT NULL,
     content         text         NOT NULL,
     thumbnail       varchar(255) NOT NULL DEFAULT '0/default-article-thumbnail.webp',
+    published       boolean      NOT NULL DEFAULT FALSE,
+    published_at    timestamp(6),                     -- NULL if not published
     star_count      integer      NOT NULL DEFAULT 0,
     comment_count   integer      NOT NULL DEFAULT 0,
     trending_score  real         NOT NULL DEFAULT 0,
@@ -97,6 +99,8 @@ CREATE TABLE IF NOT EXISTS public.series_chapters
     title      text         NOT NULL,
     content    text         NOT NULL,
     sequence   integer      NOT NULL,
+    published       boolean      NOT NULL DEFAULT FALSE,
+    published_at    timestamp(6),                        -- NULL if not published
     created_at timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     series_id  bigint       NOT NULL
