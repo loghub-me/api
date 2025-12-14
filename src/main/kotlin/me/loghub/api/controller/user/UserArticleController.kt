@@ -1,7 +1,7 @@
 package me.loghub.api.controller.user
 
-import me.loghub.api.dto.article.ArticleDTO
 import me.loghub.api.dto.article.ArticleForImportDTO
+import me.loghub.api.dto.article.ArticleUnpublishedDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.user.UserArticleService
 import org.springframework.http.ResponseEntity
@@ -18,7 +18,7 @@ class UserArticleController(private val userArticleService: UserArticleService) 
     fun searchUnpublishedArticles(
         @RequestParam(defaultValue = "") query: String,
         @AuthenticationPrincipal user: User,
-    ): ResponseEntity<List<ArticleDTO>> {
+    ): ResponseEntity<List<ArticleUnpublishedDTO>> {
         val articles = userArticleService.searchUnpublishedArticles(query, user)
         return ResponseEntity.ok(articles)
     }

@@ -37,6 +37,13 @@ object ArticleMapper {
         updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
+    fun mapUnpublished(article: Article) = ArticleUnpublishedDTO(
+        id = article.id!!,
+        title = article.title,
+        topics = article.topicsFlat,
+        createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+    )
+
     fun mapForEdit(article: Article, draft: String?) = ArticleForEditDTO(
         id = article.id!!,
         title = article.title,

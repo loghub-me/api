@@ -22,7 +22,7 @@ class UserArticleService(private val articleCustomRepository: ArticleCustomRepos
             pageable = PageRequest.of(0, DEFAULT_ARTICLE_PAGE_SIZE),
             username = user.username,
             published = false,
-        ).toList().map { ArticleMapper.map(it) }
+        ).toList().map { ArticleMapper.mapUnpublished(it) }
 
     @Transactional(readOnly = true)
     fun searchArticlesForImport(query: String, user: User) =
