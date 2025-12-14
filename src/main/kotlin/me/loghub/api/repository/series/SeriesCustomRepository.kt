@@ -39,7 +39,7 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
 
     private fun createWriterCondition(username: String) = series.writerUsername.eq(username)
     private fun createFullTextSearchCondition(query: String) =
-        Expressions.booleanTemplate(PGroongaHibernateFunction.ARTICLES_FTS.template, query)
+        Expressions.booleanTemplate(PGroongaHibernateFunction.SERIES_FTS.template, query)
 
     private fun runQueryAndWrapPage(
         conditions: Array<BooleanExpression>,

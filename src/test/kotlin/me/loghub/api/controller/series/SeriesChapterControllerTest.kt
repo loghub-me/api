@@ -204,6 +204,7 @@ class SeriesChapterControllerTest(
         val bodyForEdit = EditSeriesChapterDTO(
             title = "Edited Chapter",
             content = "This is an edited chapter.",
+            published = true,
         )
 
         @Test

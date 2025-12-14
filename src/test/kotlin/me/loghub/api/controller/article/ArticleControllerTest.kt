@@ -196,6 +196,7 @@ class ArticleControllerTest(
             content = "This is a new article.",
             thumbnail = "0/default-article-thumbnail.webp",
             topicSlugs = listOf("java", "spring"),
+            published = true,
         )
 
         @BeforeAll
@@ -241,6 +242,7 @@ class ArticleControllerTest(
             content = "This is an edited article.",
             thumbnail = "0/default-article-thumbnail.webp",
             topicSlugs = listOf("kotlin", "spring-boot"),
+            published = true,
         )
 
         @BeforeAll

@@ -42,7 +42,7 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
 
     private fun createWriterCondition(username: String) = question.writerUsername.eq(username)
     private fun createFullTextSearchCondition(query: String) =
-        Expressions.booleanTemplate(PGroongaHibernateFunction.ARTICLES_FTS.template, query)
+        Expressions.booleanTemplate(PGroongaHibernateFunction.QUESTIONS_FTS.template, query)
 
     private fun runQueryAndWrapPage(
         conditions: Array<BooleanExpression>,
