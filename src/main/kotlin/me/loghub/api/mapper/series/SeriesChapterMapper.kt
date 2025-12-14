@@ -13,6 +13,7 @@ object SeriesChapterMapper {
         id = chapter.id!!,
         title = chapter.title,
         sequence = chapter.sequence,
+        published = chapter.published,
     )
 
     fun mapDetail(chapter: SeriesChapter, renderedMarkdown: RenderedMarkdownDTO) = SeriesChapterDetailDTO(

@@ -274,3 +274,14 @@ WHERE id = ( SELECT id FROM questions WHERE slug = 'b-question' );
 INSERT INTO public.search_synonyms
 VALUES ('k8s', ARRAY ['kubernetes', 'k8s']),
        ('js', ARRAY ['javascript', 'js']);
+
+INSERT INTO public.user_activities(action, created_at, created_date, article_id, user_id)
+(SELECT 'PUBLISH_ARTICLE', published_at, published_at::date, id, writer_id FROM articles WHERE published = TRUE);
+INSERT INTO public.user_activities(action, created_at, created_date, series_id, user_id)
+(SELECT 'POST_SERIES', created_at, created_at::date, id, writer_id FROM series);
+INSERT INTO public.user_activities(action, created_at, created_date, series_id, series_chapter_id, user_id)
+(SELECT 'PUBLISH_SERIES_CHAPTER', created_at, created_at::date, series_id, id, writer_id FROM series_chapters WHERE published = TRUE);
+INSERT INTO public.user_activities(action, created_at, created_date, question_id, user_id)
+(SELECT 'POST_QUESTION', created_at, created_at::date, id, writer_id FROM questions);
+INSERT INTO public.user_activities(action, created_at, created_date, question_id, question_answer_id, user_id)
+(SELECT 'POST_QUESTION_ANSWER', created_at, created_at::date, question_id, id, writer_id FROM question_answers);

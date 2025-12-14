@@ -23,7 +23,9 @@ class SeriesChapterAspect(
         returning = "postedChapter"
     )
     fun afterCreateChapter(postedChapter: SeriesChapter) {
-        addUserActivityAfterPostChapter(postedChapter)
+        if (postedChapter.publishedAt != null) {
+            addUserActivityAfterPublishChapter(postedChapter)
+        }
         logAfterPostChapter(postedChapter)
     }
 
@@ -32,16 +34,21 @@ class SeriesChapterAspect(
         returning = "importedChapter"
     )
     fun afterImportChapter(articleId: Long, importedChapter: SeriesChapter) {
-        addUserActivityAfterPostChapter(importedChapter)
         logAfterImportChapter(importedChapter, articleId)
     }
 
     @AfterReturning(
         pointcut = "execution(* me.loghub.api.service.series.SeriesChapterService.editChapter(..)) && args(seriesId, .., writer)",
-        returning = "chapter"
+        returning = "editedChapter"
     )
-    fun afterEditChapter(seriesId: Long, writer: User, chapter: SeriesChapter) =
-        logAfterEditChapter(chapter)
+    fun afterEditChapter(seriesId: Long, writer: User, editedChapter: SeriesChapter) {
+        if (editedChapter.published) {
+            addUserActivityAfterPublishChapter(editedChapter)
+        } else {
+            removeUserActivityAfterUnpublishChapter(editedChapter)
+        }
+        logAfterEditChapter(editedChapter)
+    }
 
     @AfterReturning(
         pointcut = "execution(* me.loghub.api.service.series.SeriesChapterService.deleteChapter(..)) && args(seriesId, sequence, writer)",
@@ -49,15 +56,23 @@ class SeriesChapterAspect(
     fun afterDeleteChapter(seriesId: Long, sequence: Long, writer: User) =
         logAfterDeleteChapter(seriesId, sequence, writer)
 
-    private fun addUserActivityAfterPostChapter(postedChapter: SeriesChapter) {
-        val activity = UserActivity(
-            action = UserActivity.Action.POST_SERIES_CHAPTER,
-            user = postedChapter.writer,
-            series = postedChapter.series,
-            seriesChapter = postedChapter
-        )
-        userActivityRepository.save(activity)
+    private fun addUserActivityAfterPublishChapter(postedChapter: SeriesChapter) {
+        postedChapter.publishedAt?.let { publishedAt ->
+            userActivityRepository.save(
+                UserActivity(
+                    action = UserActivity.Action.PUBLISH_SERIES_CHAPTER,
+                    createdAt = publishedAt,
+                    createdDate = publishedAt.toLocalDate(),
+                    user = postedChapter.writer,
+                    series = postedChapter.series,
+                    seriesChapter = postedChapter,
+                )
+            )
+        }
     }
+
+    private fun removeUserActivityAfterUnpublishChapter(editedChapter: SeriesChapter) =
+        userActivityRepository.deleteBySeriesChapter(editedChapter)
 
     fun logAfterPostChapter(postedChapter: SeriesChapter) =
         logger.info { "[SeriesChapter] posted: { seriesId=${postedChapter.series.id}, chapterId=${postedChapter.id}, writerId=${postedChapter.writer.id}, title=\"${postedChapter.title}\" }" }

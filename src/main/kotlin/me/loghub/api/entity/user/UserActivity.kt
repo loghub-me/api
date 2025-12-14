@@ -55,9 +55,9 @@ class UserActivity(
     val user: User,
 ) {
     enum class Action {
-        POST_ARTICLE,
+        PUBLISH_ARTICLE,
         POST_SERIES,
-        POST_SERIES_CHAPTER,
+        PUBLISH_SERIES_CHAPTER,
         POST_QUESTION,
         POST_QUESTION_ANSWER,
     }

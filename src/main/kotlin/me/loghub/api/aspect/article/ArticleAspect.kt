@@ -23,7 +23,9 @@ class ArticleAspect(
         returning = "postedArticle"
     )
     fun afterPostArticle(postedArticle: Article) {
-        addUserActivityAfterPostArticle(postedArticle)
+        if (postedArticle.published) {
+            addUserActivityAfterPublishArticle(postedArticle)
+        }
         logAfterPostArticle(postedArticle)
     }
 
@@ -32,6 +34,11 @@ class ArticleAspect(
         returning = "editedArticle"
     )
     fun afterEditArticle(editedArticle: Article) {
+        if (editedArticle.published) {
+            addUserActivityAfterPublishArticle(editedArticle)
+        } else {
+            removeUserActivityAfterUnpublishArticle(editedArticle)
+        }
         logAfterEditArticle(editedArticle)
     }
 
@@ -40,14 +47,22 @@ class ArticleAspect(
         logAfterDeleteArticle(articleId, writer)
     }
 
-    private fun addUserActivityAfterPostArticle(postedArticle: Article) {
-        val activity = UserActivity(
-            action = UserActivity.Action.POST_ARTICLE,
-            user = postedArticle.writer,
-            article = postedArticle
-        )
-        userActivityRepository.save(activity)
+    private fun addUserActivityAfterPublishArticle(postedArticle: Article) {
+        postedArticle.publishedAt?.let { publishedAt ->
+            userActivityRepository.save(
+                UserActivity(
+                    action = UserActivity.Action.PUBLISH_ARTICLE,
+                    createdAt = publishedAt,
+                    createdDate = publishedAt.toLocalDate(),
+                    user = postedArticle.writer,
+                    article = postedArticle
+                )
+            )
+        }
     }
+
+    private fun removeUserActivityAfterUnpublishArticle(editedArticle: Article) =
+        userActivityRepository.deleteByArticle(editedArticle)
 
     private fun logAfterPostArticle(postedArticle: Article) =
         logger.info { "[Article] posted: { articleId=${postedArticle.id}, writerId=${postedArticle.writer.id}, title=\"${postedArticle.title}\" }" }
