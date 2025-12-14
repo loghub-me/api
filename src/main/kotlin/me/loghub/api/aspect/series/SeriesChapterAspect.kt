@@ -74,14 +74,14 @@ class SeriesChapterAspect(
     private fun removeUserActivityAfterUnpublishChapter(editedChapter: SeriesChapter) =
         userActivityRepository.deleteBySeriesChapter(editedChapter)
 
-    fun logAfterPostChapter(postedChapter: SeriesChapter) =
-        logger.info { "[SeriesChapter] posted: { seriesId=${postedChapter.series.id}, chapterId=${postedChapter.id}, writerId=${postedChapter.writer.id}, title=\"${postedChapter.title}\" }" }
+    fun logAfterPostChapter(chapter: SeriesChapter) =
+        logger.info { "[SeriesChapter] posted: { seriesId=${chapter.series.id}, chapterId=${chapter.id}, writerId=${chapter.writer.id}, title=\"${chapter.title}\", published=${chapter.published} }" }
 
-    fun logAfterImportChapter(importedChapter: SeriesChapter, articleId: Long) =
-        logger.info { "[SeriesChapter] imported: { seriesId=${importedChapter.series.id}, chapterId=${importedChapter.id}, writerId=${importedChapter.writer.id}, articleId=${articleId}, title=\"${importedChapter.title}\" }" }
+    fun logAfterImportChapter(chapter: SeriesChapter, articleId: Long) =
+        logger.info { "[SeriesChapter] imported: { seriesId=${chapter.series.id}, chapterId=${chapter.id}, writerId=${chapter.writer.id}, articleId=${articleId}, title=\"${chapter.title}\", published=${chapter.published} }" }
 
-    fun logAfterEditChapter(editedChapter: SeriesChapter) =
-        logger.info { "[SeriesChapter] edited: { seriesId=${editedChapter.series.id}, chapterId=${editedChapter.id}, writerId=${editedChapter.writer.id}, title=\"${editedChapter.title}\" }" }
+    fun logAfterEditChapter(chapter: SeriesChapter) =
+        logger.info { "[SeriesChapter] edited: { seriesId=${chapter.series.id}, chapterId=${chapter.id}, writerId=${chapter.writer.id}, title=\"${chapter.title}\", published=${chapter.published} }" }
 
     fun logAfterDeleteChapter(seriesId: Long, sequence: Long, writer: User) =
         logger.info { "[SeriesChapter] deleted: { seriesId=${seriesId}, chapterSequence=${sequence}, writerId=${writer.id} }" }

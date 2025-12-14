@@ -49,11 +49,11 @@ class SeriesAspect(
         userActivityRepository.save(activity)
     }
 
-    private fun logAfterPostSeries(postedSeries: Series) =
-        logger.info { "[Series] posted: { seriesId=${postedSeries.id}, writerId=${postedSeries.writer.id}, title=\"${postedSeries.title}\" }" }
+    private fun logAfterPostSeries(series: Series) =
+        logger.info { "[Series] posted: { seriesId=${series.id}, writerId=${series.writer.id}, title=\"${series.title}\" }" }
 
-    private fun logAfterEditSeries(editedSeries: Series) =
-        logger.info { "[Series] edited: { seriesId=${editedSeries.id}, writerId=${editedSeries.writer.id}, title=\"${editedSeries.title}\" }" }
+    private fun logAfterEditSeries(series: Series) =
+        logger.info { "[Series] edited: { seriesId=${series.id}, writerId=${series.writer.id}, title=\"${series.title}\" }" }
 
     private fun logAfterDeleteSeries(seriesId: Long, writer: User) =
         logger.info { "[Series] deleted: { seriesId=${seriesId}, writerId=${writer.id} }" }

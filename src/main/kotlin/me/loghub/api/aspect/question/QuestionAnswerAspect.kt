@@ -94,15 +94,15 @@ class QuestionAnswerAspect(
         userActivityRepository.save(activity)
     }
 
-    private fun logAfterPostAnswer(postedAnswer: QuestionAnswer) =
-        logger.info { "[QuestionAnswer] posted: { questionId=${postedAnswer.question.id}, answerId=${postedAnswer.id}, writerId=${postedAnswer.writer.id}, content=\"${postedAnswer.content}\" }" }
+    private fun logAfterPostAnswer(answer: QuestionAnswer) =
+        logger.info { "[QuestionAnswer] posted: { questionId=${answer.question.id}, answerId=${answer.id}, writerId=${answer.writer.id}, content=\"${answer.content}\" }" }
 
-    private fun logAfterEditAnswer(editedAnswer: QuestionAnswer) =
-        logger.info { "[QuestionAnswer] edited: { questionId=${editedAnswer.question.id}, answerId=${editedAnswer.id}, writerId=${editedAnswer.writer.id}, content=\"${editedAnswer.content}\" }" }
+    private fun logAfterEditAnswer(answer: QuestionAnswer) =
+        logger.info { "[QuestionAnswer] edited: { questionId=${answer.question.id}, answerId=${answer.id}, writerId=${answer.writer.id}, content=\"${answer.content}\" }" }
 
     private fun logAfterDeleteAnswer(questionId: Long, answerId: Long, writer: User) =
         logger.info { "[QuestionAnswer] deleted: { questionId=${questionId}, answerId=${answerId}, writerId=${writer.id} }" }
 
-    private fun logAfterAcceptAnswer(deletedAnswer: QuestionAnswer) =
-        logger.info { "[QuestionAnswer] accepted: { questionId=${deletedAnswer.question.id}, answerId=${deletedAnswer.id}, writerId=${deletedAnswer.writer.id} }" }
+    private fun logAfterAcceptAnswer(answer: QuestionAnswer) =
+        logger.info { "[QuestionAnswer] accepted: { questionId=${answer.question.id}, answerId=${answer.id}, writerId=${answer.writer.id} }" }
 }

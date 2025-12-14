@@ -76,11 +76,11 @@ class SeriesReviewAspect(
         notificationService.addNotification(series.writer.id!!, notification)
     }
 
-    private fun logAfterPostReview(postedReview: SeriesReview) =
-        logger.info { "[SeriesReview] posted: { seriesId=${postedReview.series.id}, reviewId=${postedReview.id}, writerId=${postedReview.writer.id}, content=\"${postedReview.content}\" }" }
+    private fun logAfterPostReview(review: SeriesReview) =
+        logger.info { "[SeriesReview] posted: { seriesId=${review.series.id}, reviewId=${review.id}, writerId=${review.writer.id}, content=\"${review.content}\" }" }
 
-    private fun logAfterEditReview(editedReview: SeriesReview) =
-        logger.info { "[SeriesReview] edited: { seriesId=${editedReview.series.id}, reviewId=${editedReview.id}, writerId=${editedReview.writer.id}, content=\"${editedReview.content}\" }" }
+    private fun logAfterEditReview(review: SeriesReview) =
+        logger.info { "[SeriesReview] edited: { seriesId=${review.series.id}, reviewId=${review.id}, writerId=${review.writer.id}, content=\"${review.content}\" }" }
 
     private fun logAfterDeleteReview(seriesId: Long, reviewId: Long, writer: User) =
         logger.info { "[SeriesReview] deleted: { seriesId=${seriesId}, reviewId=${reviewId}, writerId=${writer.id} }" }

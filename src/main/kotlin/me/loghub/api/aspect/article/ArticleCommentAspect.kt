@@ -84,11 +84,11 @@ class ArticleCommentAspect(
         }
     }
 
-    private fun logAfterPostComment(postedComment: ArticleComment) =
-        logger.info { "[ArticleComment] posted: { articleId=${postedComment.article.id}, commentId=${postedComment.id}, writerId=${postedComment.writer.id}, content=\"${postedComment.content}\" }" }
+    private fun logAfterPostComment(comment: ArticleComment) =
+        logger.info { "[ArticleComment] posted: { articleId=${comment.article.id}, commentId=${comment.id}, writerId=${comment.writer.id}, content=\"${comment.content}\" }" }
 
-    private fun logAfterEditComment(editedComment: ArticleComment) =
-        logger.info { "[ArticleComment] edited: { articleId=${editedComment.article.id}, commentId=${editedComment.id}, writerId=${editedComment.writer.id}, content=\"${editedComment.content}\" }" }
+    private fun logAfterEditComment(comment: ArticleComment) =
+        logger.info { "[ArticleComment] edited: { articleId=${comment.article.id}, commentId=${comment.id}, writerId=${comment.writer.id}, content=\"${comment.content}\" }" }
 
     private fun logAfterDeleteComment(articleId: Long, commentId: Long, writer: User) =
         logger.info { "[ArticleComment] deleted: { articleId=${articleId}, commentId=${commentId}, writerId=${writer.id} }" }

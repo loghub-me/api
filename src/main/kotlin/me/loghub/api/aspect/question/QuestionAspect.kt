@@ -57,15 +57,15 @@ class QuestionAspect(
         userActivityRepository.save(activity)
     }
 
-    private fun logAfterPostQuestion(postedQuestion: Question) =
-        logger.info { "[Question] posted: { questionId=${postedQuestion.id}, writerId=${postedQuestion.writer.id}, title=\"${postedQuestion.title}\" }" }
+    private fun logAfterPostQuestion(question: Question) =
+        logger.info { "[Question] posted: { questionId=${question.id}, writerId=${question.writer.id}, title=\"${question.title}\" }" }
 
-    private fun logAfterEditQuestion(editedQuestion: Question) =
-        logger.info { "[Question] edited: { questionId=${editedQuestion.id}, writerId=${editedQuestion.writer.id}, title=\"${editedQuestion.title}\" }" }
+    private fun logAfterEditQuestion(question: Question) =
+        logger.info { "[Question] edited: { questionId=${question.id}, writerId=${question.writer.id}, title=\"${question.title}\" }" }
 
     private fun logAfterDeleteQuestion(questionId: Long, writer: User) =
         logger.info { "[Question] deleted: { questionId=${questionId}, writerId=${writer.id} }" }
 
-    private fun logAfterCloseQuestion(closedQuestion: Question) =
-        logger.info { "[Question] closed: { questionId=${closedQuestion.id}, writerId=${closedQuestion.writer.id} }" }
+    private fun logAfterCloseQuestion(question: Question) =
+        logger.info { "[Question] closed: { questionId=${question.id}, writerId=${question.writer.id} }" }
 }

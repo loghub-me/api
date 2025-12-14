@@ -64,11 +64,11 @@ class ArticleAspect(
     private fun removeUserActivityAfterUnpublishArticle(editedArticle: Article) =
         userActivityRepository.deleteByArticle(editedArticle)
 
-    private fun logAfterPostArticle(postedArticle: Article) =
-        logger.info { "[Article] posted: { articleId=${postedArticle.id}, writerId=${postedArticle.writer.id}, title=\"${postedArticle.title}\" }" }
+    private fun logAfterPostArticle(article: Article) =
+        logger.info { "[Article] posted: { articleId=${article.id}, writerId=${article.writer.id}, title=\"${article.title}\", published=${article.published} }" }
 
-    private fun logAfterEditArticle(editedArticle: Article) =
-        logger.info { "[Article] edited: { articleId=${editedArticle.id}, writerId=${editedArticle.writer.id}, title=\"${editedArticle.title}\" }" }
+    private fun logAfterEditArticle(article: Article) =
+        logger.info { "[Article] edited: { articleId=${article.id}, writerId=${article.writer.id}, title=\"${article.title}\", published=${article.published} }" }
 
     private fun logAfterDeleteArticle(articleId: Long, writer: User) =
         logger.info { "[Article] deleted: { articleId=${articleId}, writerId=${writer.id} }" }
