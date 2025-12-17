@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 class RefreshController(private val refreshService: RefreshService) {
     @PostMapping
     fun refreshToken(
-        @CookieValue(
-            RefreshTokenConfig.NAME,
-            required = false
-        ) refreshToken: String?
+        @CookieValue(RefreshTokenConfig.NAME, required = false) refreshToken: String?
     ): ResponseEntity<ResponseBody> {
         val token = refreshService.refreshToken(refreshToken)
         val responseBody = MessageResponseBody(

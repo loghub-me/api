@@ -1,12 +1,14 @@
 package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
+import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.exception.auth.BadRefreshTokenException
 import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
+import me.loghub.api.util.checkField
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import kotlin.time.Duration.Companion.seconds
@@ -20,7 +22,7 @@ class RefreshService(
 ) {
     @Transactional
     fun refreshToken(token: String?): TokenDTO {
-        requireNotNull(token) { ResponseMessage.Auth.INVALID_TOKEN }
+        checkField(RefreshTokenConfig.NAME, token != null) { ResponseMessage.Auth.INVALID_TOKEN }
 
         val redisKey = RedisKeys.REFRESH_TOKEN(token)
         val userId = redisTemplate.opsForValue().get(redisKey.key)

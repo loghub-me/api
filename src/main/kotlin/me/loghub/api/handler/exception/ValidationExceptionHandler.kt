@@ -25,14 +25,6 @@ class ValidationExceptionHandler {
         ).toResponseEntity()
     }
 
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleException(e: IllegalArgumentException): ResponseEntity<ResponseBody> {
-        return MessageResponseBody(
-            message = e.message ?: ResponseMessage.Default.INVALID_REQUEST,
-            status = HttpStatus.BAD_REQUEST
-        ).toResponseEntity()
-    }
-
     @ExceptionHandler(ConflictFieldException::class)
     fun handleException(e: ConflictFieldException): ResponseEntity<ResponseBody> {
         return FieldErrorsResponseBody(
