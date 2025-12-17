@@ -17,5 +17,5 @@ class UserPrivacyAspect {
         pointcut = "execution(* me.loghub.api.service.user.UserPrivacyService.updatePrivacy(..)) && args(.., user)",
     )
     fun afterUpdatePrivacy(user: User) =
-        logger.info { "[User] update privacy: { userId=${user.id} }" }
+        logger.info { "[UserPrivacy] update privacy: { userId=${user.id} }" }
 }

@@ -17,5 +17,5 @@ class UserProfileAspect {
         pointcut = "execution(* me.loghub.api.service.user.UserProfileService.updateProfile(..)) && args(.., user)",
     )
     fun afterUpdateProfile(user: User) =
-        logger.info { "[User] update profile: { userId=${user.id} }" }
+        logger.info { "[UserProfile] update profile: { userId=${user.id} }" }
 }
