@@ -5,6 +5,7 @@ import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.repository.user.UserActivityRepository
+import me.loghub.api.repository.user.saveActivityIgnoreConflict
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.stereotype.Component
@@ -41,12 +42,15 @@ class SeriesAspect(
     }
 
     private fun addUserActivityAfterPostSeries(postedSeries: Series) {
-        val activity = UserActivity(
-            action = UserActivity.Action.POST_SERIES,
-            user = postedSeries.writer,
-            series = postedSeries
+        userActivityRepository.saveActivityIgnoreConflict(
+            UserActivity(
+                action = UserActivity.Action.POST_SERIES,
+                createdAt = postedSeries.createdAt,
+                createdDate = postedSeries.createdAt.toLocalDate(),
+                user = postedSeries.writer,
+                series = postedSeries
+            )
         )
-        userActivityRepository.save(activity)
     }
 
     private fun logAfterPostSeries(series: Series) =

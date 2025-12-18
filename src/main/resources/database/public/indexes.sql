@@ -31,3 +31,19 @@ CREATE INDEX IF NOT EXISTS question_answers_question_id_created_at_idx ON public
 
 CREATE INDEX IF NOT EXISTS user_stars_user_id_created_at_idx ON public.user_stars (user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS user_activities_user_id_created_date_idx ON public.user_activities (user_id, created_date);
+
+CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_article_id_uq_idx
+ON public.user_activities (user_id, article_id)
+WHERE action = 'PUBLISH_ARTICLE';
+CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_series_id_uq_idx
+ON public.user_activities (user_id, series_id)
+WHERE action = 'POST_SERIES';
+CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_series_chapter_id_uq_idx
+ON public.user_activities (user_id, series_chapter_id)
+WHERE action = 'PUBLISH_SERIES_CHAPTER';
+CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_question_id_uq_idx
+ON public.user_activities (user_id, question_id)
+WHERE action = 'POST_QUESTION';
+CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_question_answer_id_uq_idx
+ON public.user_activities (user_id, question_answer_id)
+WHERE action = 'POST_QUESTION_ANSWER';

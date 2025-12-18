@@ -5,6 +5,7 @@ import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.repository.user.UserActivityRepository
+import me.loghub.api.repository.user.saveActivityIgnoreConflict
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.stereotype.Component
@@ -48,17 +49,16 @@ class ArticleAspect(
     }
 
     private fun addUserActivityAfterPublishArticle(postedArticle: Article) {
-        postedArticle.publishedAt?.let { publishedAt ->
-            userActivityRepository.save(
-                UserActivity(
-                    action = UserActivity.Action.PUBLISH_ARTICLE,
-                    createdAt = publishedAt,
-                    createdDate = publishedAt.toLocalDate(),
-                    user = postedArticle.writer,
-                    article = postedArticle
-                )
+        val publishedAt = requireNotNull(postedArticle.publishedAt)
+        userActivityRepository.saveActivityIgnoreConflict(
+            UserActivity(
+                action = UserActivity.Action.PUBLISH_ARTICLE,
+                createdAt = publishedAt,
+                createdDate = publishedAt.toLocalDate(),
+                user = postedArticle.writer,
+                article = postedArticle
             )
-        }
+        )
     }
 
     private fun removeUserActivityAfterUnpublishArticle(editedArticle: Article) =

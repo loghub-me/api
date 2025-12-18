@@ -5,6 +5,7 @@ import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.repository.user.UserActivityRepository
+import me.loghub.api.repository.user.saveActivityIgnoreConflict
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.stereotype.Component
@@ -49,12 +50,15 @@ class QuestionAspect(
     }
 
     private fun addUserActivityAfterPostQuestion(postedQuestion: Question) {
-        val activity = UserActivity(
-            action = UserActivity.Action.POST_QUESTION,
-            user = postedQuestion.writer,
-            question = postedQuestion
+        userActivityRepository.saveActivityIgnoreConflict(
+            UserActivity(
+                action = UserActivity.Action.POST_QUESTION,
+                createdAt = postedQuestion.createdAt,
+                createdDate = postedQuestion.createdAt.toLocalDate(),
+                user = postedQuestion.writer,
+                question = postedQuestion
+            )
         )
-        userActivityRepository.save(activity)
     }
 
     private fun logAfterPostQuestion(question: Question) =

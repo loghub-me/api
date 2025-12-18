@@ -5,6 +5,7 @@ import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.repository.user.UserActivityRepository
+import me.loghub.api.repository.user.saveActivityIgnoreConflict
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.stereotype.Component
@@ -57,18 +58,17 @@ class SeriesChapterAspect(
         logAfterDeleteChapter(seriesId, sequence, writer)
 
     private fun addUserActivityAfterPublishChapter(postedChapter: SeriesChapter) {
-        postedChapter.publishedAt?.let { publishedAt ->
-            userActivityRepository.save(
-                UserActivity(
-                    action = UserActivity.Action.PUBLISH_SERIES_CHAPTER,
-                    createdAt = publishedAt,
-                    createdDate = publishedAt.toLocalDate(),
-                    user = postedChapter.writer,
-                    series = postedChapter.series,
-                    seriesChapter = postedChapter,
-                )
+        val publishedAt = requireNotNull(postedChapter.publishedAt)
+        userActivityRepository.saveActivityIgnoreConflict(
+            UserActivity(
+                action = UserActivity.Action.PUBLISH_SERIES_CHAPTER,
+                createdAt = publishedAt,
+                createdDate = publishedAt.toLocalDate(),
+                user = postedChapter.writer,
+                series = postedChapter.series,
+                seriesChapter = postedChapter
             )
-        }
+        )
     }
 
     private fun removeUserActivityAfterUnpublishChapter(editedChapter: SeriesChapter) =

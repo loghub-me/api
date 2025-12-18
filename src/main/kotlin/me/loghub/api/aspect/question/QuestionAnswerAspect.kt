@@ -7,6 +7,7 @@ import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.repository.user.UserActivityRepository
+import me.loghub.api.repository.user.saveActivityIgnoreConflict
 import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
@@ -85,13 +86,16 @@ class QuestionAnswerAspect(
     }
 
     private fun addUserActivityAfterPostAnswer(postedAnswer: QuestionAnswer) {
-        val activity = UserActivity(
-            action = UserActivity.Action.POST_QUESTION_ANSWER,
-            user = postedAnswer.writer,
-            question = postedAnswer.question,
-            questionAnswer = postedAnswer
+        userActivityRepository.saveActivityIgnoreConflict(
+            UserActivity(
+                action = UserActivity.Action.POST_QUESTION_ANSWER,
+                createdAt = postedAnswer.createdAt,
+                createdDate = postedAnswer.createdAt.toLocalDate(),
+                user = postedAnswer.writer,
+                question = postedAnswer.question,
+                questionAnswer = postedAnswer
+            )
         )
-        userActivityRepository.save(activity)
     }
 
     private fun logAfterPostAnswer(answer: QuestionAnswer) =

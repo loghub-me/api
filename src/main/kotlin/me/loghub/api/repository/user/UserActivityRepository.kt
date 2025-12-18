@@ -7,7 +7,9 @@ import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 
 interface UserActivityRepository : JpaRepository<UserActivity, Long> {
@@ -59,7 +61,67 @@ interface UserActivityRepository : JpaRepository<UserActivity, Long> {
     @Query(value = NativeQuery.SELECT_PROJECTION_BY_USER_AND_CREATED_DATE, nativeQuery = true)
     fun findProjectionByUserIdAndCreatedDate(userId: Long, createdDate: LocalDate): List<UserActivityProjection>
 
+    @Modifying
+    @Query(
+        value = """
+        INSERT INTO user_activities (action, created_at, created_date, user_id, article_id)
+        VALUES (CAST(:#{#a.action.name()} AS user_action_enum), :#{#a.createdAt}, :#{#a.createdDate}, :#{#a.user.id}, :#{#a.article.id})
+        ON CONFLICT (user_id, article_id) WHERE action = 'PUBLISH_ARTICLE' DO NOTHING
+    """, nativeQuery = true
+    )
+    fun saveArticleActivity(@Param("a") a: UserActivity)
+
+    @Modifying
+    @Query(
+        value = """
+        INSERT INTO user_activities (action, created_at, created_date, user_id, series_id)
+        VALUES (CAST(:#{#a.action.name()} AS user_action_enum), :#{#a.createdAt}, :#{#a.createdDate}, :#{#a.user.id}, :#{#a.series.id})
+        ON CONFLICT (user_id, series_id) WHERE action = 'POST_SERIES' DO NOTHING
+    """, nativeQuery = true
+    )
+    fun saveSeriesActivity(@Param("a") a: UserActivity)
+
+    @Modifying
+    @Query(
+        value = """
+        INSERT INTO user_activities (action, created_at, created_date, user_id, series_id, series_chapter_id)
+        VALUES (CAST(:#{#a.action.name()} AS user_action_enum), :#{#a.createdAt}, :#{#a.createdDate}, :#{#a.user.id}, :#{#a.series.id}, :#{#a.seriesChapter.id})
+        ON CONFLICT (user_id, series_chapter_id) WHERE action = 'PUBLISH_SERIES_CHAPTER' DO NOTHING
+    """, nativeQuery = true
+    )
+    fun saveSeriesChapterActivity(@Param("a") a: UserActivity)
+
+    @Modifying
+    @Query(
+        value = """
+        INSERT INTO user_activities (action, created_at, created_date, user_id, question_id)
+        VALUES (CAST(:#{#a.action.name()} AS user_action_enum), :#{#a.createdAt}, :#{#a.createdDate}, :#{#a.user.id}, :#{#a.question.id})
+        ON CONFLICT (user_id, question_id) WHERE action = 'POST_QUESTION' DO NOTHING
+    """, nativeQuery = true
+    )
+    fun saveQuestionActivity(@Param("a") a: UserActivity)
+
+    @Modifying
+    @Query(
+        value = """
+        INSERT INTO user_activities (action, created_at, created_date, user_id, question_id, question_answer_id)
+        VALUES (CAST(:#{#a.action.name()} AS user_action_enum), :#{#a.createdAt}, :#{#a.createdDate}, :#{#a.user.id}, :#{#a.question.id}, :#{#a.questionAnswer.id})
+        ON CONFLICT (user_id, question_answer_id) WHERE action = 'POST_QUESTION_ANSWER' DO NOTHING
+    """, nativeQuery = true
+    )
+    fun saveQuestionAnswerActivity(@Param("a") a: UserActivity)
+
     fun deleteByArticle(article: Article)
 
     fun deleteBySeriesChapter(seriesChapter: SeriesChapter)
+}
+
+fun UserActivityRepository.saveActivityIgnoreConflict(activity: UserActivity) {
+    when (activity.action) {
+        UserActivity.Action.PUBLISH_ARTICLE -> saveArticleActivity(activity)
+        UserActivity.Action.POST_SERIES -> saveSeriesActivity(activity)
+        UserActivity.Action.PUBLISH_SERIES_CHAPTER -> saveSeriesChapterActivity(activity)
+        UserActivity.Action.POST_QUESTION -> saveQuestionActivity(activity)
+        UserActivity.Action.POST_QUESTION_ANSWER -> saveQuestionAnswerActivity(activity)
+    }
 }
