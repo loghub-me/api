@@ -1,5 +1,6 @@
 package me.loghub.api.controller.series
 
+import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.response.MethodResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/series/{seriesId}/reviews")

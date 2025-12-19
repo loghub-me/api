@@ -1,5 +1,6 @@
 package me.loghub.api.controller.article
 
+import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.article.comment.ArticleCommentDTO
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/articles/{articleId}/comments")

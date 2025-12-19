@@ -1,6 +1,5 @@
 package me.loghub.api.handler.auth
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import me.loghub.api.config.RefreshTokenConfig
@@ -13,21 +12,18 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.logout.LogoutHandler
 import org.springframework.stereotype.Component
+import tools.jackson.databind.json.JsonMapper
 
 @Component
 class CustomLogoutHandler(
-    private val objectMapper: ObjectMapper,
+    private val jsonMapper: JsonMapper,
     private val refreshTokenService: RefreshTokenService,
 ) : LogoutHandler {
     override fun logout(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
         authentication: Authentication?,
     ) {
-        if (request == null || response == null) {
-            return
-        }
-
         for (cookie in request.cookies) {
             if (cookie.name == RefreshTokenConfig.NAME) {
                 refreshTokenService.revokeToken(cookie.value)
@@ -49,7 +45,7 @@ class CustomLogoutHandler(
 
         response.status = HttpServletResponse.SC_OK
         response.contentType = "${HttpContentType.APPLICATION_JSON};${HttpContentType.CHARSET_UTF_8}"
-        response.writer.write(objectMapper.writeValueAsString(responseBody))
+        response.writer.write(jsonMapper.writeValueAsString(responseBody))
         response.writer.flush()
     }
 }

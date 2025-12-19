@@ -1,20 +1,19 @@
 package me.loghub.api.config
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import tools.jackson.databind.DefaultTyping
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.toJavaDuration
 
@@ -22,9 +21,9 @@ import kotlin.time.toJavaDuration
 @EnableCaching
 class CacheConfig {
     @Bean
-    fun cacheManager(connectionFactory: RedisConnectionFactory): RedisCacheManager {
+    fun cacheManager(connectionFactory: RedisConnectionFactory, jsonMapper: JsonMapper): RedisCacheManager {
         val keySerializer = StringRedisSerializer()
-        val valueSerializer = GenericJackson2JsonRedisSerializer(objectMapper())
+        val valueSerializer = GenericJacksonJsonRedisSerializer(cacheManagerJsonMapper(jsonMapper))
 
         val cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(1.hours.toJavaDuration())
@@ -35,13 +34,17 @@ class CacheConfig {
         return RedisCacheManager.builder(connectionFactory).cacheDefaults(cacheConfig).build()
     }
 
-    private fun objectMapper() = ObjectMapper()
-        .registerModule(KotlinModule.Builder().build())
-        .registerModule(JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .activateDefaultTyping(
-            LaissezFaireSubTypeValidator(),
-            ObjectMapper.DefaultTyping.NON_FINAL,
-            JsonTypeInfo.As.PROPERTY
-        )
+    private fun cacheManagerJsonMapper(jsonMapper: JsonMapper): ObjectMapper {
+        val ptv = BasicPolymorphicTypeValidator.builder()
+            .allowIfSubType(Any::class.java)
+            .build()
+        return JsonMapper.builder()
+            .findAndAddModules()
+            .activateDefaultTyping(
+                ptv,
+                DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+            )
+            .build()
+    }
 }

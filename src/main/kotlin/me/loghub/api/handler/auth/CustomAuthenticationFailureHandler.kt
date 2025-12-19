@@ -1,6 +1,5 @@
 package me.loghub.api.handler.auth
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import me.loghub.api.constant.http.HttpContentType
@@ -10,9 +9,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.stereotype.Component
+import tools.jackson.databind.json.JsonMapper
 
 @Component
-class CustomAuthenticationFailureHandler(private val objectMapper: ObjectMapper) : AuthenticationFailureHandler {
+class CustomAuthenticationFailureHandler(private val jsonMapper: JsonMapper) : AuthenticationFailureHandler {
     override fun onAuthenticationFailure(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -25,7 +25,7 @@ class CustomAuthenticationFailureHandler(private val objectMapper: ObjectMapper)
 
         response.status = HttpServletResponse.SC_FORBIDDEN
         response.contentType = "${HttpContentType.APPLICATION_JSON};${HttpContentType.CHARSET_UTF_8}"
-        response.writer.write(objectMapper.writeValueAsString(responseBody))
+        response.writer.write(jsonMapper.writeValueAsString(responseBody))
         response.writer.flush()
     }
 }
