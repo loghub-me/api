@@ -1,5 +1,7 @@
 package me.loghub.api.proxy
 
+import me.loghub.api.dto.task.answer.AnswerGenerateRequest
+import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.dto.task.image.ImageUploadResponse
 import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
@@ -46,4 +48,7 @@ interface TaskAPIProxy {
         @RequestPart("file") file: MultipartFile,
         @RequestPart("userId") userId: Long,
     )
+
+    @PostMapping("/answer/generate")
+    fun generateAnswer(@RequestBody request: AnswerGenerateRequest): AnswerGenerateResponse
 }

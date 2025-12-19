@@ -4,7 +4,7 @@ import jakarta.persistence.*
 import me.loghub.api.entity.PublicEntity
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcType
-import org.hibernate.dialect.PostgreSQLEnumJdbcType
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -17,9 +17,7 @@ class User(
     @Column(name = "email", unique = true, nullable = false, length = 255)
     var email: String,
 
-    @Column(name = "username", unique = true, nullable = false, length = 14)
-    @get:JvmName("getUsernameProp")  // to prevent JVM signature conflict
-    var username: String,
+    username: String,
 
     @Column(name = "provider", nullable = false)
     @Enumerated
@@ -42,6 +40,9 @@ class User(
 
     id: Long? = null,
 ) : PublicEntity(id), UserDetails {
+    @Column(name = "username", unique = true, nullable = false, length = 14)
+    private var _username = username
+
     enum class Provider { LOCAL, GOOGLE, GITHUB }
     enum class Role : GrantedAuthority {
         MEMBER, ADMIN, BOT;
@@ -49,14 +50,14 @@ class User(
         override fun getAuthority(): String = "ROLE_$name"
     }
 
-    override fun getAuthorities(): Collection<GrantedAuthority> = listOf(role)
-
-    override fun getUsername(): String = username
+    override fun getUsername(): String = _username
 
     override fun getPassword(): String? = null
 
+    override fun getAuthorities(): Collection<GrantedAuthority> = listOf(role)
+
     fun updateUsername(username: String) {
-        this.username = username
+        this._username = username
     }
 
     fun updateProfile(profile: UserProfile) {

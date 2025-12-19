@@ -5,7 +5,7 @@ import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.series.Series
 import org.hibernate.annotations.JdbcType
-import org.hibernate.dialect.PostgreSQLEnumJdbcType
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 

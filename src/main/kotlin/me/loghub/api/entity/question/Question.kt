@@ -12,7 +12,7 @@ import me.loghub.api.util.checkField
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.Formula
 import org.hibernate.annotations.JdbcType
-import org.hibernate.dialect.PostgreSQLEnumJdbcType
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 

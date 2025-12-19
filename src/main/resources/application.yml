@@ -29,9 +29,6 @@ spring:
             scope:
               - read:user
               - user:email
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
   servlet:
     multipart:
       max-file-size: 5MB

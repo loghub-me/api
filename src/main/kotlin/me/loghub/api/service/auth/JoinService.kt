@@ -8,7 +8,6 @@ import me.loghub.api.dto.auth.join.JoinRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.dto.task.mail.JoinMailSendRequest
-import me.loghub.api.entity.user.User
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.lib.redis.key.RedisKeys
 import me.loghub.api.lib.validation.isReservedUsername
@@ -32,7 +31,7 @@ class JoinService(
 ) {
     @Transactional
     fun requestJoin(requestBody: JoinRequestDTO) {
-        checkJoinable(requestBody.email, requestBody.username)
+        checkJoinable(requestBody)
 
         val otp = issueOTP(requestBody)
         val mail = JoinMailSendRequest(to = requestBody.email, otp = otp)
@@ -55,17 +54,18 @@ class JoinService(
         return tokenService.generateToken(joinedUser)
     }
 
-    private fun checkJoinable(email: String, username: String) {
+    private fun checkJoinable(requestBody: JoinRequestDTO) {
+        val (email, username) = requestBody
         checkField(
-            User::username.name,
+            JoinRequestDTO::username.name,
             !username.isReservedUsername(),
         ) { ResponseMessage.User.USERNAME_NOT_ALLOWED }
         checkConflict(
-            User::email.name,
+            JoinRequestDTO::email.name,
             userRepository.existsByEmail(email),
         ) { ResponseMessage.User.EMAIL_ALREADY_EXISTS }
         checkConflict(
-            User::username.name,
+            JoinRequestDTO::username.name,
             userRepository.existsByUsernameIgnoreCase(username),
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
     }

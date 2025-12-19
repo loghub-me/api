@@ -33,12 +33,12 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
             LEFT JOIN us.series
             LEFT JOIN us.question
         """
-        const val BY_USER = "us.user = :user"
+        const val BY_USER = "us.user._username = :username"
         const val CREATED_AT_DESC = "us.createdAt DESC"
     }
 
     @Query("$SELECT_DTO WHERE $BY_USER ORDER BY $CREATED_AT_DESC")
-    fun findDTOsByUser(user: User, pageable: Pageable): Page<UserStarDTO>
+    fun findDTOsByUsername(username: String, pageable: Pageable): Page<UserStarDTO>
 
     // -----------[Article]-----------
     fun existsByArticleAndUser(article: Article, user: User): Boolean
