@@ -5,8 +5,11 @@ import me.loghub.api.dto.notification.NotificationType
 import org.springframework.data.redis.serializer.RedisSerializer
 
 class NotificationRedisSerializer : RedisSerializer<NotificationDTO> {
-    override fun serialize(value: NotificationDTO?): ByteArray? =
-        value?.let { "${it.href}|${it.title}|${it.message}|${it.timestamp}|${it.type}".toByteArray(Charsets.UTF_8) }
+    override fun serialize(value: NotificationDTO?): ByteArray {
+        requireNotNull(value)
+        val (href, title, message, timestamp, type) = value
+        return "$href|$title|$message|$timestamp|$type".toByteArray(Charsets.UTF_8)
+    }
 
     override fun deserialize(bytes: ByteArray?): NotificationDTO? {
         if (bytes == null) return null

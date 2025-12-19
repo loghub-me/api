@@ -4,8 +4,11 @@ import me.loghub.api.dto.auth.join.JoinInfoDTO
 import org.springframework.data.redis.serializer.RedisSerializer
 
 class JoinInfoRedisSerializer : RedisSerializer<JoinInfoDTO> {
-    override fun serialize(value: JoinInfoDTO?): ByteArray? =
-        value?.let { "${it.otp}|${it.email}|${it.username}|${it.nickname}".toByteArray(Charsets.UTF_8) }
+    override fun serialize(value: JoinInfoDTO?): ByteArray {
+        requireNotNull(value)
+        val (otp, email, username, nickname) = value
+        return "$otp|$email|$username|$nickname".toByteArray(Charsets.UTF_8)
+    }
 
     override fun deserialize(bytes: ByteArray?): JoinInfoDTO? {
         if (bytes == null) return null

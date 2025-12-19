@@ -5,8 +5,11 @@ import me.loghub.api.entity.user.User
 import org.springframework.data.redis.serializer.RedisSerializer
 
 class OAuth2JoinInfoRedisSerializer : RedisSerializer<OAuth2JoinInfoDTO> {
-    override fun serialize(value: OAuth2JoinInfoDTO?): ByteArray? =
-        value?.let { "${it.token}|${it.email}|${it.provider.name}".toByteArray(Charsets.UTF_8) }
+    override fun serialize(value: OAuth2JoinInfoDTO?): ByteArray {
+        requireNotNull(value)
+        val (token, email, provider) = value
+        return "$token|$email|${provider.name}".toByteArray(Charsets.UTF_8)
+    }
 
     override fun deserialize(bytes: ByteArray?): OAuth2JoinInfoDTO? {
         if (bytes == null) return null
