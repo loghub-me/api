@@ -1,38 +1,19 @@
 package me.loghub.api.controller.article
 
-import me.loghub.api.dto.article.*
-import me.loghub.api.dto.auth.token.TokenDTO
-import me.loghub.api.entity.user.User
-import me.loghub.api.service.test.TestGrantService
+import me.loghub.api.controller.BaseControllerTest
+import me.loghub.api.dto.article.ArticleDetailDTO
+import me.loghub.api.dto.article.ArticleForEditDTO
+import me.loghub.api.dto.article.ArticleSort
+import me.loghub.api.dto.article.PostArticleDTO
 import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.data.domain.Page
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.client.expectBody
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
-@ActiveProfiles("test")
-class ArticleControllerTest(
-    @Autowired private val rest: TestRestTemplate,
-    @Autowired private val jdbcTemplate: JdbcTemplate,
-) {
-    lateinit var member1: User
-    lateinit var member1Token: TokenDTO
-    lateinit var member2: User
-    lateinit var member2Token: TokenDTO
-
+class ArticleControllerTest : BaseControllerTest() {
     object Article {
         object Id {
             const val BY_MEMBER1 = 1L
@@ -45,51 +26,6 @@ class ArticleControllerTest(
         }
     }
 
-    @BeforeAll
-    fun setup(@Autowired grantService: TestGrantService) {
-        resetDatabase(jdbcTemplate)
-        val (member1, member1Token) = grantService.grant("member1")
-        this.member1 = member1
-        this.member1Token = member1Token
-        val (member2, member2Token) = grantService.grant("member2")
-        this.member2 = member2
-        this.member2Token = member2Token
-    }
-
-    private inline fun <reified T> searchArticles(uri: String) =
-        rest.getForEntity(uri, T::class.java)
-
-    private inline fun <reified T> getArticle(username: String, slug: String) =
-        rest.getForEntity("/articles/@${username}/${slug}", T::class.java)
-
-    private inline fun <reified T> getArticleForEdit(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.get("/articles/$id/for-edit")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.build(), T::class.java)
-    }
-
-    private inline fun <reified T> postArticle(body: PostArticleDTO, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.post("/articles")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.body(body), T::class.java)
-    }
-
-    private inline fun <reified T> editArticle(
-        id: Long,
-        body: PostArticleDTO,
-        token: TokenDTO? = null,
-    ): ResponseEntity<T> {
-        val request = RequestEntity.put("/articles/$id")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.body(body), T::class.java)
-    }
-
-    private inline fun <reified T> deleteArticle(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.delete("/articles/$id")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.build(), T::class.java)
-    }
-
     @Nested
     @Order(1)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -99,8 +35,9 @@ class ArticleControllerTest(
 
         @Test
         fun `searchArticles - ok - no params`() {
-            val response = searchArticles<Page<ArticleDTO>>("/articles")
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.get().uri("/articles")
+                .exchange()
+                .expectStatus().isOk
         }
 
         @Test
@@ -110,8 +47,9 @@ class ArticleControllerTest(
                 .queryParam("sort", ArticleSort.trending)
                 .queryParam("page", 1)
                 .toUriString()
-            val response = searchArticles<Page<ArticleDTO>>(uri)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.get().uri(uri)
+                .exchange()
+                .expectStatus().isOk
         }
 
         @Test
@@ -119,8 +57,9 @@ class ArticleControllerTest(
             val uri = UriComponentsBuilder.fromPath("/articles")
                 .queryParam("sort", "foo")
                 .toUriString()
-            val response = searchArticles<String>(uri)
-            assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+            rest.get().uri(uri)
+                .exchange()
+                .expectStatus().isBadRequest
         }
 
         @Test
@@ -128,8 +67,9 @@ class ArticleControllerTest(
             val uri = UriComponentsBuilder.fromPath("/articles")
                 .queryParam("page", 0)
                 .toUriString()
-            val response = searchArticles<String>(uri)
-            assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+            rest.get().uri(uri)
+                .exchange()
+                .expectStatus().isBadRequest
         }
     }
 
@@ -142,15 +82,17 @@ class ArticleControllerTest(
 
         @Test
         fun `getArticle - not_found`() {
-            val response = getArticle<String>(member1.username, Article.Slug.INVALID)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.get().uri("/articles/@${member1.username}/${Article.Slug.INVALID}")
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         fun `getArticle - ok`() {
-            val response = getArticle<ArticleDetailDTO>(member1.username, Article.Slug.BY_MEMBER1)
-            assertEquals(HttpStatus.OK, response.statusCode)
-            assertEquals(Article.Slug.BY_MEMBER1, response.body?.slug)
+            rest.get().uri("/articles/@${member1.username}/${Article.Slug.BY_MEMBER1}")
+                .exchange()
+                .expectStatus().isOk
+                .expectBody<ArticleDetailDTO>()
         }
     }
 
@@ -163,27 +105,34 @@ class ArticleControllerTest(
 
         @Test
         fun `getArticleForEdit - unauthorized`() {
-            val response = getArticleForEdit<String>(Article.Id.BY_MEMBER1)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.get().uri("/articles/${Article.Id.BY_MEMBER1}/for-edit")
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `getArticleForEdit - forbidden`() {
-            val response = getArticleForEdit<String>(Article.Id.BY_MEMBER1, member2Token)
-            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+            rest.get().uri("/articles/${Article.Id.BY_MEMBER1}/for-edit")
+                .header(HttpHeaders.AUTHORIZATION, member2Token.authorization)
+                .exchange()
+                .expectStatus().isForbidden
         }
 
         @Test
         fun `getArticleForEdit - not_found`() {
-            val response = getArticleForEdit<String>(Article.Id.INVALID, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.get().uri("/articles/${Article.Id.INVALID}/for-edit")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         fun `getArticleForEdit - ok`() {
-            val response = getArticleForEdit<ArticleForEditDTO>(Article.Id.BY_MEMBER1, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
-            assertEquals(Article.Id.BY_MEMBER1, response.body?.id)
+            rest.get().uri("/articles/${Article.Id.BY_MEMBER1}/for-edit")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody<ArticleForEditDTO>()
         }
     }
 
@@ -204,32 +153,46 @@ class ArticleControllerTest(
 
         @Test
         fun `postArticle - unauthorized`() {
-            val response = postArticle<String>(bodyForPost)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.post().uri("/articles")
+                .body(bodyForPost)
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `postArticle - bad_request - short title`() {
-            val response = postArticle<String>(bodyForPost.copy(title = "f"), member1Token)
-            assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+            rest.post().uri("/articles")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForPost.copy(title = "f"))
+                .exchange()
+                .expectStatus().isBadRequest
         }
 
         @Test
         fun `postArticle - bad_request - empty content`() {
-            val response = postArticle<String>(bodyForPost.copy(content = ""), member1Token)
-            assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+            rest.post().uri("/articles")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForPost.copy(content = ""))
+                .exchange()
+                .expectStatus().isBadRequest
         }
 
         @Test
         fun `postArticle - bad_request - invalid thumbnail`() {
-            val response = postArticle<String>(bodyForPost.copy(thumbnail = "foo"), member1Token)
-            assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+            rest.post().uri("/articles")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForPost.copy(thumbnail = "invalid-thumbnail-path"))
+                .exchange()
+                .expectStatus().isBadRequest
         }
 
         @Test
         fun `postArticle - created`() {
-            val response = postArticle<String>(bodyForPost, member1Token)
-            assertEquals(HttpStatus.CREATED, response.statusCode)
+            rest.post().uri("/articles")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForPost)
+                .exchange()
+                .expectStatus().isCreated
         }
     }
 
@@ -250,32 +213,46 @@ class ArticleControllerTest(
 
         @Test
         fun `editArticle - unauthorized`() {
-            val response = editArticle<String>(Article.Id.BY_MEMBER1, bodyForEdit)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.put().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `editArticle - forbidden`() {
-            val response = editArticle<String>(Article.Id.BY_MEMBER1, bodyForEdit, member2Token)
-            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+            rest.put().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member2Token.authorization)
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isForbidden
         }
 
         @Test
         fun `editArticle - not_found`() {
-            val response = editArticle<String>(Article.Id.INVALID, bodyForEdit, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.put().uri("/articles/${Article.Id.INVALID}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         fun `editArticle - bad_request - short title`() {
-            val response = editArticle<String>(Article.Id.BY_MEMBER1, bodyForEdit.copy(title = "f"), member1Token)
-            assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+            rest.put().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForEdit.copy(title = "f"))
+                .exchange()
+                .expectStatus().isBadRequest
         }
 
         @Test
         fun `editArticle - ok`() {
-            val response = editArticle<String>(Article.Id.BY_MEMBER1, bodyForEdit, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.put().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isOk
         }
     }
 
@@ -289,27 +266,34 @@ class ArticleControllerTest(
 
         @Test
         fun `deleteArticle - unauthorized`() {
-            val response = deleteArticle<String>(Article.Id.BY_MEMBER1)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.delete().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `deleteArticle - forbidden`() {
-            val response = deleteArticle<String>(Article.Id.BY_MEMBER1, member2Token)
-            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+            rest.delete().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member2Token.authorization)
+                .exchange()
+                .expectStatus().isForbidden
         }
 
         @Test
         fun `deleteArticle - not_found`() {
-            val response = deleteArticle<String>(Article.Id.INVALID, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.delete().uri("/articles/${Article.Id.INVALID}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         @Order(Integer.MAX_VALUE)
         fun `deleteArticle - ok`() {
-            val response = deleteArticle<String>(Article.Id.BY_MEMBER1, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.delete().uri("/articles/${Article.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isOk
         }
     }
 }

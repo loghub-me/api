@@ -1,88 +1,19 @@
 package me.loghub.api.controller.article
 
+import me.loghub.api.controller.BaseControllerTest
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
-import me.loghub.api.dto.auth.token.TokenDTO
-import me.loghub.api.entity.user.User
-import me.loghub.api.service.test.TestGrantService
 import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.test.context.ActiveProfiles
-import kotlin.test.assertEquals
+import kotlin.test.Test
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
-@ActiveProfiles("test")
-class ArticleCommentControllerTest(
-    @Autowired private val rest: TestRestTemplate,
-    @Autowired private val jdbcTemplate: JdbcTemplate,
-) {
-    lateinit var member1: User
-    lateinit var member1Token: TokenDTO
-    lateinit var member2: User
-    lateinit var member2Token: TokenDTO
-
+class ArticleCommentControllerTest : BaseControllerTest() {
     object ArticleComment {
         object Id {
             const val BY_MEMBER1 = 1L
             const val INVALID = 999L
         }
-    }
-
-    @BeforeAll
-    fun setup(@Autowired grantService: TestGrantService) {
-        resetDatabase(jdbcTemplate)
-        val (member1, member1Token) = grantService.grant("member1")
-        this.member1 = member1
-        this.member1Token = member1Token
-        val (member2, member2Token) = grantService.grant("member2")
-        this.member2 = member2
-        this.member2Token = member2Token
-    }
-
-    private inline fun <reified T> getComments(articleId: Long) =
-        rest.getForEntity("/articles/${articleId}/comments", T::class.java)
-
-    private inline fun <reified T> getReplies(articleId: Long, commentId: Long) =
-        rest.getForEntity("/articles/${articleId}/comments/${commentId}/replies", T::class.java)
-
-    private inline fun <reified T> postComment(
-        articleId: Long,
-        body: PostArticleCommentDTO,
-        token: TokenDTO? = null
-    ): ResponseEntity<T> {
-        val request = RequestEntity.post("/articles/${articleId}/comments")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.body(body), T::class.java)
-    }
-
-    private inline fun <reified T> editComment(
-        articleId: Long,
-        commentId: Long,
-        body: PostArticleCommentDTO,
-        token: TokenDTO? = null
-    ): ResponseEntity<T> {
-        val request = RequestEntity.put("/articles/${articleId}/comments/${commentId}")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.body(body), T::class.java)
-    }
-
-    private inline fun <reified T> deleteComment(
-        articleId: Long,
-        commentId: Long,
-        token: TokenDTO? = null
-    ): ResponseEntity<T> {
-        val request = RequestEntity.delete("/articles/${articleId}/comments/${commentId}")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.build(), T::class.java)
     }
 
     @Nested
@@ -94,11 +25,11 @@ class ArticleCommentControllerTest(
 
         @Test
         fun `getComments - ok`() {
-            val response = getComments<String>(1L)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.get().uri("/articles/1/comments")
+                .exchange()
+                .expectStatus().isOk
         }
     }
-
 
     @Nested
     @Order(2)
@@ -109,8 +40,9 @@ class ArticleCommentControllerTest(
 
         @Test
         fun `getReplies - ok`() {
-            val response = getReplies<String>(1L, ArticleComment.Id.BY_MEMBER1)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.get().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}/replies")
+                .exchange()
+                .expectStatus().isOk
         }
     }
 
@@ -127,22 +59,30 @@ class ArticleCommentControllerTest(
         fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
-        fun `postComment - unauthenticated`() {
-            val response = postComment<String>(1L, bodyForPost)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        fun `postComment - unauthorized`() {
+            rest.post().uri("/articles/1/comments")
+                .body(bodyForPost)
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `postComment - created - without parentId`() {
-            val response = postComment<String>(1L, bodyForPost, member1Token)
-            assertEquals(HttpStatus.CREATED, response.statusCode)
+            rest.post().uri("/articles/1/comments")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForPost)
+                .exchange()
+                .expectStatus().isCreated
         }
 
         @Test
         fun `postComment - created - with parentId`() {
             val bodyForPostWithParentId = bodyForPost.copy(parentId = ArticleComment.Id.BY_MEMBER1)
-            val response = postComment<String>(1L, bodyForPostWithParentId, member1Token)
-            assertEquals(HttpStatus.CREATED, response.statusCode)
+            rest.post().uri("/articles/1/comments")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForPostWithParentId)
+                .exchange()
+                .expectStatus().isCreated
         }
     }
 
@@ -159,27 +99,38 @@ class ArticleCommentControllerTest(
         fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
-        fun `editComment - unauthenticated`() {
-            val response = editComment<String>(1L, ArticleComment.Id.BY_MEMBER1, bodyForEdit)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        fun `editComment - unauthorized`() {
+            rest.put().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}")
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `editComment - forbidden`() {
-            val response = editComment<String>(1L, ArticleComment.Id.BY_MEMBER1, bodyForEdit, member2Token)
-            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+            rest.put().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member2Token.authorization)
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isForbidden
         }
 
         @Test
         fun `editComment - not_found`() {
-            val response = editComment<String>(1L, ArticleComment.Id.INVALID, bodyForEdit, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.put().uri("/articles/1/comments/${ArticleComment.Id.INVALID}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         fun `editComment - ok`() {
-            val response = editComment<String>(1L, ArticleComment.Id.BY_MEMBER1, bodyForEdit, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.put().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .body(bodyForEdit)
+                .exchange()
+                .expectStatus().isOk
         }
     }
 
@@ -192,28 +143,35 @@ class ArticleCommentControllerTest(
         fun setupDatabase() = resetDatabase(jdbcTemplate)
 
         @Test
-        fun `deleteComment - unauthenticated`() {
-            val response = deleteComment<String>(1L, ArticleComment.Id.BY_MEMBER1)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        fun `deleteComment - unauthorized`() {
+            rest.delete().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}")
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `deleteComment - forbidden`() {
-            val response = deleteComment<String>(1L, ArticleComment.Id.BY_MEMBER1, member2Token)
-            assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+            rest.delete().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member2Token.authorization)
+                .exchange()
+                .expectStatus().isForbidden
         }
 
         @Test
         fun `deleteComment - not_found`() {
-            val response = deleteComment<String>(1L, ArticleComment.Id.INVALID, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.delete().uri("/articles/1/comments/${ArticleComment.Id.INVALID}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         @Order(Integer.MAX_VALUE)
         fun `deleteComment - ok`() {
-            val response = deleteComment<String>(1L, ArticleComment.Id.BY_MEMBER1, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.delete().uri("/articles/1/comments/${ArticleComment.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isOk
         }
     }
 }

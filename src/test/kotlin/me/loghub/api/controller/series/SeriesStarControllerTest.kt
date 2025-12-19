@@ -1,71 +1,20 @@
 package me.loghub.api.controller.series
 
-import me.loghub.api.dto.auth.token.TokenDTO
-import me.loghub.api.dto.response.DataResponseBody
-import me.loghub.api.entity.user.User
-import me.loghub.api.service.test.TestGrantService
+import me.loghub.api.controller.BaseControllerTest
 import me.loghub.api.util.resetDatabase
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.test.context.ActiveProfiles
 import kotlin.test.Test
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestClassOrder(ClassOrderer.OrderAnnotation::class)
-@ActiveProfiles("test")
-class SeriesStarControllerTest(
-    @Autowired private val rest: TestRestTemplate,
-    @Autowired private val jdbcTemplate: JdbcTemplate,
-) {
-    lateinit var member1: User
-    lateinit var member1Token: TokenDTO
-    lateinit var member2: User
-    lateinit var member2Token: TokenDTO
-
+class SeriesStarControllerTest : BaseControllerTest() {
     object Series {
         object Id {
             const val BY_MEMBER1 = 1L
             const val BY_MEMBER2 = 2L
             const val INVALID = 999L
         }
-    }
-
-    @BeforeAll
-    fun setup(@Autowired grantService: TestGrantService) {
-        resetDatabase(jdbcTemplate)
-        val (member1, member1Token) = grantService.grant("member1")
-        this.member1 = member1
-        this.member1Token = member1Token
-        val (member2, member2Token) = grantService.grant("member2")
-        this.member2 = member2
-        this.member2Token = member2Token
-    }
-
-    private inline fun <reified T> existsSeriesStar(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.get("/series/star/$id")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.build(), T::class.java)
-    }
-
-    private inline fun <reified T> addSeriesStar(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.post("/series/star/$id")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.build(), T::class.java)
-    }
-
-    private inline fun <reified T> deleteSeriesStar(id: Long, token: TokenDTO? = null): ResponseEntity<T> {
-        val request = RequestEntity.delete("/series/star/$id")
-        token?.let { request.header(HttpHeaders.AUTHORIZATION, it.authorization) }
-        return rest.exchange(request.build(), T::class.java)
     }
 
     @Nested
@@ -77,22 +26,29 @@ class SeriesStarControllerTest(
 
         @Test
         fun `existsSeriesStar - unauthorized`() {
-            val response = existsSeriesStar<String>(Series.Id.BY_MEMBER1)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.get().uri("/series/star/${Series.Id.BY_MEMBER1}")
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `existsSeriesStar - not_found`() {
-            val response = existsSeriesStar<DataResponseBody<Boolean>>(Series.Id.BY_MEMBER1, member2Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
-            assertEquals(false, response.body!!.data)
+            rest.get().uri("/series/star/${Series.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member2Token.authorization)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody()
+                .jsonPath("$.data").isEqualTo(false)
         }
 
         @Test
         fun `existsSeriesStar - ok`() {
-            val response = existsSeriesStar<DataResponseBody<Boolean>>(Series.Id.BY_MEMBER1, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
-            assertEquals(true, response.body!!.data)
+            rest.get().uri("/series/star/${Series.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody()
+                .jsonPath("$.data").isEqualTo(true)
         }
     }
 
@@ -105,29 +61,35 @@ class SeriesStarControllerTest(
 
         @Test
         fun `addSeriesStar - unauthorized`() {
-            val response = addSeriesStar<String>(Series.Id.BY_MEMBER2)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.post().uri("/series/star/${Series.Id.BY_MEMBER2}")
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `addSeriesStar - not_found`() {
-            val response = addSeriesStar<String>(Series.Id.INVALID, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.post().uri("/series/star/${Series.Id.INVALID}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         fun `addSeriesStar - conflict`() {
-            val response = addSeriesStar<String>(Series.Id.BY_MEMBER1, member1Token)
-            assertEquals(HttpStatus.CONFLICT, response.statusCode)
+            rest.post().uri("/series/star/${Series.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT)
         }
 
         @Test
         fun `addSeriesStar - created`() {
-            val response = addSeriesStar<String>(Series.Id.BY_MEMBER2, member1Token)
-            assertEquals(HttpStatus.CREATED, response.statusCode)
+            rest.post().uri("/series/star/${Series.Id.BY_MEMBER2}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isCreated
         }
     }
-
 
     @Nested
     @Order(3)
@@ -139,21 +101,26 @@ class SeriesStarControllerTest(
 
         @Test
         fun `deleteSeriesStar - unauthorized`() {
-            val response = deleteSeriesStar<String>(Series.Id.BY_MEMBER1)
-            assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+            rest.delete().uri("/series/star/${Series.Id.BY_MEMBER1}")
+                .exchange()
+                .expectStatus().isUnauthorized
         }
 
         @Test
         fun `deleteSeriesStar - not_found`() {
-            val response = deleteSeriesStar<String>(Series.Id.BY_MEMBER2, member1Token)
-            assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+            rest.delete().uri("/series/star/${Series.Id.BY_MEMBER2}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isNotFound
         }
 
         @Test
         @Order(Integer.MAX_VALUE)
         fun `deleteSeriesStar - ok`() {
-            val response = deleteSeriesStar<String>(Series.Id.BY_MEMBER1, member1Token)
-            assertEquals(HttpStatus.OK, response.statusCode)
+            rest.delete().uri("/series/star/${Series.Id.BY_MEMBER1}")
+                .header(HttpHeaders.AUTHORIZATION, member1Token.authorization)
+                .exchange()
+                .expectStatus().isOk
         }
     }
 }
