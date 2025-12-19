@@ -1,5 +1,5 @@
 # build
-FROM ghcr.io/graalvm/jdk-community:21 AS build
+FROM ghcr.io/graalvm/jdk-community:24 AS build
 WORKDIR /app
 
 COPY gradlew .
@@ -13,7 +13,7 @@ RUN chmod +x gradlew
 RUN ./gradlew bootJar
 
 # run
-FROM ghcr.io/graalvm/jdk-community:21 AS run
+FROM ghcr.io/graalvm/jdk-community:24 AS run
 WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar app.jar
