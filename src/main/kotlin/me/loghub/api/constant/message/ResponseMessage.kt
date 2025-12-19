@@ -110,6 +110,7 @@ object ResponseMessage {
             const val INVALID_SEQUENCE = "챕터 순서가 유효하지 않습니다."
             const val DUPLICATED_SEQUENCE = "챕터 순서에 중복된 값이 있습니다."
             const val OUT_OF_BOUNDS_SEQUENCE = "챕터 순서가 범위를 벗어났습니다."
+            const val SIZE_LIMIT_EXCEEDED = "시리즈의 챕터는 최대 20개까지 등록할 수 있습니다."
 
             object Draft {
                 const val UPDATE_SUCCESS = "챕터가 성공적으로 임시 저장되었습니다!"

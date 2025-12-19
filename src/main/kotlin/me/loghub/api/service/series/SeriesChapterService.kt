@@ -14,10 +14,7 @@ import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.service.common.CacheService
-import me.loghub.api.util.checkField
-import me.loghub.api.util.checkPermission
-import me.loghub.api.util.checkPublished
-import me.loghub.api.util.orElseThrowNotFound
+import me.loghub.api.util.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,6 +29,7 @@ class SeriesChapterService(
 ) {
     private companion object {
         private const val DEFAULT_CHAPTER_TITLE = "새 챕터"
+        private const val MAX_CHAPTER_SIZE = 20
     }
 
     @Transactional(readOnly = true)
@@ -67,6 +65,8 @@ class SeriesChapterService(
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
         val chapterSize = seriesChapterRepository.countBySeries(series)
+        checkConflict(chapterSize >= MAX_CHAPTER_SIZE) { ResponseMessage.Series.Chapter.SIZE_LIMIT_EXCEEDED }
+
         val chapter = SeriesChapter(
             title = DEFAULT_CHAPTER_TITLE,
             sequence = chapterSize + 1,

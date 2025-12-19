@@ -52,10 +52,10 @@ class SeriesChapterAspect(
     }
 
     @AfterReturning(
-        pointcut = "execution(* me.loghub.api.service.series.SeriesChapterService.deleteChapter(..)) && args(seriesId, sequence, writer)",
+        pointcut = "execution(* me.loghub.api.service.series.SeriesChapterService.deleteChapter(..)) && args(seriesId, chapterId, writer)",
     )
-    fun afterDeleteChapter(seriesId: Long, sequence: Long, writer: User) =
-        logAfterDeleteChapter(seriesId, sequence, writer)
+    fun afterDeleteChapter(seriesId: Long, chapterId: Long, writer: User) =
+        logAfterDeleteChapter(seriesId, chapterId, writer)
 
     private fun addUserActivityAfterPublishChapter(postedChapter: SeriesChapter) {
         val publishedAt = requireNotNull(postedChapter.publishedAt)
@@ -83,6 +83,6 @@ class SeriesChapterAspect(
     fun logAfterEditChapter(chapter: SeriesChapter) =
         logger.info { "[SeriesChapter] edited: { seriesId=${chapter.series.id}, chapterId=${chapter.id}, writerId=${chapter.writer.id}, title=\"${chapter.title}\", published=${chapter.published} }" }
 
-    fun logAfterDeleteChapter(seriesId: Long, sequence: Long, writer: User) =
-        logger.info { "[SeriesChapter] deleted: { seriesId=${seriesId}, chapterSequence=${sequence}, writerId=${writer.id} }" }
+    fun logAfterDeleteChapter(seriesId: Long, chapterId: Long, writer: User) =
+        logger.info { "[SeriesChapter] deleted: { seriesId=${seriesId}, chapterId=${chapterId}, writerId=${writer.id} }" }
 }
