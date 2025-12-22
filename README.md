@@ -27,6 +27,7 @@
 |:-------------------------:|---------------------|----------------------------------------|
 |        `APP_NAME`         | 애플리케이션 이름           | `loghub-me-api`                        |
 |   `ACCESS_TOKEN_SECRET`   | 엑세스 토큰 비밀키          | 비밀키 생성 명령어: `openssl rand -hex 3`      |
+|       `ASSETS_HOST`       | 에셋 호스트              | `https://assets.loghub.me`             |
 |      `CLIENT_DOMAIN`      | 클라이언트 도메인           | `localhost`                            |
 |       `CLIENT_HOST`       | 클라이언트 호스트           | `http://localhost:3000`                |
 |         `DB_HOST`         | 데이터베이스 호스트          | `localhost`                            |

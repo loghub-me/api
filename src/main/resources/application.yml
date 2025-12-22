@@ -42,6 +42,8 @@ refresh-token:
 resend:
   api-key: ${RESEND_API_KEY}
   from: ${RESEND_FROM_EMAIL}
+assets:
+  host: ${ASSETS_HOST}
 client:
   host: ${CLIENT_HOST}
 server:

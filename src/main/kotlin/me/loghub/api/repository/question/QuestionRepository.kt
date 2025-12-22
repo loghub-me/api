@@ -1,5 +1,6 @@
 package me.loghub.api.repository.question
 
+import me.loghub.api.dto.common.SitemapItemProjection
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
@@ -26,6 +27,21 @@ interface QuestionRepository : JpaRepository<Question, Long> {
 
     @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>
+
+    @Query(
+        value = """
+        SELECT CONCAT(:clientHost, '/questions/', q.writer_username, '/', q.slug) AS url,
+        to_char(q.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS lastModified,
+        'weekly' AS changeFrequency,
+        :priority AS priority
+        FROM questions q
+    """, nativeQuery = true
+    )
+    fun findSitemap(
+        @Param("clientHost") clientHost: String,
+        @Param("assetsHost") assetsHost: String,
+        @Param("priority") priority: Double,
+    ): List<SitemapItemProjection>
 
     fun existsByIdAndWriter(id: Long, writer: User): Boolean
 

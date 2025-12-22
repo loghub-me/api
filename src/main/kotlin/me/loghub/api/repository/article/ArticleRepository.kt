@@ -1,5 +1,6 @@
 package me.loghub.api.repository.article
 
+import me.loghub.api.dto.common.SitemapItemProjection
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
@@ -26,6 +27,23 @@ interface ArticleRepository : JpaRepository<Article, Long> {
 
     @Query("$SELECT_ARTICLE JOIN a.topics t WHERE t.slug = :topicSlug ORDER BY a.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Article>
+
+    @Query(
+        value = """
+        SELECT CONCAT(:clientHost, '/articles/', a.writer_username, '/', a.slug) AS url,
+        to_char(a.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS lastModified,
+        'weekly' AS changeFrequency,
+        0.8 AS priority,
+        ARRAY[CONCAT(:assetsHost, '/', a.thumbnail)] AS images
+        FROM articles a
+        WHERE a.published = TRUE
+    """, nativeQuery = true
+    )
+    fun findSitemap(
+        @Param("clientHost") clientHost: String,
+        @Param("assetsHost") assetsHost: String,
+        @Param("priority") priority: Double,
+    ): List<SitemapItemProjection>
 
     fun existsByIdAndWriter(id: Long, writer: User): Boolean
 

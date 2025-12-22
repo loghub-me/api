@@ -1,5 +1,6 @@
 package me.loghub.api.repository.series
 
+import me.loghub.api.dto.common.SitemapItemProjection
 import me.loghub.api.entity.series.Series
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
@@ -29,6 +30,32 @@ interface SeriesRepository : JpaRepository<Series, Long> {
 
     @Query("$SELECT_SERIES JOIN s.topics t WHERE t.slug = :topicSlug ORDER BY s.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Series>
+
+    @Query(
+        value = """
+        SELECT CONCAT(:clientHost, '/series/', s.writer_username, '/', s.slug) AS url,
+        to_char(s.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS lastModified,
+        'weekly' AS changeFrequency,
+        :seriesPriority AS priority,
+        ARRAY[CONCAT(:assetsHost, '/', s.thumbnail)] AS images
+        FROM series s
+        UNION ALL
+        SELECT CONCAT(:clientHost, '/series/', s.writer_username, '/', s.slug, '/', sc.sequence) AS url,
+        to_char(sc.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS lastModified,
+        'weekly' AS changeFrequency,
+        :chapterPriority AS priority,
+        ARRAY[CONCAT(:assetsHost, '/', s.thumbnail)] AS images
+        FROM series s
+        JOIN series_chapters sc ON sc.series_id = s.id
+        WHERE sc.published = TRUE
+    """, nativeQuery = true
+    )
+    fun findSitemap(
+        @Param("clientHost") clientHost: String,
+        @Param("assetsHost") assetsHost: String,
+        @Param("seriesPriority") seriesPriority: Double,
+        @Param("chapterPriority") chapterPriority: Double,
+    ): List<SitemapItemProjection>
 
     @Query("$EXISTS_SERIES WHERE $BY_COMPOSITE_KEY")
     fun existsByCompositeKey(username: String, slug: String): Boolean
