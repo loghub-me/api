@@ -1,6 +1,5 @@
 package me.loghub.api.mapper.question
 
-import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
@@ -12,10 +11,7 @@ object QuestionAnswerMapper {
     fun map(answer: QuestionAnswer, renderedMarkdown: RenderedMarkdownDTO) = QuestionAnswerDTO(
         id = answer.id!!,
         title = answer.title,
-        content = ContentDTO(
-            markdown = answer.content,
-            html = renderedMarkdown.html,
-        ),
+        contentHTML = renderedMarkdown.html,
         anchors = renderedMarkdown.anchors,
         accepted = answer.accepted,
         writer = UserMapper.map(answer.writer),

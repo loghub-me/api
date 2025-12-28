@@ -82,8 +82,7 @@ class SeriesService(
         )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
-        series.update(requestBody)
-        series.updateSlug(slug)
+        series.update(requestBody, slug)
         series.updateTopics(topics)
         return series
     }

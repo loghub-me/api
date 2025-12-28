@@ -1,6 +1,7 @@
 package me.loghub.api.service.common
 
 import me.loghub.api.dto.common.RenderedMarkdownDTO
+import me.loghub.api.dto.task.markdown.MarkdownNormalizeRequest
 import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
 import me.loghub.api.lib.redis.key.RedisKey
 import me.loghub.api.lib.redis.key.RedisKeys
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service
 import java.security.MessageDigest
 
 @Service
-class CacheService(
+class MarkdownService(
     private val redisTemplate: RedisTemplate<String, RenderedMarkdownDTO>,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
@@ -28,6 +29,9 @@ class CacheService(
             val redisKey = RedisKeys.MARKDOWN(sha256(markdown))
             redisTemplate.opsForValue().get(redisKey.key) ?: generateMarkdownCache(redisKey, markdown)
         }
+
+    fun normalizeMarkdown(markdown: String) =
+        taskAPIProxy.normalizeMarkdown(MarkdownNormalizeRequest(markdown)).result
 
     private fun generateMarkdownCache(redisKey: RedisKey, markdown: String): RenderedMarkdownDTO {
         val result = taskAPIProxy.renderMarkdown(MarkdownRenderRequest(markdown)).result

@@ -10,7 +10,7 @@ import me.loghub.api.mapper.question.QuestionMapper
 import me.loghub.api.repository.question.QuestionCustomRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.topic.TopicRepository
-import me.loghub.api.service.common.CacheService
+import me.loghub.api.service.common.MarkdownService
 import me.loghub.api.util.SlugBuilder
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
@@ -26,7 +26,7 @@ class QuestionService(
     private val questionRepository: QuestionRepository,
     private val questionCustomRepository: QuestionCustomRepository,
     private val topicRepository: TopicRepository,
-    private val cacheService: CacheService,
+    private val markdownService: MarkdownService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
@@ -49,7 +49,7 @@ class QuestionService(
     fun getQuestion(username: String, slug: String): QuestionDetailDTO {
         val question = questionRepository.findWithWriterByCompositeKey(username, slug)
             ?: throw EntityNotFoundException(ResponseMessage.Question.NOT_FOUND)
-        val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(question.content)
+        val renderedMarkdown = markdownService.findOrGenerateMarkdownCache(question.content)
 
         return QuestionMapper.mapDetail(question, renderedMarkdown)
     }
@@ -73,8 +73,9 @@ class QuestionService(
             exists = { slug -> questionRepository.existsByCompositeKey(writer.username, slug) }
         )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
+        val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
 
-        val question = requestBody.toEntity(slug, writer, topics)
+        val question = requestBody.toEntity(slug, normalizedContent, writer, topics)
         return questionRepository.save(question)
     }
 
@@ -91,8 +92,7 @@ class QuestionService(
         )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
-        question.update(requestBody)
-        question.updateSlug(slug)
+        question.update(requestBody, slug)
         question.updateTopics(topics)
         return question
     }

@@ -16,8 +16,11 @@ class SeriesChapter(
     @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
-    @Column(name = "content", nullable = false, length = 8192)
-    var content: String = "",
+    @Column(name = "content", nullable = false, length = 16384)
+    var content: String,
+
+    @Column(name = "normalized_content", nullable = false, length = 16384)
+    var normalizedContent: String,
 
     @Column(name = "sequence", nullable = false)
     var sequence: Int,
@@ -36,9 +39,10 @@ class SeriesChapter(
     @JoinColumn(name = "writer_id", nullable = false)
     val writer: User,
 ) : PublicEntity() {
-    fun update(requestBody: EditSeriesChapterDTO) {
+    fun update(requestBody: EditSeriesChapterDTO, normalizedContent: String) {
         this.title = requestBody.title
         this.content = requestBody.content
+        this.normalizedContent = normalizedContent
     }
 
     fun updateSequence(newSequence: Int) {

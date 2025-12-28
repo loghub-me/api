@@ -18,10 +18,11 @@ data class PostQuestionDTO(
     @field:TopicSlugsValidation
     val topicSlugs: List<String>
 ) {
-    fun toEntity(slug: String, writer: User, topics: Set<Topic>) = Question(
+    fun toEntity(slug: String, normalizedContent: String, writer: User, topics: Set<Topic>) = Question(
         slug = slug,
         title = title,
         content = content,
+        normalizedContent = normalizedContent,
         writer = writer,
         writerUsername = writer.username,
         topics = topics.toMutableSet(),

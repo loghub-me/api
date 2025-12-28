@@ -30,8 +30,8 @@ object QuestionMapper {
             slug = question.slug,
             title = question.title,
             content = ContentDTO(
-                markdown = question.content,
                 html = renderedMarkdown.html,
+                normalized = question.normalizedContent,
             ),
             anchors = renderedMarkdown.anchors,
             status = question.status,

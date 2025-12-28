@@ -4,10 +4,7 @@ import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
 import me.loghub.api.dto.task.image.ImageUploadResponse
-import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
-import me.loghub.api.dto.task.markdown.MarkdownRenderResponse
-import me.loghub.api.dto.task.markdown.MarkdownsRenderRequest
-import me.loghub.api.dto.task.markdown.MarkdownsRenderResponse
+import me.loghub.api.dto.task.markdown.*
 import me.loghub.api.proxy.config.TaskAPIConfig
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
@@ -27,6 +24,9 @@ interface TaskAPIProxy {
 
     @PostMapping("/markdown/render")
     fun renderMarkdowns(@RequestBody request: MarkdownsRenderRequest): MarkdownsRenderResponse
+
+    @PostMapping("/markdown/normalize")
+    fun normalizeMarkdown(@RequestBody request: MarkdownNormalizeRequest): MarkdownNormalizeResponse
 
     @PostMapping(
         value = ["/image/upload"],

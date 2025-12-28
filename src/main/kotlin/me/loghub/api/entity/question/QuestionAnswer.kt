@@ -16,7 +16,7 @@ class QuestionAnswer(
     @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
-    @Column(name = "content", nullable = false, length = 8192)
+    @Column(name = "content", nullable = false, length = 16384)
     var content: String,
 
     @Column(name = "accepted", nullable = false)

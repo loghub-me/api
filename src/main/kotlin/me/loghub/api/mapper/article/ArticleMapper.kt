@@ -25,8 +25,8 @@ object ArticleMapper {
         slug = article.slug,
         title = article.title,
         content = ContentDTO(
-            markdown = article.content,
             html = renderedMarkdown.html,
+            normalized = article.normalizedContent,
         ),
         anchors = renderedMarkdown.anchors,
         thumbnail = article.thumbnail,

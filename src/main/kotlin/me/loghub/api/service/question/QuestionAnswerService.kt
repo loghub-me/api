@@ -15,7 +15,7 @@ import me.loghub.api.mapper.question.QuestionAnswerMapper
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.question.QuestionStatsRepository
-import me.loghub.api.service.common.CacheService
+import me.loghub.api.service.common.MarkdownService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkCooldown
 import me.loghub.api.util.checkField
@@ -30,14 +30,14 @@ class QuestionAnswerService(
     private val questionRepository: QuestionRepository,
     private val questionStatsRepository: QuestionStatsRepository,
     private val questionAnswerGenerateService: QuestionAnswerGenerateService,
-    private val cacheService: CacheService,
+    private val markdownService: MarkdownService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     @Transactional(readOnly = true)
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
         val answers = questionAnswerRepository.findAllWithWriterByQuestionIdOrderByCreatedAt(questionId)
         val answerMarkdowns = answers.map { it.content }
-        val renderedMarkdowns = cacheService.findOrGenerateMarkdownCache(answerMarkdowns)
+        val renderedMarkdowns = markdownService.findOrGenerateMarkdownCache(answerMarkdowns)
 
         return answers.mapIndexed { i, answer -> QuestionAnswerMapper.map(answer, renderedMarkdowns[i]) }
     }

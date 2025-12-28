@@ -23,8 +23,11 @@ class Article(
     @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
-    @Column(name = "content", nullable = false, length = 8192)
+    @Column(name = "content", nullable = false, length = 16384)
     var content: String,
+
+    @Column(name = "normalized_content", nullable = false, length = 8192)
+    var normalizedContent: String,
 
     @Column(name = "thumbnail", nullable = false)
     var thumbnail: String,
@@ -63,14 +66,12 @@ class Article(
     @Formula("ctid")
     val ctid: String? = null,
 ) : PublicEntity() {
-    fun update(requestBody: PostArticleDTO) {
+    fun update(requestBody: PostArticleDTO, slug: String, normalizedContent: String) {
         this.title = requestBody.title
         this.content = requestBody.content
         this.thumbnail = requestBody.thumbnail
-    }
-
-    fun updateSlug(slug: String) {
         this.slug = slug
+        this.normalizedContent = normalizedContent
     }
 
     fun updateTopics(topics: Set<Topic>) {

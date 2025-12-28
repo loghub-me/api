@@ -10,7 +10,7 @@ import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.repository.article.ArticleCustomRepository
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.topic.TopicRepository
-import me.loghub.api.service.common.CacheService
+import me.loghub.api.service.common.MarkdownService
 import me.loghub.api.util.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -23,7 +23,7 @@ class ArticleService(
     private val articleRepository: ArticleRepository,
     private val articleCustomRepository: ArticleCustomRepository,
     private val topicRepository: TopicRepository,
-    private val cacheService: CacheService,
+    private val markdownService: MarkdownService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
@@ -48,7 +48,7 @@ class ArticleService(
 
         checkPublished(article.published) { ResponseMessage.Article.NOT_FOUND }
 
-        val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(article.content)
+        val renderedMarkdown = markdownService.findOrGenerateMarkdownCache(article.content)
         return ArticleMapper.mapDetail(article, renderedMarkdown)
     }
 
@@ -71,8 +71,9 @@ class ArticleService(
             exists = { slug -> articleRepository.existsByCompositeKey(writer.username, slug) }
         )
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
+        val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
 
-        val article = requestBody.toEntity(slug, writer, topics)
+        val article = requestBody.toEntity(slug, normalizedContent, writer, topics)
         return articleRepository.save(article)
     }
 
@@ -87,10 +88,10 @@ class ArticleService(
             slug = requestBody.title.toSlug(),
             exists = { slug -> articleRepository.existsByCompositeKeyAndIdNot(writer.username, slug, articleId) }
         )
+        val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
-        article.update(requestBody)
-        article.updateSlug(slug)
+        article.update(requestBody, slug, normalizedContent)
         article.updateTopics(topics)
         if (requestBody.published) article.publish() else article.unpublish()
 

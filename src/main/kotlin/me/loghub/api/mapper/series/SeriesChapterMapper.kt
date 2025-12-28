@@ -20,8 +20,8 @@ object SeriesChapterMapper {
         id = chapter.id!!,
         title = chapter.title,
         content = ContentDTO(
-            markdown = chapter.content,
             html = renderedMarkdown.html,
+            normalized = chapter.normalizedContent,
         ),
         anchors = renderedMarkdown.anchors,
         sequence = chapter.sequence,

@@ -27,10 +27,11 @@ data class PostArticleDTO(
     @field:NotNull(message = "공개 여부는 필수 입력값입니다.")
     val published: Boolean,
 ) {
-    fun toEntity(slug: String, writer: User, topics: Set<Topic>) = Article(
+    fun toEntity(slug: String, normalizedContent: String, writer: User, topics: Set<Topic>) = Article(
         slug = slug,
         title = title,
         content = content,
+        normalizedContent = normalizedContent,
         thumbnail = thumbnail,
         published = published,
         publishedAt = if (published) LocalDateTime.now() else null,

@@ -11,9 +11,9 @@ enum class PGroongaHibernateFunction(
 ) {
     ARTICLES_FTS(
         "articles_fts",
-        "ARRAY[title, content, topics_flat] &@~ pgroonga_condition(" +
+        "ARRAY[title, normalized_content, topics_flat] &@~ pgroonga_condition(" +
                 "pgroonga_query_expand('search_synonyms', 'term', 'synonyms', ?1)," +
-                "weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.CONTENT}, ${WEIGHTS.TOPIC_FLATS}]," +
+                "weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.NORMALIZED_CONTENT}, ${WEIGHTS.TOPIC_FLATS}]," +
                 "index_name => 'articles_fts_idx')",
         1,
         StandardBasicTypes.BOOLEAN,
@@ -29,9 +29,9 @@ enum class PGroongaHibernateFunction(
     ),
     QUESTIONS_FTS(
         "questions_fts",
-        "ARRAY[title, content, topics_flat] &@~ pgroonga_condition(" +
+        "ARRAY[title, normalized_content, topics_flat] &@~ pgroonga_condition(" +
                 "pgroonga_query_expand('search_synonyms', 'term', 'synonyms', ?1)," +
-                "weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.CONTENT}, ${WEIGHTS.TOPIC_FLATS}]," +
+                "weights => ARRAY[${WEIGHTS.TITLE}, ${WEIGHTS.NORMALIZED_CONTENT}, ${WEIGHTS.TOPIC_FLATS}]," +
                 "index_name => 'questions_fts_idx')",
         1,
         StandardBasicTypes.BOOLEAN,
@@ -46,7 +46,7 @@ enum class PGroongaHibernateFunction(
 
     private object WEIGHTS {
         const val TITLE = 5
-        const val CONTENT = 1
+        const val NORMALIZED_CONTENT = 2
         const val DESCRIPTION = 1
         const val TOPIC_FLATS = 2
     }

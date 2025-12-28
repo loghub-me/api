@@ -149,11 +149,11 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
        ('member1@loghub.me', 'member1', '멤버1', 'MEMBER'),
        ('member2@loghub.me', 'member2', '멤버2', 'MEMBER');
 
-INSERT INTO public.articles(slug, title, content, writer_id, writer_username, published, published_at)
+INSERT INTO public.articles(slug, title, content, writer_id, writer_username, published, published_at, normalized_content)
 VALUES ('article-1', 'Article 1', 'Article content 1',
-        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1', TRUE, NOW()),
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1', TRUE, NOW(), 'Article content 1'),
        ('article-2', 'Article 2', 'Article content 2',
-        ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2', TRUE, NOW());
+        ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2', TRUE, NOW(), 'Article content 2');
 INSERT INTO public.article_comments(content, article_id, writer_id)
 VALUES ('Article comment 1', 1, ( SELECT id FROM users WHERE username = 'member1' )),
        ('Article comment 2', 1, ( SELECT id FROM users WHERE username = 'member2' ));
@@ -180,13 +180,13 @@ VALUES ('series-1', 'Series 1', 'Series content 1',
         ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'),
        ('series-2', 'Series 2', 'Series content 2',
         ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
-INSERT INTO public.series_chapters(title, content, sequence, series_id, writer_id, published, published_at)
+INSERT INTO public.series_chapters(title, content, sequence, series_id, writer_id, published, published_at, normalized_content)
 VALUES ('Series Chapter 1-1', 'Series Chapter content 1-1', 1, 1,
-        ( SELECT id FROM public.users WHERE username = 'member1' ), TRUE, NOW()),
+        ( SELECT id FROM public.users WHERE username = 'member1' ), TRUE, NOW(), 'Series Chapter content 1-1'),
        ('Series Chapter 1-2', 'Series Chapter content 1-2', 2, 1,
-        ( SELECT id FROM public.users WHERE username = 'member1' ), TRUE, NOW()),
+        ( SELECT id FROM public.users WHERE username = 'member1' ), TRUE, NOW(), 'Series Chapter content 1-2'),
        ('Series Chapter 2-1', 'Series Chapter content 2-1', 1, 2,
-        ( SELECT id FROM public.users WHERE username = 'member2' ), TRUE, NOW());
+        ( SELECT id FROM public.users WHERE username = 'member2' ), TRUE, NOW(), 'Series Chapter content 2-1');
 INSERT INTO public.series_reviews(content, rating, series_id, writer_id)
 VALUES ('Series review 1', 5, 1, ( SELECT id FROM users WHERE username = 'member1' )),
        ('Series review 2', 4, 1, ( SELECT id FROM users WHERE username = 'member2' ));
@@ -201,11 +201,11 @@ SET star_count = c.cnt
 FROM ( SELECT series_id, COUNT(*) AS cnt FROM public.user_stars WHERE series_id IS NOT NULL GROUP BY series_id ) c
 WHERE id = c.series_id;
 
-INSERT INTO public.questions(slug, title, content, writer_id, writer_username)
+INSERT INTO public.questions(slug, title, content, writer_id, writer_username, normalized_content)
 VALUES ('question-1', 'Question 1', 'Question content 1',
-        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1'),
+        ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1', 'Question content 1'),
        ('question-2', 'Question 2', 'Question content 2',
-        ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2');
+        ( SELECT id FROM public.users WHERE username = 'member2' ), 'member2', 'Question content 2');
 INSERT INTO public.question_answers(title, content, question_id, writer_id)
 VALUES ('Question Answer 1-1', 'Question Answer content 1-1', 1,
         ( SELECT id FROM public.users WHERE username = 'member2' ));

@@ -64,13 +64,10 @@ class Series(
     @Formula("ctid")
     val ctid: String? = null,
 ) : PublicEntity() {
-    fun update(requestBody: PostSeriesDTO) {
+    fun update(requestBody: PostSeriesDTO, slug: String) {
         this.title = requestBody.title
         this.description = requestBody.description
         this.thumbnail = requestBody.thumbnail
-    }
-
-    fun updateSlug(slug: String) {
         this.slug = slug
     }
 

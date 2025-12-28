@@ -13,7 +13,7 @@ import me.loghub.api.mapper.series.SeriesChapterMapper
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
-import me.loghub.api.service.common.CacheService
+import me.loghub.api.service.common.MarkdownService
 import me.loghub.api.util.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -24,11 +24,12 @@ class SeriesChapterService(
     private val seriesRepository: SeriesRepository,
     private val seriesChapterRepository: SeriesChapterRepository,
     private val articleRepository: ArticleRepository,
-    private val cacheService: CacheService,
+    private val markdownService: MarkdownService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
         private const val DEFAULT_CHAPTER_TITLE = "새 챕터"
+        private const val DEFAULT_CHAPTER_CONTENT = ""
         private const val MAX_CHAPTER_SIZE = 20
     }
 
@@ -40,7 +41,7 @@ class SeriesChapterService(
 
         checkPublished(chapter.published) { ResponseMessage.Series.NOT_FOUND }
 
-        val renderedMarkdown = cacheService.findOrGenerateMarkdownCache(chapter.content)
+        val renderedMarkdown = markdownService.findOrGenerateMarkdownCache(chapter.content)
         return SeriesChapterMapper.mapDetail(chapter, renderedMarkdown)
     }
 
@@ -69,6 +70,8 @@ class SeriesChapterService(
 
         val chapter = SeriesChapter(
             title = DEFAULT_CHAPTER_TITLE,
+            content = DEFAULT_CHAPTER_CONTENT,
+            normalizedContent = DEFAULT_CHAPTER_CONTENT,
             sequence = chapterSize + 1,
             series = series,
             writer = writer,
@@ -93,6 +96,7 @@ class SeriesChapterService(
         val chapter = SeriesChapter(
             title = article.title,
             content = article.content,
+            normalizedContent = article.normalizedContent,
             sequence = chapterSize + 1,
             series = series,
             writer = writer,
@@ -109,7 +113,9 @@ class SeriesChapterService(
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        chapter.update(requestBody)
+        val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
+
+        chapter.update(requestBody, normalizedContent)
         if (requestBody.published) chapter.publish() else chapter.unpublish()
 
         return chapter

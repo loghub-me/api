@@ -27,8 +27,11 @@ class Question(
     @Column(name = "title", nullable = false, length = 56)
     var title: String,
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 16384)
     var content: String,
+
+    @Column(name = "normalized_content", nullable = false, length = 16384)
+    var normalizedContent: String,
 
     @Enumerated
     @JdbcType(PostgreSQLEnumJdbcType::class)
@@ -74,12 +77,9 @@ class Question(
 ) : PublicEntity() {
     enum class Status { OPEN, CLOSED, SOLVED }
 
-    fun update(requestBody: PostQuestionDTO) {
+    fun update(requestBody: PostQuestionDTO, slug: String) {
         this.title = requestBody.title
         this.content = requestBody.content
-    }
-
-    fun updateSlug(slug: String) {
         this.slug = slug
     }
 
