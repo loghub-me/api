@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
 import me.loghub.api.entity.PublicEntity
 import me.loghub.api.entity.user.User
+import me.loghub.api.util.collapseToDoubleNewlines
 import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
@@ -38,7 +39,7 @@ class ArticleComment(
     val writer: User,
 ) : PublicEntity() {
     fun update(requestBody: PostArticleCommentDTO) {
-        this.content = requestBody.content
+        this.content = requestBody.content.collapseToDoubleNewlines()
     }
 
     fun delete() {
