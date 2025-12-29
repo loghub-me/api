@@ -1,6 +1,6 @@
 package me.loghub.api.controller
 
-import me.loghub.api.dto.auth.token.TokenDTO
+import me.loghub.api.dto.auth.token.AccessToken
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.test.TestGrantService
 import me.loghub.api.util.resetDatabase
@@ -30,9 +30,9 @@ abstract class BaseControllerTest {
     lateinit var rest: RestTestClient
 
     lateinit var member1: User
-    lateinit var member1Token: TokenDTO
+    lateinit var member1Token: AccessToken
     lateinit var member2: User
-    lateinit var member2Token: TokenDTO
+    lateinit var member2Token: AccessToken
 
     @BeforeEach
     fun setupRestClient() {
@@ -47,9 +47,9 @@ abstract class BaseControllerTest {
 
         val (member1, member1Token) = grantService.grant("member1")
         this.member1 = member1
-        this.member1Token = member1Token
+        this.member1Token = member1Token.accessToken
         val (member2, member2Token) = grantService.grant("member2")
         this.member2 = member2
-        this.member2Token = member2Token
+        this.member2Token = member2Token.accessToken
     }
 }
