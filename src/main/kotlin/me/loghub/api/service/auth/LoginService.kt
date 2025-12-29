@@ -2,6 +2,7 @@ package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.login.LoginConfirmDTO
 import me.loghub.api.dto.auth.login.LoginRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
@@ -38,7 +39,7 @@ class LoginService(
     }
 
     @Transactional
-    fun confirmLogin(requestBody: LoginConfirmDTO): TokenDTO {
+    fun confirmLogin(requestBody: LoginConfirmDTO): Pair<TokenDTO, SessionDTO> {
         val redisKey = RedisKeys.LOGIN_OTP(requestBody.email)
         val otp = redisTemplate.opsForValue().get(redisKey.key)
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
@@ -50,7 +51,7 @@ class LoginService(
 
         val user = userRepository.findByEmail(requestBody.email)
             ?: throw EntityNotFoundFieldException(User::email.name, ResponseMessage.User.NOT_FOUND)
-        return tokenService.generateToken(user)
+        return Pair(tokenService.generateToken(user), SessionDTO(user))
     }
 
     fun issueOTP(email: String): String {

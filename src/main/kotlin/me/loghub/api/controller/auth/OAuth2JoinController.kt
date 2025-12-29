@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController
 class OAuth2JoinController(private val joinService: OAuth2JoinService) {
     @PostMapping("/confirm")
     fun confirmJoin(@RequestBody @Valid requestBody: OAuth2JoinConfirmDTO): ResponseEntity<ResponseBody> {
-        val (accessToken, refreshToken) = joinService.confirmJoin(requestBody)
+        val (token, session) = joinService.confirmJoin(requestBody)
+        val (accessToken, refreshToken) = token
         val responseBody = MessageResponseBody(
             message = ResponseMessage.Join.CONFIRM_SUCCESS,
             status = HttpStatus.OK,
@@ -27,6 +28,7 @@ class OAuth2JoinController(private val joinService: OAuth2JoinService) {
         return ResponseEntity.status(responseBody.status)
             .header(HttpHeaders.AUTHORIZATION, accessToken.authorization)
             .header(HttpHeaders.SET_COOKIE, refreshToken.cookie)
+            .header(HttpHeaders.SET_COOKIE, session.cookie)
             .body(responseBody)
     }
 }

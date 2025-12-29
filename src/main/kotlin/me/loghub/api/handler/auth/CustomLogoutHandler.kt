@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import me.loghub.api.constant.http.HttpContentType
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.service.auth.token.RefreshTokenService
@@ -27,13 +28,10 @@ class CustomLogoutHandler(
         for (cookie in request.cookies) {
             if (cookie.name == RefreshToken.Cookie.NAME) {
                 refreshTokenService.revokeToken(cookie.value)
-                cookie.apply {
-                    value = ""
-                    maxAge = 0
-                    path = "/"
-                }
+            }
+            if (cookie.name == RefreshToken.Cookie.NAME || cookie.name == SessionDTO.Cookie.NAME) {
+                cookie.apply { value = ""; maxAge = 0; path = "/" }
                 response.addCookie(cookie)
-                break
             }
         }
         SecurityContextHolder.clearContext()

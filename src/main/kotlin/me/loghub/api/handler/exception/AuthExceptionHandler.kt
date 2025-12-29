@@ -1,6 +1,7 @@
 package me.loghub.api.handler.exception
 
 import me.loghub.api.config.ClientConfig
+import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
@@ -30,8 +31,10 @@ class AuthExceptionHandler {
             status = HttpStatus.BAD_REQUEST
         )
         val emptyRefreshTokenCookie = generateEmptyRefreshTokenCookie()
+        val emptySessionCookie = generateEmptySessionCookie()
         return ResponseEntity.status(responseBody.status)
             .header(HttpHeaders.SET_COOKIE, emptyRefreshTokenCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, emptySessionCookie.toString())
             .body(responseBody)
     }
 
@@ -49,6 +52,16 @@ class AuthExceptionHandler {
         .secure(true)
         .path(RefreshToken.Cookie.PATH)
         .sameSite(RefreshToken.Cookie.SAME_SITE)
+        .maxAge(0)
+        .build()
+
+    private fun generateEmptySessionCookie() = ResponseCookie
+        .from(SessionDTO.Cookie.NAME, "")
+        .domain(ClientConfig.DOMAIN)
+        .httpOnly(true)
+        .secure(true)
+        .path(SessionDTO.Cookie.PATH)
+        .sameSite(SessionDTO.Cookie.SAME_SITE)
         .maxAge(0)
         .build()
 }

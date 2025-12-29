@@ -21,9 +21,9 @@ import kotlin.time.toJavaDuration
 @EnableCaching
 class CacheConfig {
     @Bean
-    fun cacheManager(connectionFactory: RedisConnectionFactory, jsonMapper: JsonMapper): RedisCacheManager {
+    fun cacheManager(connectionFactory: RedisConnectionFactory): RedisCacheManager {
         val keySerializer = StringRedisSerializer()
-        val valueSerializer = GenericJacksonJsonRedisSerializer(cacheManagerJsonMapper(jsonMapper))
+        val valueSerializer = GenericJacksonJsonRedisSerializer(cacheManagerJsonMapper())
 
         val cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(1.hours.toJavaDuration())
@@ -34,7 +34,7 @@ class CacheConfig {
         return RedisCacheManager.builder(connectionFactory).cacheDefaults(cacheConfig).build()
     }
 
-    private fun cacheManagerJsonMapper(jsonMapper: JsonMapper): ObjectMapper {
+    private fun cacheManagerJsonMapper(): ObjectMapper {
         val ptv = BasicPolymorphicTypeValidator.builder()
             .allowIfSubType(Any::class.java)
             .build()

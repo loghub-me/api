@@ -2,6 +2,7 @@ package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.exception.auth.BadRefreshTokenException
@@ -21,7 +22,7 @@ class RefreshService(
     private val tokenService: TokenService,
 ) {
     @Transactional
-    fun refreshToken(token: String?): TokenDTO {
+    fun refreshToken(token: String?): Pair<TokenDTO, SessionDTO> {
         checkField(RefreshToken.Cookie.NAME, token != null) { ResponseMessage.Auth.INVALID_TOKEN }
 
         val redisKey = RedisKeys.REFRESH_TOKEN(token)
@@ -30,6 +31,6 @@ class RefreshService(
             ?: throw BadRefreshTokenException(ResponseMessage.Auth.INVALID_TOKEN)
         val user = userRepository.findById(userId.toLong())
             .orElseThrow { BadRefreshTokenException(ResponseMessage.Auth.INVALID_TOKEN) }
-        return tokenService.generateToken(user)
+        return Pair(tokenService.generateToken(user), SessionDTO(user))
     }
 }

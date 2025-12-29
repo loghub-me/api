@@ -2,6 +2,7 @@ package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.join.JoinConfirmDTO
 import me.loghub.api.dto.auth.join.JoinInfoDTO
 import me.loghub.api.dto.auth.join.JoinRequestDTO
@@ -39,7 +40,7 @@ class JoinService(
     }
 
     @Transactional
-    fun confirmJoin(requestBody: JoinConfirmDTO): TokenDTO {
+    fun confirmJoin(requestBody: JoinConfirmDTO): Pair<TokenDTO, SessionDTO> {
         val redisKey = RedisKeys.JOIN_OTP(requestBody.email)
         val info = redisTemplate.opsForValue().get(redisKey.key)
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
@@ -51,7 +52,7 @@ class JoinService(
 
         val joinedUser = userRepository.save(info.toUserEntity())
         taskAPIProxy.generateAvatar(AvatarGenerateRequest(joinedUser.id!!))
-        return tokenService.generateToken(joinedUser)
+        return Pair(tokenService.generateToken(joinedUser), SessionDTO(joinedUser))
     }
 
     private fun checkJoinable(requestBody: JoinRequestDTO) {

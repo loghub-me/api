@@ -20,7 +20,8 @@ class RefreshController(private val refreshService: RefreshService) {
     fun refreshToken(
         @CookieValue(RefreshToken.Cookie.NAME, required = false) refreshToken: String?
     ): ResponseEntity<ResponseBody> {
-        val (accessToken, refreshToken) = refreshService.refreshToken(refreshToken)
+        val (token, session) = refreshService.refreshToken(refreshToken)
+        val (accessToken, refreshToken) = token
         val responseBody = MessageResponseBody(
             message = ResponseMessage.Token.REFRESH_SUCCESS,
             status = HttpStatus.OK,
@@ -28,6 +29,7 @@ class RefreshController(private val refreshService: RefreshService) {
         return ResponseEntity.status(responseBody.status)
             .header(HttpHeaders.AUTHORIZATION, accessToken.authorization)
             .header(HttpHeaders.SET_COOKIE, refreshToken.cookie)
+            .header(HttpHeaders.SET_COOKIE, session.cookie)
             .body(responseBody)
     }
 }
