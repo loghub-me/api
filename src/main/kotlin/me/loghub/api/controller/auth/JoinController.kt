@@ -29,14 +29,14 @@ class JoinController(private val joinService: JoinService) {
 
     @PostMapping("/confirm")
     fun confirmJoin(@RequestBody @Valid requestBody: JoinConfirmDTO): ResponseEntity<ResponseBody> {
-        val token = joinService.confirmJoin(requestBody)
+        val (accessToken, refreshToken) = joinService.confirmJoin(requestBody)
         val responseBody = MessageResponseBody(
             message = ResponseMessage.Join.CONFIRM_SUCCESS,
             status = HttpStatus.OK,
         )
         return ResponseEntity.status(responseBody.status)
-            .header(HttpHeaders.AUTHORIZATION, token.authorization)
-            .header(HttpHeaders.SET_COOKIE, token.cookie)
+            .header(HttpHeaders.AUTHORIZATION, accessToken.authorization)
+            .header(HttpHeaders.SET_COOKIE, refreshToken.cookie)
             .body(responseBody)
     }
 }

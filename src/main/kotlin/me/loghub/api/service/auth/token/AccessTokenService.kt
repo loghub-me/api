@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.DecodedJWT
+import me.loghub.api.dto.auth.token.AccessToken
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserGitHub
 import me.loghub.api.entity.user.UserPrivacy
@@ -29,23 +30,23 @@ class AccessTokenService(
         const val USERNAME = "username"
         const val NICKNAME = "nickname"
         const val PROVIDER = "provider"
-        const val JOINED_AT = "joinedAt"
         const val ROLE = "role"
     }
 
-    fun generateToken(user: User): String =
-        JWT.create()
+    fun generateToken(user: User): AccessToken {
+        val value = JWT.create()
             .withIssuer(issuer)
             .withSubject(user.id.toString())
             .withClaim(JwtClaims.EMAIL, user.email)
             .withClaim(JwtClaims.USERNAME, user.username)
             .withClaim(JwtClaims.NICKNAME, user.profile.nickname)
             .withClaim(JwtClaims.PROVIDER, user.provider.name)
-            .withClaim(JwtClaims.JOINED_AT, user.createdAt.toLocalDate().toString())
             .withClaim(JwtClaims.ROLE, user.role.name)
             .withIssuedAt(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
             .withExpiresAt(LocalDateTime.now().plusSeconds(expiration).atZone(ZoneId.systemDefault()).toInstant())
             .sign(jwtAlgorithm)
+        return AccessToken(value)
+    }
 
     fun generateAuthentication(token: String): UsernamePasswordAuthenticationToken {
         val decodedToken = jwtVerifier.verify(token)

@@ -8,13 +8,16 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "client")
 class ClientConfig {
     lateinit var host: String
+    lateinit var domain: String
 
     companion object {
         lateinit var HOST: String
+        lateinit var DOMAIN: String
     }
 
     @PostConstruct
     fun init() {
         Companion.HOST = host
+        Companion.DOMAIN = domain
     }
 }

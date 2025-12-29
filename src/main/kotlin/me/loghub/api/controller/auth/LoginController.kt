@@ -29,14 +29,14 @@ class LoginController(private val loginService: LoginService) {
 
     @PostMapping("/confirm")
     fun confirmLogin(@RequestBody @Valid requestBody: LoginConfirmDTO): ResponseEntity<ResponseBody> {
-        val token = loginService.confirmLogin(requestBody)
+        val (accessToken, refreshToken) = loginService.confirmLogin(requestBody)
         val responseBody = MessageResponseBody(
             message = ResponseMessage.Login.CONFIRM_SUCCESS,
             status = HttpStatus.OK,
         )
         return ResponseEntity.status(responseBody.status)
-            .header(HttpHeaders.AUTHORIZATION, token.authorization)
-            .header(HttpHeaders.SET_COOKIE, token.cookie)
+            .header(HttpHeaders.AUTHORIZATION, accessToken.authorization)
+            .header(HttpHeaders.SET_COOKIE, refreshToken.cookie)
             .body(responseBody)
     }
 }

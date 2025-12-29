@@ -1,8 +1,8 @@
 package me.loghub.api.service.auth
 
 import jakarta.transaction.Transactional
-import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.exception.auth.BadRefreshTokenException
 import me.loghub.api.lib.redis.key.RedisKeys
@@ -22,7 +22,7 @@ class RefreshService(
 ) {
     @Transactional
     fun refreshToken(token: String?): TokenDTO {
-        checkField(RefreshTokenConfig.NAME, token != null) { ResponseMessage.Auth.INVALID_TOKEN }
+        checkField(RefreshToken.Cookie.NAME, token != null) { ResponseMessage.Auth.INVALID_TOKEN }
 
         val redisKey = RedisKeys.REFRESH_TOKEN(token)
         val userId = redisTemplate.opsForValue().get(redisKey.key)

@@ -1,7 +1,7 @@
 package me.loghub.api.controller.auth
 
-import me.loghub.api.config.RefreshTokenConfig
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.service.auth.RefreshService
@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RestController
 class RefreshController(private val refreshService: RefreshService) {
     @PostMapping
     fun refreshToken(
-        @CookieValue(RefreshTokenConfig.NAME, required = false) refreshToken: String?
+        @CookieValue(RefreshToken.Cookie.NAME, required = false) refreshToken: String?
     ): ResponseEntity<ResponseBody> {
-        val token = refreshService.refreshToken(refreshToken)
+        val (accessToken, refreshToken) = refreshService.refreshToken(refreshToken)
         val responseBody = MessageResponseBody(
             message = ResponseMessage.Token.REFRESH_SUCCESS,
             status = HttpStatus.OK,
         )
         return ResponseEntity.status(responseBody.status)
-            .header(HttpHeaders.AUTHORIZATION, token.authorization)
-            .header(HttpHeaders.SET_COOKIE, token.cookie)
+            .header(HttpHeaders.AUTHORIZATION, accessToken.authorization)
+            .header(HttpHeaders.SET_COOKIE, refreshToken.cookie)
             .body(responseBody)
     }
 }

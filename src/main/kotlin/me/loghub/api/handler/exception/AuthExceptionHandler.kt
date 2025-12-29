@@ -1,6 +1,7 @@
 package me.loghub.api.handler.exception
 
-import me.loghub.api.config.RefreshTokenConfig
+import me.loghub.api.config.ClientConfig
+import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.exception.auth.BadOTPException
@@ -42,12 +43,12 @@ class AuthExceptionHandler {
         ).toResponseEntity()
 
     private fun generateEmptyRefreshTokenCookie() = ResponseCookie
-        .from(RefreshTokenConfig.NAME, "")
-        .domain(RefreshTokenConfig.DOMAIN)
+        .from(RefreshToken.Cookie.NAME, "")
+        .domain(ClientConfig.DOMAIN)
         .httpOnly(true)
         .secure(true)
-        .path(RefreshTokenConfig.PATH)
-        .sameSite(RefreshTokenConfig.SAME_SITE)
+        .path(RefreshToken.Cookie.PATH)
+        .sameSite(RefreshToken.Cookie.SAME_SITE)
         .maxAge(0)
         .build()
 }
