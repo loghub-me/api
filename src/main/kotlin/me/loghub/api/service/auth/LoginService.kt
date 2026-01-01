@@ -10,7 +10,7 @@ import me.loghub.api.dto.task.mail.LoginMailSendRequest
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.exception.entity.EntityNotFoundFieldException
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.auth.LoginOTPRedisKey
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import me.loghub.api.service.common.MailService
@@ -40,13 +40,13 @@ class LoginService(
 
     @Transactional
     fun confirmLogin(requestBody: LoginConfirmDTO): Pair<TokenDTO, SessionDTO> {
-        val redisKey = RedisKeys.LOGIN_OTP(requestBody.email)
-        val otp = redisTemplate.opsForValue().get(redisKey.key)
+        val redisKey = LoginOTPRedisKey(requestBody.email)
+        val otp = redisTemplate.opsForValue().get(redisKey)
             ?: throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
 
         when {
             requestBody.otp != otp -> throw BadOTPException(ResponseMessage.Auth.INVALID_OTP)
-            else -> redisTemplate.delete(redisKey.key)
+            else -> redisTemplate.delete(redisKey)
         }
 
         val user = userRepository.findByEmail(requestBody.email)
@@ -56,8 +56,8 @@ class LoginService(
 
     fun issueOTP(email: String): String {
         val otp = OTPBuilder.generateOTP()
-        val redisKey = RedisKeys.LOGIN_OTP(email)
-        redisTemplate.opsForValue().set(redisKey.key, otp, redisKey.ttl)
+        val redisKey = LoginOTPRedisKey(email)
+        redisTemplate.opsForValue().set(redisKey, otp, LoginOTPRedisKey.TTL)
         return otp
     }
 }

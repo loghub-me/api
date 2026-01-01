@@ -5,7 +5,7 @@ import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.question.QuestionTrendingScoreRedisKey
 import me.loghub.api.repository.user.UserActivityRepository
 import me.loghub.api.repository.user.saveActivityIgnoreConflict
 import me.loghub.api.service.notification.NotificationService
@@ -30,7 +30,7 @@ class QuestionAnswerAspect(
         val logger = KotlinLogging.logger { };
     }
 
-    private val trendingScoreKey = RedisKeys.Question.TRENDING_SCORE()
+    private val trendingScoreKey = QuestionTrendingScoreRedisKey()
     private val zSetOps: ZSetOperations<String, String>
         get() = redisTemplate.opsForZSet()
 
@@ -69,10 +69,10 @@ class QuestionAnswerAspect(
     }
 
     private fun updateTrendingScoreAfterPostAnswer(questionId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, questionId.toString(), TrendingScoreDelta.ANSWER)
+        zSetOps.incrementScore(trendingScoreKey, questionId.toString(), TrendingScoreDelta.ANSWER)
 
     private fun updateTrendingScoreAfterDeleteAnswer(questionId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, questionId.toString(), -TrendingScoreDelta.ANSWER)
+        zSetOps.incrementScore(trendingScoreKey, questionId.toString(), -TrendingScoreDelta.ANSWER)
 
     private fun sendNotificationsAfterPostAnswer(postedAnswer: QuestionAnswer) {
         val question = postedAnswer.question

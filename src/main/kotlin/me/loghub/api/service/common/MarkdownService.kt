@@ -3,8 +3,7 @@ package me.loghub.api.service.common
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.task.markdown.MarkdownNormalizeRequest
 import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
-import me.loghub.api.lib.redis.key.RedisKey
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.common.MarkdownCacheRedisKey
 import me.loghub.api.proxy.TaskAPIProxy
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -20,22 +19,22 @@ class MarkdownService(
     }
 
     fun findOrGenerateMarkdownCache(markdown: String): RenderedMarkdownDTO {
-        val redisKey = RedisKeys.MARKDOWN(sha256(markdown))
-        return redisTemplate.opsForValue().get(redisKey.key) ?: generateMarkdownCache(redisKey, markdown)
+        val redisKey = MarkdownCacheRedisKey(sha256(markdown))
+        return redisTemplate.opsForValue().get(redisKey) ?: generateMarkdownCache(redisKey, markdown)
     }
 
     fun findOrGenerateMarkdownCache(markdowns: List<String>): List<RenderedMarkdownDTO> =
         markdowns.map { markdown ->
-            val redisKey = RedisKeys.MARKDOWN(sha256(markdown))
-            redisTemplate.opsForValue().get(redisKey.key) ?: generateMarkdownCache(redisKey, markdown)
+            val redisKey = MarkdownCacheRedisKey(sha256(markdown))
+            redisTemplate.opsForValue().get(redisKey) ?: generateMarkdownCache(redisKey, markdown)
         }
 
     fun normalizeMarkdown(markdown: String) =
         taskAPIProxy.normalizeMarkdown(MarkdownNormalizeRequest(markdown)).result
 
-    private fun generateMarkdownCache(redisKey: RedisKey, markdown: String): RenderedMarkdownDTO {
+    private fun generateMarkdownCache(redisKey: String, markdown: String): RenderedMarkdownDTO {
         val result = taskAPIProxy.renderMarkdown(MarkdownRenderRequest(markdown)).result
-        redisTemplate.opsForValue().set(redisKey.key, result, redisKey.ttl)
+        redisTemplate.opsForValue().set(redisKey, result, MarkdownCacheRedisKey.TTL)
         return result
     }
 

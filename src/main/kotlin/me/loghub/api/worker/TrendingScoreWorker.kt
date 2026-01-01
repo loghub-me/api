@@ -1,6 +1,8 @@
 package me.loghub.api.worker
 
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.article.ArticleTrendingScoreRedisKey
+import me.loghub.api.lib.redis.key.question.QuestionTrendingScoreRedisKey
+import me.loghub.api.lib.redis.key.series.SeriesTrendingScoreRedisKey
 import me.loghub.api.repository.article.ArticleTrendingScoreRepository
 import me.loghub.api.repository.question.QuestionTrendingScoreRepository
 import me.loghub.api.repository.series.SeriesTrendingScoreRepository
@@ -33,19 +35,19 @@ class TrendingScoreWorker(
     @Transactional
     fun updateTrendingScores() {
         updateTrendingScore(
-            RedisKeys.Article.TRENDING_SCORE().key,
+            ArticleTrendingScoreRedisKey(),
             articleTrendingScoreRepository::decayTrendingScores,
             articleTrendingScoreRepository::clearLowTrendingScores,
             articleTrendingScoreRepository::incrementTrendingScoreById,
         )
         updateTrendingScore(
-            RedisKeys.Series.TRENDING_SCORE().key,
+            SeriesTrendingScoreRedisKey(),
             seriesTrendingScoreRepository::decayTrendingScores,
             seriesTrendingScoreRepository::clearLowTrendingScores,
             seriesTrendingScoreRepository::incrementTrendingScoreById
         )
         updateTrendingScore(
-            RedisKeys.Question.TRENDING_SCORE().key,
+            QuestionTrendingScoreRedisKey(),
             questionTrendingScoreRepository::decayTrendingScores,
             questionTrendingScoreRepository::clearLowTrendingScores,
             questionTrendingScoreRepository::incrementTrendingScoreById

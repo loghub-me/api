@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.series.SeriesReview
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.series.SeriesTrendingScoreRedisKey
 import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
@@ -26,7 +26,7 @@ class SeriesReviewAspect(
         val logger = KotlinLogging.logger { };
     }
 
-    private val trendingScoreKey = RedisKeys.Series.TRENDING_SCORE()
+    private val trendingScoreKey = SeriesTrendingScoreRedisKey()
     private val zSetOps: ZSetOperations<String, String>
         get() = redisTemplate.opsForZSet()
 
@@ -58,10 +58,10 @@ class SeriesReviewAspect(
     }
 
     private fun updateTrendingScoreAfterPostReview(seriesId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), TrendingScoreDelta.REVIEW)
+        zSetOps.incrementScore(trendingScoreKey, seriesId.toString(), TrendingScoreDelta.REVIEW)
 
     private fun updateTrendingScoreAfterDeleteReview(seriesId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), -TrendingScoreDelta.REVIEW)
+        zSetOps.incrementScore(trendingScoreKey, seriesId.toString(), -TrendingScoreDelta.REVIEW)
 
     private fun sendNotificationsAfterPostReview(postedReview: SeriesReview) {
         val series = postedReview.series

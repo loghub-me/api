@@ -1,6 +1,6 @@
 package me.loghub.api.service.common
 
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.common.RateLimitRedisKey
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -21,7 +21,7 @@ class RateLimitService(private val redisTemplate: RedisTemplate<String, String>)
         val duration = unit.duration.multipliedBy(window)
         val windowStartMillis = now.minus(duration).toEpochMilli()
 
-        val redisKey = RedisKeys.RATE_LIMIT(userId, className, methodName).key
+        val redisKey = RateLimitRedisKey(userId, className, methodName)
 
         val zSetOps = redisTemplate.opsForZSet()
         zSetOps.removeRangeByScore(redisKey, 0.0, windowStartMillis.toDouble())

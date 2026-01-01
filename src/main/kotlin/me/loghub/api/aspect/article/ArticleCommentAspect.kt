@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.article.ArticleComment
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.article.ArticleTrendingScoreRedisKey
 import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
@@ -26,7 +26,7 @@ class ArticleCommentAspect(
         val logger = KotlinLogging.logger { };
     }
 
-    private val trendingScoreKey = RedisKeys.Article.TRENDING_SCORE()
+    private val trendingScoreKey = ArticleTrendingScoreRedisKey()
     private val zSetOps: ZSetOperations<String, String>
         get() = redisTemplate.opsForZSet()
 
@@ -56,10 +56,10 @@ class ArticleCommentAspect(
     }
 
     private fun updateTrendingScoreAfterPostComment(articleId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, articleId.toString(), TrendingScoreDelta.COMMENT)
+        zSetOps.incrementScore(trendingScoreKey, articleId.toString(), TrendingScoreDelta.COMMENT)
 
     private fun updateTrendingScoreAfterDeleteComment(articleId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, articleId.toString(), -TrendingScoreDelta.COMMENT)
+        zSetOps.incrementScore(trendingScoreKey, articleId.toString(), -TrendingScoreDelta.COMMENT)
 
     private fun sendNotificationsAfterPostComment(postedComment: ArticleComment) {
         val article = postedComment.article

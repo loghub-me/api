@@ -10,7 +10,8 @@ import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.question.QuestionAnswerGenerateCooldownRedisKey
+import me.loghub.api.lib.redis.key.question.QuestionAnswerGeneratingRedisKey
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
@@ -34,10 +35,10 @@ class QuestionAnswerGenerateService(
     }
 
     fun checkGeneratingAnswer(questionId: Long): Boolean =
-        redisTemplate.hasKey(RedisKeys.Question.Answer.GENERATING(questionId).key)
+        redisTemplate.hasKey(QuestionAnswerGeneratingRedisKey(questionId))
 
     fun checkGenerateCooldown(questionId: Long): Boolean =
-        redisTemplate.hasKey(RedisKeys.Question.Answer.GENERATE_COOLDOWN(questionId).key)
+        redisTemplate.hasKey(QuestionAnswerGenerateCooldownRedisKey(questionId))
 
     @Async(AsyncConfig.AnswerGenerateExecutor.NAME)
     @Transactional
@@ -81,16 +82,20 @@ class QuestionAnswerGenerateService(
         }
 
     private fun setGeneratingStatusAndCooldown(questionId: Long) {
-        for (redisKey in listOf(
-            RedisKeys.Question.Answer.GENERATING(questionId),
-            RedisKeys.Question.Answer.GENERATE_COOLDOWN(questionId),
-        )) {
-            redisTemplate.opsForValue().set(redisKey.key, true.toString(), redisKey.ttl)
-        }
+        redisTemplate.opsForValue().set(
+            QuestionAnswerGeneratingRedisKey(questionId),
+            true.toString(),
+            QuestionAnswerGeneratingRedisKey.TTL
+        )
+        redisTemplate.opsForValue().set(
+            QuestionAnswerGenerateCooldownRedisKey(questionId),
+            true.toString(),
+            QuestionAnswerGenerateCooldownRedisKey.TTL
+        )
     }
 
     private fun deleteGeneratingStatus(questionId: Long) {
-        val redisKey = RedisKeys.Question.Answer.GENERATING(questionId)
-        redisTemplate.delete(redisKey.key)
+        val redisKey = QuestionAnswerGeneratingRedisKey(questionId)
+        redisTemplate.delete(redisKey)
     }
 }

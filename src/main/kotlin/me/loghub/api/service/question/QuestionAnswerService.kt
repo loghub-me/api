@@ -10,7 +10,7 @@ import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.question.QuestionAnswerDraftRedisKey
 import me.loghub.api.mapper.question.QuestionAnswerMapper
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
@@ -49,8 +49,8 @@ class QuestionAnswerService(
 
         checkPermission(answer.writer == writer) { ResponseMessage.Question.Answer.PERMISSION_DENIED }
 
-        val draftRedisKey = RedisKeys.Question.Answer.DRAFT(questionId, answerId)
-        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        val draftRedisKey = QuestionAnswerDraftRedisKey(questionId, answerId)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey)
         return QuestionAnswerMapper.mapForEdit(answer, draft)
     }
 

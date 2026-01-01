@@ -3,7 +3,7 @@ package me.loghub.api.service.question
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.common.UpdateDraftDTO
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.question.QuestionDraftRedisKey
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.util.checkPermission
 import org.springframework.data.redis.core.RedisTemplate
@@ -21,8 +21,8 @@ class QuestionDraftService(
             questionRepository.existsByIdAndWriter(questionId, writer)
         ) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Question.DRAFT(questionId)
-        redisTemplate.opsForValue().set(redisKey.key, requestBody.content, redisKey.ttl)
+        val redisKey = QuestionDraftRedisKey(questionId)
+        redisTemplate.opsForValue().set(redisKey, requestBody.content, QuestionDraftRedisKey.TTL)
     }
 
     @Transactional
@@ -31,7 +31,7 @@ class QuestionDraftService(
             questionRepository.existsByIdAndWriter(questionId, writer)
         ) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Question.DRAFT(questionId)
-        redisTemplate.delete(redisKey.key)
+        val redisKey = QuestionDraftRedisKey(questionId)
+        redisTemplate.delete(redisKey)
     }
 }

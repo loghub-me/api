@@ -1,6 +1,6 @@
 package me.loghub.api.aspect.series
 
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.series.SeriesTrendingScoreRedisKey
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate
@@ -14,7 +14,7 @@ class SeriesStarAspect(private val redisTemplate: RedisTemplate<String, String>)
         const val STAR = 3.toDouble()
     }
 
-    private val trendingScoreKey = RedisKeys.Series.TRENDING_SCORE()
+    private val trendingScoreKey = SeriesTrendingScoreRedisKey()
     private val zSetOps: ZSetOperations<String, String>
         get() = redisTemplate.opsForZSet()
 
@@ -29,8 +29,8 @@ class SeriesStarAspect(private val redisTemplate: RedisTemplate<String, String>)
     }
 
     private fun updateTrendingScoreAfterAddStar(seriesId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(trendingScoreKey, seriesId.toString(), TrendingScoreDelta.STAR)
 
     private fun updateTrendingScoreAfterDeleteStar(seriesId: Long) =
-        zSetOps.incrementScore(trendingScoreKey.key, seriesId.toString(), -TrendingScoreDelta.STAR)
+        zSetOps.incrementScore(trendingScoreKey, seriesId.toString(), -TrendingScoreDelta.STAR)
 }

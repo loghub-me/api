@@ -8,7 +8,7 @@ import me.loghub.api.dto.series.chapter.UpdateSeriesChapterSequenceDTO
 import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.series.SeriesChapterDraftRedisKey
 import me.loghub.api.mapper.series.SeriesChapterMapper
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.series.SeriesChapterRepository
@@ -53,8 +53,8 @@ class SeriesChapterService(
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        val draftRedisKey = RedisKeys.Series.Chapter.DRAFT(seriesId, chapter.id!!)
-        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        val draftRedisKey = SeriesChapterDraftRedisKey(seriesId, chapter.id!!)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey)
         return SeriesChapterMapper.mapForEdit(chapter, draft)
     }
 

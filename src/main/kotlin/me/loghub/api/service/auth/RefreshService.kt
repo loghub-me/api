@@ -6,7 +6,7 @@ import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.exception.auth.BadRefreshTokenException
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.auth.RefreshTokenRedisKey
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import me.loghub.api.util.checkField
@@ -21,13 +21,17 @@ class RefreshService(
     private val userRepository: UserRepository,
     private val tokenService: TokenService,
 ) {
+    private companion object {
+        val GRACE_PERIOD = 10.seconds.toJavaDuration()
+    }
+
     @Transactional
     fun refreshToken(token: String?): Pair<TokenDTO, SessionDTO> {
         checkField(RefreshToken.Cookie.NAME, token != null) { ResponseMessage.Auth.INVALID_TOKEN }
 
-        val redisKey = RedisKeys.REFRESH_TOKEN(token)
-        val userId = redisTemplate.opsForValue().get(redisKey.key)
-            ?.also { redisTemplate.expire(redisKey.key, 10.seconds.toJavaDuration()) }  // Grace period
+        val redisKey = RefreshTokenRedisKey(token)
+        val userId = redisTemplate.opsForValue().get(redisKey)
+            ?.also { redisTemplate.expire(redisKey, GRACE_PERIOD) }  // Grace period
             ?: throw BadRefreshTokenException(ResponseMessage.Auth.INVALID_TOKEN)
         val user = userRepository.findById(userId.toLong())
             .orElseThrow { BadRefreshTokenException(ResponseMessage.Auth.INVALID_TOKEN) }

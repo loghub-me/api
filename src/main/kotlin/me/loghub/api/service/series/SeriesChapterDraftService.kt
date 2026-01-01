@@ -3,7 +3,7 @@ package me.loghub.api.service.series
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.common.UpdateDraftDTO
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.series.SeriesChapterDraftRedisKey
 import me.loghub.api.repository.series.SeriesChapterRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.util.checkPermission
@@ -24,8 +24,8 @@ class SeriesChapterDraftService(
             seriesChapterRepository.existsBySeriesAndIdAndWriter(series, chapterId, writer)
         ) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Series.Chapter.DRAFT(seriesId, chapterId)
-        redisTemplate.opsForValue().set(redisKey.key, requestBody.content, redisKey.ttl)
+        val redisKey = SeriesChapterDraftRedisKey(seriesId, chapterId)
+        redisTemplate.opsForValue().set(redisKey, requestBody.content, SeriesChapterDraftRedisKey.TTL)
     }
 
     @Transactional
@@ -35,7 +35,7 @@ class SeriesChapterDraftService(
             seriesChapterRepository.existsBySeriesAndIdAndWriter(series, chapterId, writer)
         ) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Series.Chapter.DRAFT(seriesId, chapterId)
-        redisTemplate.delete(redisKey.key)
+        val redisKey = SeriesChapterDraftRedisKey(seriesId, chapterId)
+        redisTemplate.delete(redisKey)
     }
 }

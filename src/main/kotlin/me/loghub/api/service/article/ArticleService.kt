@@ -5,7 +5,7 @@ import me.loghub.api.dto.article.*
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.article.ArticleDraftRedisKey
 import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.repository.article.ArticleCustomRepository
 import me.loghub.api.repository.article.ArticleRepository
@@ -59,8 +59,8 @@ class ArticleService(
 
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        val draftRedisKey = RedisKeys.Article.DRAFT(articleId)
-        val draft = redisTemplate.opsForValue().get(draftRedisKey.key)
+        val draftRedisKey = ArticleDraftRedisKey(articleId)
+        val draft = redisTemplate.opsForValue().get(draftRedisKey)
         return ArticleMapper.mapForEdit(article, draft)
     }
 

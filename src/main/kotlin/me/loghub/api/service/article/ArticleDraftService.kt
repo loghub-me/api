@@ -3,7 +3,7 @@ package me.loghub.api.service.article
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.common.UpdateDraftDTO
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.article.ArticleDraftRedisKey
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.util.checkPermission
 import org.springframework.data.redis.core.RedisTemplate
@@ -21,8 +21,8 @@ class ArticleDraftService(
             articleRepository.existsByIdAndWriter(articleId, writer)
         ) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Article.DRAFT(articleId)
-        redisTemplate.opsForValue().set(redisKey.key, requestBody.content, redisKey.ttl)
+        val redisKey = ArticleDraftRedisKey(articleId)
+        redisTemplate.opsForValue().set(redisKey, requestBody.content, ArticleDraftRedisKey.TTL)
     }
 
     @Transactional
@@ -31,7 +31,7 @@ class ArticleDraftService(
             articleRepository.existsByIdAndWriter(articleId, writer)
         ) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Article.DRAFT(articleId)
-        redisTemplate.delete(redisKey.key)
+        val redisKey = ArticleDraftRedisKey(articleId)
+        redisTemplate.delete(redisKey)
     }
 }

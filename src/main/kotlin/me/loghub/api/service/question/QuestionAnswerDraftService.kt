@@ -3,7 +3,7 @@ package me.loghub.api.service.question
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.common.UpdateDraftDTO
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.RedisKeys
+import me.loghub.api.lib.redis.key.question.QuestionAnswerDraftRedisKey
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.util.checkPermission
@@ -24,8 +24,8 @@ class QuestionAnswerDraftService(
             questionAnswerRepository.existsByQuestionAndIdAndWriter(question, answerId, writer)
         ) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Question.Answer.DRAFT(questionId, answerId)
-        redisTemplate.opsForValue().set(redisKey.key, requestBody.content, redisKey.ttl)
+        val redisKey = QuestionAnswerDraftRedisKey(questionId, answerId)
+        redisTemplate.opsForValue().set(redisKey, requestBody.content, QuestionAnswerDraftRedisKey.TTL)
     }
 
     @Transactional
@@ -35,7 +35,7 @@ class QuestionAnswerDraftService(
             questionAnswerRepository.existsByQuestionAndIdAndWriter(question, answerId, writer)
         ) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        val redisKey = RedisKeys.Question.Answer.DRAFT(questionId, answerId)
-        redisTemplate.delete(redisKey.key)
+        val redisKey = QuestionAnswerDraftRedisKey(questionId, answerId)
+        redisTemplate.delete(redisKey)
     }
 }
