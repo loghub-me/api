@@ -17,9 +17,9 @@ class SitemapService(
     private val topicRepository: TopicRepository,
 ) {
     private companion object {
-        const val ARTICLE_PRIORITY = 0.8
-        const val SERIES_PRIORITY = 0.8
-        const val SERIES_CHAPTER_PRIORITY = 0.8
+        const val ARTICLE_PRIORITY = 1.0
+        const val SERIES_PRIORITY = 1.0
+        const val SERIES_CHAPTER_PRIORITY = 1.0
         const val QUESTION_PRIORITY = 0.7
         const val TOPIC_PRIORITY = 0.6
     }
