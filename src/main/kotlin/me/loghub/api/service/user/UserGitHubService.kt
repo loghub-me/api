@@ -6,12 +6,12 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.user.UpdateUserGitHubDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserGitHub
+import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.exception.github.GitHubUserNotFoundException
 import me.loghub.api.mapper.user.UserMapper
 import me.loghub.api.proxy.GitHubAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.checkConflict
-import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,30 +26,30 @@ class UserGitHubService(
     }
 
     @Transactional(readOnly = true)
-    fun getGitHub(user: User) = userRepository.findByUsername(user.username)
-        ?.let { UserMapper.mapGitHub(it.github) }
+    fun getGitHub(user: User) = userRepository.findWithMetaByUsername(user.username)
+        ?.let { UserMapper.mapGitHub(it.meta.github) }
         ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
 
     @Transactional
     fun updateGitHub(requestBody: UpdateUserGitHubDTO, user: User) {
-        val foundUser = userRepository.findById(user.id!!)
-            .orElseThrowNotFound { ResponseMessage.User.NOT_FOUND }
+        val foundUser = userRepository.findWithMetaById(user.id!!)
+            ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
         val newGitHub = UserGitHub(requestBody.username)
         foundUser.updateGitHub(newGitHub)
     }
 
     @Transactional
     fun deleteGitHub(user: User) {
-        val foundUser = userRepository.findById(user.id!!)
-            .orElseThrowNotFound { ResponseMessage.User.NOT_FOUND }
+        val foundUser = userRepository.findWithMetaById(user.id!!)
+            ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
         foundUser.updateGitHub(UserGitHub())
     }
 
     @Transactional
     fun verifyGitHub(user: User) {
-        val foundUser = userRepository.findById(user.id!!)
-            .orElseThrowNotFound { ResponseMessage.User.NOT_FOUND }
-        val github = foundUser.github
+        val foundUser = userRepository.findWithMetaById(user.id!!)
+            ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
+        val github = foundUser.meta.github
         val githubUsername = github.username
 
         checkConflict(githubUsername == null) {
@@ -61,12 +61,12 @@ class UserGitHubService(
 
         try {
             val userPageURL = "$LOGHUB_USER_PAGE_PREFIX/${foundUser.username}"
-            val isVerified = checkGitHubProfile(userPageURL, githubUsername!!)
+            val isVerified = checkGitHubProfile(userPageURL, githubUsername)
             if (!isVerified) {
                 throw GitHubUserNotFoundException(ResponseMessage.User.GitHub.VERIFICATION_FAILED)
             }
-            foundUser.updateGitHub(foundUser.github.copy(verified = true))
-            foundUser.updateGitHub(foundUser.github.copy(verified = true))
+            github.apply { verified = true }
+            foundUser.updateGitHub(github)
         } catch (e: FeignException) {
             when (e.status()) {
                 404 -> throw GitHubUserNotFoundException(ResponseMessage.User.GitHub.USER_NOT_FOUND)

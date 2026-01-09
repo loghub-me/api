@@ -1,10 +1,7 @@
 package me.loghub.api.dto.auth.join
 
 import jakarta.validation.constraints.Size
-import me.loghub.api.entity.user.User
-import me.loghub.api.entity.user.UserGitHub
-import me.loghub.api.entity.user.UserPrivacy
-import me.loghub.api.entity.user.UserProfile
+import me.loghub.api.entity.user.*
 import me.loghub.api.lib.validation.EmailValidation
 import me.loghub.api.lib.validation.NicknameValidation
 import me.loghub.api.lib.validation.Trimmed
@@ -24,12 +21,16 @@ data class OAuth2JoinConfirmDTO(
     @field:Trimmed
     val token: String,
 ) {
-    fun toUserEntity(provider: User.Provider) = User(
-        email = this.email,
-        username = this.username,
-        profile = UserProfile(nickname = nickname),
-        privacy = UserPrivacy(),
-        github = UserGitHub(),
-        provider = provider,
-    )
+    fun toUserEntity(provider: User.Provider): User {
+        val user = User(
+            email = this.email,
+            username = this.username,
+            nickname = nickname,
+            provider = provider,
+            privacy = UserPrivacy(),
+            meta = UserMeta(profile = UserProfile(), github = UserGitHub(), stats = UserStats()),
+        )
+        user.meta.apply { this.user = user }
+        return user
+    }
 }

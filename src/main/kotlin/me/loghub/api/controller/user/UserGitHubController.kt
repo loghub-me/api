@@ -33,7 +33,7 @@ class UserGitHubController(private val userGitHubService: UserGitHubService) {
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
-    
+
     @DeleteMapping
     fun deleteGitHub(@AuthenticationPrincipal user: User): ResponseEntity<ResponseBody> {
         userGitHubService.deleteGitHub(user)

@@ -1,10 +1,7 @@
 package me.loghub.api.mapper.user
 
 import me.loghub.api.dto.user.*
-import me.loghub.api.entity.user.User
-import me.loghub.api.entity.user.UserGitHub
-import me.loghub.api.entity.user.UserPrivacy
-import me.loghub.api.entity.user.UserProfile
+import me.loghub.api.entity.user.*
 
 object UserMapper {
     fun map(user: User) = UserDTO(
@@ -16,15 +13,15 @@ object UserMapper {
         id = user.id!!,
         email = if (user.privacy.emailPublic) user.email else null,
         username = user.username,
-        profile = mapProfile(user.profile),
-        github = mapGitHub(user.github),
-        role = user.role
+        nickname = user.nickname,
+        role = user.role,
+        meta = UserMetaDTO(
+            profile = mapProfile(user.meta.profile),
+            github = mapGitHub(user.meta.github),
+        ),
     )
 
-    fun mapProfile(profile: UserProfile) = UserProfileDTO(
-        nickname = profile.nickname,
-        readme = profile.readme
-    )
+    fun mapProfile(profile: UserProfile) = UserProfileDTO(readme = profile.readme)
 
     fun mapPrivacy(privacy: UserPrivacy) = UserPrivacyDTO(emailPublic = privacy.emailPublic)
 
@@ -33,3 +30,5 @@ object UserMapper {
         verified = github.verified
     )
 }
+
+\ No newline at end of file

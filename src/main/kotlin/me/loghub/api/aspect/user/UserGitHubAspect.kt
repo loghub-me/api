@@ -30,5 +30,5 @@ class UserGitHubAspect {
         pointcut = "execution(* me.loghub.api.service.user.UserGitHubService.verifyGitHub(..)) && args(user)",
     )
     fun afterVerifyGitHub(user: User) =
-        logger.info { "[UserGitHub] verify github: { userId=${user.id}, githubUsername=${user.github.username} }" }
+        logger.info { "[UserGitHub] verify github: { userId=${user.id}, githubUsername=${user.meta.github.username} }" }
 }

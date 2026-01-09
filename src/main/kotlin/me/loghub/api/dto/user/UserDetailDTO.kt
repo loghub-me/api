@@ -6,7 +6,7 @@ data class UserDetailDTO(
     val id: Long,
     val email: String?,
     val username: String,
-    val profile: UserProfileDTO,
-    val github: UserGitHubDTO,
+    val nickname: String,
     val role: User.Role,
+    val meta: UserMetaDTO,
 )

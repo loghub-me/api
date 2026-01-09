@@ -150,6 +150,9 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
        ('member1@loghub.me', 'member1', '멤버1', 'MEMBER'),
        ('member2@loghub.me', 'member2', '멤버2', 'MEMBER');
 
+INSERT INTO public.users_meta(user_id)
+VALUES (1), (2), (3), (4);
+
 INSERT INTO public.articles(slug, title, content, writer_id, writer_username, published, published_at, normalized_content)
 VALUES ('a-article', 'A Article',
         E'### A Content\n\nThis is a sample article content for A Article.\n\n- Point 1\n- Point 2\n- Point 3\n\nEnjoy reading!',

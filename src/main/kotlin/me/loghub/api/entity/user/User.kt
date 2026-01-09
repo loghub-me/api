@@ -19,6 +19,9 @@ class User(
 
     username: String,
 
+    @Column(name = "nickname", nullable = false, length = 12)
+    var nickname: String,
+
     @Column(name = "provider", nullable = false)
     @Enumerated
     @JdbcType(PostgreSQLEnumJdbcType::class)
@@ -30,13 +33,10 @@ class User(
     val role: Role = Role.MEMBER,
 
     @Embedded
-    var profile: UserProfile,
-
-    @Embedded
     var privacy: UserPrivacy,
 
-    @Embedded
-    var github: UserGitHub,
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.ALL])
+    var meta: UserMeta,
 
     id: Long? = null,
 ) : PublicEntity(id), UserDetails {
@@ -60,8 +60,12 @@ class User(
         this._username = username
     }
 
+    fun updateNickname(nickname: String) {
+        this.nickname = nickname
+    }
+
     fun updateProfile(profile: UserProfile) {
-        this.profile = profile
+        this.meta.profile = profile
     }
 
     fun updatePrivacy(privacy: UserPrivacy) {
@@ -69,6 +73,6 @@ class User(
     }
 
     fun updateGitHub(gitHub: UserGitHub) {
-        this.github = gitHub
+        this.meta.github = gitHub
     }
 }

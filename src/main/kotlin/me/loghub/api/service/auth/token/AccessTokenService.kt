@@ -5,11 +5,9 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.DecodedJWT
+import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.auth.token.AccessToken
-import me.loghub.api.entity.user.User
-import me.loghub.api.entity.user.UserGitHub
-import me.loghub.api.entity.user.UserPrivacy
-import me.loghub.api.entity.user.UserProfile
+import me.loghub.api.entity.user.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
@@ -39,7 +37,7 @@ class AccessTokenService(
             .withSubject(user.id.toString())
             .withClaim(JwtClaims.EMAIL, user.email)
             .withClaim(JwtClaims.USERNAME, user.username)
-            .withClaim(JwtClaims.NICKNAME, user.profile.nickname)
+            .withClaim(JwtClaims.NICKNAME, user.nickname)
             .withClaim(JwtClaims.PROVIDER, user.provider.name)
             .withClaim(JwtClaims.ROLE, user.role.name)
             .withIssuedAt(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
@@ -59,15 +57,29 @@ class AccessTokenService(
 
     fun generatePrincipal(decodedToken: DecodedJWT): User {
         val claims = decodedToken.claims
+        val email = claims[JwtClaims.EMAIL]?.asString()
+        val username = claims[JwtClaims.USERNAME]?.asString()
+        val nickname = claims[JwtClaims.NICKNAME]?.asString()
+        val provider = claims[JwtClaims.PROVIDER]?.asString()
+        val role = claims[JwtClaims.ROLE]?.asString()
+
+        if (email == null || username == null || nickname == null || provider == null || role == null) {
+            throw IllegalArgumentException(ResponseMessage.Auth.INVALID_TOKEN)
+        }
+
         return User(
             id = decodedToken.subject.toLong(),
-            email = claims["email"]!!.asString(),
-            username = claims["username"]!!.asString(),
-            provider = User.Provider.valueOf(claims["provider"]!!.asString()),
-            profile = UserProfile(nickname = claims["nickname"]!!.asString()),
+            email = email,
+            username = username,
+            nickname = nickname,
+            provider = User.Provider.valueOf(provider),
+            role = User.Role.valueOf(role),
             privacy = UserPrivacy(),
-            github = UserGitHub(),
-            role = User.Role.valueOf(claims["role"]!!.asString()),
+            meta = UserMeta(
+                profile = UserProfile(),
+                github = UserGitHub(),
+                stats = UserStats(),
+            ),
         )
     }
 

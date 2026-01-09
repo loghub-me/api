@@ -1,7 +1,10 @@
 CREATE OR REPLACE FUNCTION archive.archive_user_on_delete () RETURNS TRIGGER AS '
     BEGIN
-        INSERT INTO archive.users (id, email, username, nickname, readme, email_public, github_username, github_verified, provider, role, created_at, updated_at) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.id, OLD.email, OLD.username, OLD.nickname, OLD.readme, OLD.email_public, OLD.provider, OLD.github_username, OLD.github_verified, OLD.role, OLD.created_at, OLD.updated_at);
+        INSERT INTO archive.users (id, email, username, nickname, email_public, provider, role, created_at, updated_at) OVERRIDING SYSTEM VALUE
+        VALUES (OLD.id, OLD.email, OLD.username, OLD.nickname, OLD.email_public, OLD.provider, OLD.role, OLD.created_at, OLD.updated_at);
+        RETURN OLD;
+    END
+' LANGUAGE plpgsql;
         RETURN OLD;
     END
 ' LANGUAGE plpgsql;

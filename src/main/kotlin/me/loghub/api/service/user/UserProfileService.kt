@@ -13,15 +13,16 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserProfileService(private val userRepository: UserRepository) {
     @Transactional(readOnly = true)
-    fun getProfile(user: User) = userRepository.findByUsername(user.username)
-        ?.let { UserMapper.mapProfile(it.profile) }
+    fun getProfile(user: User) = userRepository.findWithMetaByUsername(user.username)
+        ?.let { UserMapper.mapProfile(it.meta.profile) }
         ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
 
     @Transactional
     fun updateProfile(requestBody: UpdateUserProfileDTO, user: User) {
-        val foundUser = userRepository.findByUsername(user.username)
+        val foundUser = userRepository.findWithMetaByUsername(user.username)
             ?: throw UsernameNotFoundException(ResponseMessage.User.NOT_FOUND)
-        val newProfile = UserProfile(nickname = requestBody.nickname, readme = requestBody.readme)
+        val newProfile = UserProfile(readme = requestBody.readme)
+        foundUser.updateNickname(requestBody.nickname)
         foundUser.updateProfile(newProfile)
     }
 }

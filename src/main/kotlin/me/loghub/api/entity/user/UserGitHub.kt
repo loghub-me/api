@@ -9,5 +9,5 @@ data class UserGitHub(
     val username: String? = null,
 
     @Column(name = "github_verified", nullable = false)
-    val verified: Boolean = false,
+    var verified: Boolean = false,
 )

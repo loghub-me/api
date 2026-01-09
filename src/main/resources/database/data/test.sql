@@ -149,6 +149,9 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
        ('member1@loghub.me', 'member1', '멤버1', 'MEMBER'),
        ('member2@loghub.me', 'member2', '멤버2', 'MEMBER');
 
+INSERT INTO public.users_meta(user_id)
+VALUES (1), (2), (3), (4);
+
 INSERT INTO public.articles(slug, title, content, writer_id, writer_username, published, published_at, normalized_content)
 VALUES ('article-1', 'Article 1', 'Article content 1',
         ( SELECT id FROM public.users WHERE username = 'member1' ), 'member1', TRUE, NOW(), 'Article content 1'),

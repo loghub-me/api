@@ -4,14 +4,20 @@ CREATE TABLE IF NOT EXISTS public.users
     email           varchar(255)       NOT NULL UNIQUE,
     username        varchar(12)        NOT NULL UNIQUE,
     nickname        varchar(12)        NOT NULL,
-    readme          varchar(1024)       NOT NULL DEFAULT '',
     email_public    boolean            NOT NULL DEFAULT FALSE,
-    github_username varchar(40),
-    github_verified boolean            NOT NULL DEFAULT FALSE,
     provider        user_provider_enum NOT NULL DEFAULT 'LOCAL',
     role            user_role_enum     NOT NULL DEFAULT 'MEMBER',
     created_at      timestamp(6)       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      timestamp(6)       NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.users_meta
+(
+    user_id                     bigint            PRIMARY KEY
+        CONSTRAINT users_meta_user_id_fk REFERENCES public.users ON DELETE CASCADE,
+    readme                      varchar(1024)     NOT NULL DEFAULT '',
+    github_username             varchar(40),
+    github_verified             boolean           NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS public.topics

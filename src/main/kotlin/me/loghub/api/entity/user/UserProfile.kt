@@ -5,9 +5,6 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 data class UserProfile(
-    @Column(name = "nickname", nullable = false, length = 12)
-    val nickname: String,
-
     @Column(length = 1024)
     val readme: String = ""
 )
