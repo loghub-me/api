@@ -18,9 +18,9 @@ class ArticleStarController(private val articleStarService: ArticleStarService) 
     @GetMapping
     fun existsArticleStar(
         @PathVariable articleId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        val exists = articleStarService.existsStar(articleId, user)
+        val exists = articleStarService.existsStar(articleId, stargazer)
         return DataResponseBody(
             data = exists,
             status = HttpStatus.OK,
@@ -30,9 +30,9 @@ class ArticleStarController(private val articleStarService: ArticleStarService) 
     @PostMapping
     fun addArticleStar(
         @PathVariable articleId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        val star = articleStarService.addStar(articleId, user)
+        val star = articleStarService.addStar(articleId, stargazer)
         return MethodResponseBody(
             id = star.id!!,
             message = ResponseMessage.Star.ADD_SUCCESS,
@@ -43,9 +43,9 @@ class ArticleStarController(private val articleStarService: ArticleStarService) 
     @DeleteMapping
     fun deleteArticleStar(
         @PathVariable articleId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        articleStarService.deleteStar(articleId, user)
+        articleStarService.deleteStar(articleId, stargazer)
         return MessageResponseBody(
             message = ResponseMessage.Star.DELETE_SUCCESS,
             status = HttpStatus.OK,

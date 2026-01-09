@@ -18,9 +18,9 @@ class SeriesStarController(private val seriesStarService: SeriesStarService) {
     @GetMapping
     fun existsSeriesStar(
         @PathVariable seriesId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        val exists = seriesStarService.existsStar(seriesId, user)
+        val exists = seriesStarService.existsStar(seriesId, stargazer)
         return DataResponseBody(
             data = exists,
             status = HttpStatus.OK,
@@ -30,9 +30,9 @@ class SeriesStarController(private val seriesStarService: SeriesStarService) {
     @PostMapping
     fun addSeriesStar(
         @PathVariable seriesId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        val star = seriesStarService.addStar(seriesId, user)
+        val star = seriesStarService.addStar(seriesId, stargazer)
         return MethodResponseBody(
             id = star.id!!,
             message = ResponseMessage.Star.ADD_SUCCESS,
@@ -43,9 +43,9 @@ class SeriesStarController(private val seriesStarService: SeriesStarService) {
     @DeleteMapping
     fun deleteSeriesStar(
         @PathVariable seriesId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        seriesStarService.deleteStar(seriesId, user)
+        seriesStarService.deleteStar(seriesId, stargazer)
         return MessageResponseBody(
             message = ResponseMessage.Star.DELETE_SUCCESS,
             status = HttpStatus.OK,

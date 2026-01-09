@@ -19,30 +19,31 @@ class SeriesStarService(
     private val seriesStatsRepository: SeriesStatsRepository,
 ) : IStarService {
     @Transactional(readOnly = true)
-    override fun existsStar(id: Long, user: User): Boolean {
+    override fun existsStar(id: Long, stargazer: User): Boolean {
         val seriesRef = seriesRepository.getReferenceById(id)
-        return userStarRepository.existsBySeriesAndUser(seriesRef, user)
+        return userStarRepository.existsBySeriesAndStargazer(seriesRef, stargazer)
     }
 
     @Transactional
-    override fun addStar(id: Long, user: User): UserStar {
+    override fun addStar(id: Long, stargazer: User): UserStar {
         val seriesRef = seriesRepository.getReferenceById(id)
 
         checkConflict(
-            userStarRepository.existsBySeriesAndUser(seriesRef, user)
+            userStarRepository.existsBySeriesAndStargazer(seriesRef, stargazer)
         ) { ResponseMessage.Star.ALREADY_EXISTS }
         checkExists(
             seriesRepository.existsById(id)
         ) { ResponseMessage.Series.NOT_FOUND }
 
         seriesStatsRepository.incrementStarCount(id)
-        return userStarRepository.save(UserStar(user = user, series = seriesRef, target = UserStar.Target.SERIES))
+        val newStar = UserStar(stargazer = stargazer, series = seriesRef, target = UserStar.Target.SERIES);
+        return userStarRepository.save(newStar)
     }
 
     @Transactional
-    override fun deleteStar(id: Long, user: User) {
+    override fun deleteStar(id: Long, stargazer: User) {
         val seriesRef = seriesRepository.getReferenceById(id)
-        val deletedRows = userStarRepository.deleteBySeriesAndUser(seriesRef, user)
+        val deletedRows = userStarRepository.deleteBySeriesAndStargazer(seriesRef, stargazer)
 
         checkExists(deletedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 

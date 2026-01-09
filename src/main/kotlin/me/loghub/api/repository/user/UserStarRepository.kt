@@ -33,28 +33,28 @@ interface UserStarRepository : JpaRepository<UserStar, Long> {
             LEFT JOIN us.series
             LEFT JOIN us.question
         """
-        const val BY_USER = "us.user._username = :username"
+        const val BY_STARGAZER_USERNAME = "us.stargazer._username = :username"
         const val CREATED_AT_DESC = "us.createdAt DESC"
     }
 
-    @Query("$SELECT_DTO WHERE $BY_USER ORDER BY $CREATED_AT_DESC")
-    fun findDTOsByUsername(username: String, pageable: Pageable): Page<UserStarDTO>
+    @Query("$SELECT_DTO WHERE $BY_STARGAZER_USERNAME ORDER BY $CREATED_AT_DESC")
+    fun findDTOsByStargazerUsername(username: String, pageable: Pageable): Page<UserStarDTO>
 
     // -----------[Article]-----------
-    fun existsByArticleAndUser(article: Article, user: User): Boolean
+    fun existsByArticleAndStargazer(article: Article, stargazer: User): Boolean
 
-    @EntityGraph(attributePaths = ["article", "user"])
-    fun deleteByArticleAndUser(article: Article, user: User): Int
+    @EntityGraph(attributePaths = ["article", "stargazer"])
+    fun deleteByArticleAndStargazer(article: Article, stargazer: User): Int
 
     // -----------[Series]-----------
-    fun existsBySeriesAndUser(series: Series, user: User): Boolean
+    fun existsBySeriesAndStargazer(series: Series, stargazer: User): Boolean
 
-    @EntityGraph(attributePaths = ["series", "user"])
-    fun deleteBySeriesAndUser(series: Series, user: User): Int
+    @EntityGraph(attributePaths = ["series", "stargazer"])
+    fun deleteBySeriesAndStargazer(series: Series, stargazer: User): Int
 
     // -----------[Question]-----------
-    fun existsByQuestionAndUser(question: Question, user: User): Boolean
+    fun existsByQuestionAndStargazer(question: Question, stargazer: User): Boolean
 
-    @EntityGraph(attributePaths = ["question", "user"])
-    fun deleteByQuestionAndUser(question: Question, user: User): Int
+    @EntityGraph(attributePaths = ["question", "stargazer"])
+    fun deleteByQuestionAndStargazer(question: Question, stargazer: User): Int
 }

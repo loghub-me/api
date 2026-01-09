@@ -168,7 +168,7 @@ UPDATE public.articles
 SET comment_count = c.cnt
 FROM ( SELECT article_id, COUNT(*) AS cnt FROM public.article_comments GROUP BY article_id ) c
 WHERE id = c.article_id;
-INSERT INTO public.user_stars(target, article_id, user_id)
+INSERT INTO public.user_stars(target, article_id, stargazer_id)
 VALUES ('ARTICLE', 1, ( SELECT id FROM public.users WHERE username = 'member1' ));
 UPDATE public.articles
 SET star_count = c.cnt
@@ -194,7 +194,7 @@ UPDATE public.series
 SET review_count = c.cnt
 FROM ( SELECT series_id, COUNT(*) AS cnt FROM public.series_reviews GROUP BY series_id ) c
 WHERE id = c.series_id;
-INSERT INTO public.user_stars(target, series_id, user_id)
+INSERT INTO public.user_stars(target, series_id, stargazer_id)
 VALUES ('SERIES', 1, ( SELECT id FROM public.users WHERE username = 'member1' ));
 UPDATE public.series
 SET star_count = c.cnt
@@ -213,7 +213,7 @@ UPDATE public.questions
 SET answer_count = c.cnt
 FROM ( SELECT question_id, COUNT(*) AS cnt FROM public.question_answers GROUP BY question_id ) c
 WHERE id = c.question_id;
-INSERT INTO public.user_stars(target, question_id, user_id)
+INSERT INTO public.user_stars(target, question_id, stargazer_id)
 VALUES ('QUESTION', 1, ( SELECT id FROM public.users WHERE username = 'member1' ));
 UPDATE public.questions
 SET star_count = c.cnt

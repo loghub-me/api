@@ -18,9 +18,9 @@ class QuestionStarController(private val questionStarService: QuestionStarServic
     @GetMapping
     fun existsQuestionStar(
         @PathVariable questionId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        val exists = questionStarService.existsStar(questionId, user)
+        val exists = questionStarService.existsStar(questionId, stargazer)
         return DataResponseBody(
             data = exists,
             status = HttpStatus.OK,
@@ -30,9 +30,9 @@ class QuestionStarController(private val questionStarService: QuestionStarServic
     @PostMapping
     fun addQuestionStar(
         @PathVariable questionId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        val star = questionStarService.addStar(questionId, user)
+        val star = questionStarService.addStar(questionId, stargazer)
         return MethodResponseBody(
             id = star.id!!,
             message = ResponseMessage.Star.ADD_SUCCESS,
@@ -43,9 +43,9 @@ class QuestionStarController(private val questionStarService: QuestionStarServic
     @DeleteMapping
     fun deleteQuestionStar(
         @PathVariable questionId: Long,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal stargazer: User
     ): ResponseEntity<ResponseBody> {
-        questionStarService.deleteStar(questionId, user)
+        questionStarService.deleteStar(questionId, stargazer)
         return MessageResponseBody(
             message = ResponseMessage.Star.DELETE_SUCCESS,
             status = HttpStatus.OK,

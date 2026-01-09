@@ -19,6 +19,7 @@ class UserStarService(private val userStarRepository: UserStarRepository) {
     fun getStars(username: String, page: Int): Page<UserStarDTO> {
         checkField("page", page > 0) { ResponseMessage.Page.MUST_BE_POSITIVE }
 
-        return userStarRepository.findDTOsByUsername(username, PageRequest.of(page - 1, PAGE_SIZE))
+        val pageRequest = PageRequest.of(page - 1, PAGE_SIZE)
+        return userStarRepository.findDTOsByStargazerUsername(username, pageRequest)
     }
 }

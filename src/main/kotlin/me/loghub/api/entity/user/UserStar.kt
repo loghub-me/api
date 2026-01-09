@@ -37,8 +37,8 @@ class UserStar(
     val question: Question? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    @JoinColumn(name = "stargazer_id", nullable = false)
+    val stargazer: User,
 ) {
     enum class Target { ARTICLE, SERIES, QUESTION }
 }

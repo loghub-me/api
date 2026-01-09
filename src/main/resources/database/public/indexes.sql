@@ -29,7 +29,7 @@ CREATE INDEX IF NOT EXISTS questions_writer_username_status_trending_idx ON publ
 
 CREATE INDEX IF NOT EXISTS question_answers_question_id_created_at_idx ON public.question_answers (question_id, created_at);
 
-CREATE INDEX IF NOT EXISTS user_stars_user_id_created_at_idx ON public.user_stars (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS user_stars_stargazer_id_created_at_idx ON public.user_stars (stargazer_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS user_activities_user_id_created_date_idx ON public.user_activities (user_id, created_date);
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_article_id_uq_idx
