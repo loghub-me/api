@@ -3,6 +3,11 @@ CREATE TRIGGER trg_archive_user_on_delete
     AFTER DELETE ON public.users
     FOR EACH ROW EXECUTE FUNCTION archive.archive_user_on_delete ();
 
+DROP TRIGGER IF EXISTS trg_archive_user_meta_on_delete ON public.users_meta;
+CREATE TRIGGER trg_archive_user_meta_on_delete
+    AFTER DELETE ON public.users_meta
+    FOR EACH ROW EXECUTE FUNCTION archive.archive_user_meta_on_delete ();
+
 DROP TRIGGER IF EXISTS trg_archive_article_on_delete ON public.articles;
 CREATE TRIGGER trg_archive_article_on_delete
     AFTER DELETE ON public.articles

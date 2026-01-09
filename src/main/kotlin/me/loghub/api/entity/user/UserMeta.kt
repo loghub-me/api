@@ -18,6 +18,9 @@ class UserMeta(
     @Embedded
     var github: UserGitHub,
 
+    @Embedded
+    var stats: UserStats,
+
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", unique = true)
     @MapsId

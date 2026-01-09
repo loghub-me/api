@@ -17,7 +17,10 @@ CREATE TABLE IF NOT EXISTS public.users_meta
         CONSTRAINT users_meta_user_id_fk REFERENCES public.users ON DELETE CASCADE,
     readme                      varchar(1024)     NOT NULL DEFAULT '',
     github_username             varchar(40),
-    github_verified             boolean           NOT NULL DEFAULT FALSE
+    github_verified             boolean           NOT NULL DEFAULT FALSE,
+    total_posted_count          bigint            NOT NULL DEFAULT 0,
+    total_added_star_count      bigint            NOT NULL DEFAULT 0,
+    total_gazed_star_count      bigint            NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS public.topics

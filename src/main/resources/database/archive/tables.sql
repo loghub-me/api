@@ -3,6 +3,11 @@ CREATE TABLE IF NOT EXISTS archive.users (
   deleted_at timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS archive.users_meta (
+  LIKE public.users_meta,
+  deleted_at timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS archive.articles (
   LIKE public.articles,
   deleted_at timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP

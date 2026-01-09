@@ -18,7 +18,8 @@ object UserMapper {
         meta = UserMetaDTO(
             profile = mapProfile(user.meta.profile),
             github = mapGitHub(user.meta.github),
-        ),
+            stats = mapStats(user.meta.stats),
+        )
     )
 
     fun mapProfile(profile: UserProfile) = UserProfileDTO(readme = profile.readme)
@@ -29,6 +30,10 @@ object UserMapper {
         username = github.username,
         verified = github.verified
     )
-}
 
-\ No newline at end of file
+    fun mapStats(stats: UserStats) = UserStatsDTO(
+        totalPostedCount = stats.totalPostedCount,
+        totalAddedStarCount = stats.totalAddedStarCount,
+        totalGazedStarCount = stats.totalGazedStarCount,
+    )
+}
