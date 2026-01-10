@@ -13,6 +13,11 @@ spring:
       password: ${REDIS_PASSWORD}
   jpa:
     open-in-view: false
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      table-prefix: batch.
   security:
     oauth2:
       client:

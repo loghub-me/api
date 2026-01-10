@@ -25,4 +25,8 @@ class UserMeta(
     @JoinColumn(name = "user_id", unique = true)
     @MapsId
     var user: User? = null,
-)
+) {
+    fun updateStats(stats: UserStats) {
+        this.stats = stats
+    }
+}
