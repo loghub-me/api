@@ -23,7 +23,7 @@ class QuestionDraftController(private val questionDraftService: QuestionDraftSer
     ): ResponseEntity<ResponseBody> {
         questionDraftService.updateQuestionDraft(id, requestBody, writer)
         return MessageResponseBody(
-            message = ResponseMessage.Question.Draft.UPDATE_SUCCESS,
+            message = ResponseMessage.Draft.UPDATE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
@@ -35,7 +35,7 @@ class QuestionDraftController(private val questionDraftService: QuestionDraftSer
     ): ResponseEntity<ResponseBody> {
         questionDraftService.deleteQuestionDraft(id, writer)
         return MessageResponseBody(
-            message = ResponseMessage.Question.Draft.DELETE_SUCCESS,
+            message = ResponseMessage.Draft.DELETE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }

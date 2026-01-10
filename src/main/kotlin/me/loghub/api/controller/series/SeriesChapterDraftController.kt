@@ -24,7 +24,7 @@ class SeriesChapterDraftController(private val seriesChapterDraftService: Series
     ): ResponseEntity<ResponseBody> {
         seriesChapterDraftService.updateChapterDraft(seriesId, chapterId, requestBody, writer)
         return MessageResponseBody(
-            message = ResponseMessage.Series.Chapter.Draft.UPDATE_SUCCESS,
+            message = ResponseMessage.Draft.UPDATE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
@@ -37,7 +37,7 @@ class SeriesChapterDraftController(private val seriesChapterDraftService: Series
     ): ResponseEntity<ResponseBody> {
         seriesChapterDraftService.deleteChapterDraft(seriesId, chapterId, writer)
         return MessageResponseBody(
-            message = ResponseMessage.Series.Chapter.Draft.DELETE_SUCCESS,
+            message = ResponseMessage.Draft.DELETE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }

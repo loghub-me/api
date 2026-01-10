@@ -23,7 +23,7 @@ class ArticleDraftController(private val articleDraftService: ArticleDraftServic
     ): ResponseEntity<ResponseBody> {
         articleDraftService.updateArticleDraft(id, requestBody, writer)
         return MessageResponseBody(
-            message = ResponseMessage.Article.Draft.UPDATE_SUCCESS,
+            message = ResponseMessage.Draft.UPDATE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
@@ -35,7 +35,7 @@ class ArticleDraftController(private val articleDraftService: ArticleDraftServic
     ): ResponseEntity<ResponseBody> {
         articleDraftService.deleteArticleDraft(id, writer)
         return MessageResponseBody(
-            message = ResponseMessage.Article.Draft.DELETE_SUCCESS,
+            message = ResponseMessage.Draft.DELETE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()
     }
