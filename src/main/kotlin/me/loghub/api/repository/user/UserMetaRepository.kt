@@ -11,7 +11,7 @@ interface UserMetaRepository : JpaRepository<UserMeta, Long> {
         SELECT
             (
             SELECT
-                (SELECT COUNT(*) FROM articles WHERE writer_id = :writerId) +
+                (SELECT COUNT(*) FROM articles WHERE writer_id = :writerId AND published = true) +
                 (SELECT COUNT(*) FROM series WHERE writer_id = :writerId) +
                 (SELECT COUNT(*) FROM questions WHERE writer_id = :writerId)
             ) as total_posted_count,
