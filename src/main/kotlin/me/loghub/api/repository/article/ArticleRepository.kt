@@ -33,7 +33,7 @@ interface ArticleRepository : JpaRepository<Article, Long> {
         SELECT CONCAT(:clientHost, '/articles/', a.writer_username, '/', a.slug) AS url,
         to_char(a.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS lastModified,
         'weekly' AS changeFrequency,
-        0.8 AS priority,
+        :priority AS priority,
         ARRAY[CONCAT(:assetsHost, '/', a.thumbnail)] AS images
         FROM articles a
         WHERE a.published = TRUE
