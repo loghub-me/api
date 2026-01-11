@@ -5,7 +5,7 @@ import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 @Entity
-@Table(name = "users_meta")
+@Table(name = "user_meta")
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener::class)
 class UserMeta(

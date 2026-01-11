@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS public.users
     updated_at      timestamp(6)       NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS public.users_meta
+CREATE TABLE IF NOT EXISTS public.user_meta
 (
     user_id                     bigint            PRIMARY KEY
-        CONSTRAINT users_meta_user_id_fk REFERENCES public.users ON DELETE CASCADE,
+        CONSTRAINT user_meta_user_id_fk REFERENCES public.users ON DELETE CASCADE,
     readme                      varchar(1024)     NOT NULL DEFAULT '',
     github_username             varchar(40),
     github_verified             boolean           NOT NULL DEFAULT FALSE,
