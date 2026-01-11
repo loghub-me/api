@@ -1,7 +1,6 @@
 package me.loghub.api.service.auth
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.oauth2.OAuth2Attribute
 import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.join.OAuth2JoinConfirmDTO
 import me.loghub.api.dto.auth.join.OAuth2JoinInfoDTO
@@ -14,7 +13,6 @@ import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -26,14 +24,11 @@ class OAuth2JoinService(
     private val redisTemplate: RedisTemplate<String, OAuth2JoinInfoDTO>,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
-    @Transactional(readOnly = true)
-    fun existsByEmail(email: String) = userRepository.existsByEmail(email)
-
-    fun issueToken(user: DefaultOAuth2User): String {
+    fun issueToken(email: String, provider: User.Provider): String {
         val info = OAuth2JoinInfoDTO(
             token = UUID.randomUUID().toString(),
-            email = user.attributes[OAuth2Attribute.EMAIL].toString(),
-            provider = User.Provider.valueOf(user.attributes[OAuth2Attribute.PROVIDER].toString())
+            email = email,
+            provider = provider,
         )
         val redisKey = OAuth2JoinTokenRedisKey(info.email)
         redisTemplate.opsForValue().set(redisKey, info, OAuth2JoinTokenRedisKey.TTL)

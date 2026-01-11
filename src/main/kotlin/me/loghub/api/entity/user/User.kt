@@ -43,7 +43,12 @@ class User(
     @Column(name = "username", unique = true, nullable = false, length = 14)
     private var _username = username
 
-    enum class Provider { LOCAL, GOOGLE, GITHUB }
+    enum class Provider(val registrationId: String) {
+        LOCAL("local"),
+        GOOGLE("google"),
+        GITHUB("github");
+    }
+
     enum class Role : GrantedAuthority {
         MEMBER, ADMIN, BOT;
 

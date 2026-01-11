@@ -1,8 +1,7 @@
 package me.loghub.api.service.auth
 
 import me.loghub.api.constant.message.ResponseMessage
-import me.loghub.api.constant.oauth2.OAuth2Attribute
-import me.loghub.api.constant.oauth2.OAuth2RegistrationId
+import me.loghub.api.dto.auth.oauth2.OAuth2UserAttributes
 import me.loghub.api.entity.user.User
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -17,19 +16,19 @@ class CustomOAuth2UserService : DefaultOAuth2UserService() {
     override fun loadUser(request: OAuth2UserRequest): OAuth2User {
         val registrationId = request.clientRegistration.registrationId;
         val user = super.loadUser(request)
-        val attributes = mapAttributes(registrationId, user.attributes)
-        return DefaultOAuth2User(user.authorities, attributes, "email")
+        val attributes = extractAttributes(registrationId, user.attributes)
+        return DefaultOAuth2User(user.authorities, attributes.toMap(), OAuth2UserAttributes::email.name)
     }
 
-    private fun mapAttributes(registrationId: String, attributes: Map<String, Any>) = when (registrationId) {
-        OAuth2RegistrationId.GOOGLE -> mapOf(
-            OAuth2Attribute.EMAIL to attributes["email"].toString(),
-            OAuth2Attribute.PROVIDER to User.Provider.GOOGLE,
+    private fun extractAttributes(registrationId: String, attributes: Map<String, Any>) = when (registrationId) {
+        User.Provider.GOOGLE.registrationId -> OAuth2UserAttributes(
+            attributes["email"].toString(),
+            User.Provider.GOOGLE,
         )
 
-        OAuth2RegistrationId.GITHUB -> mapOf(
-            OAuth2Attribute.EMAIL to attributes["email"].toString(),
-            OAuth2Attribute.PROVIDER to User.Provider.GITHUB,
+        User.Provider.GITHUB.registrationId -> OAuth2UserAttributes(
+            attributes["email"].toString(),
+            User.Provider.GITHUB,
         )
 
         else -> throw UnsupportedOperationException(ResponseMessage.Auth.UNSUPPORTED_OAUTH2_PROVIDER)
