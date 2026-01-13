@@ -77,10 +77,11 @@ class Question(
 ) : PublicEntity() {
     enum class Status { OPEN, CLOSED, SOLVED }
 
-    fun update(requestBody: PostQuestionDTO, slug: String) {
+    fun update(requestBody: PostQuestionDTO, slug: String, normalizedContent: String) {
         this.title = requestBody.title
         this.content = requestBody.content
         this.slug = slug
+        this.normalizedContent = normalizedContent
     }
 
     fun updateTopics(topics: Set<Topic>) {

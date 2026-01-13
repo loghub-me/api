@@ -90,9 +90,10 @@ class QuestionService(
             slug = requestBody.title.toSlug(),
             exists = { slug -> questionRepository.existsByCompositeKeyAndIdNot(writer.username, slug, questionId) }
         )
+        val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
-        question.update(requestBody, slug)
+        question.update(requestBody, slug, normalizedContent)
         question.updateTopics(topics)
         return question
     }
