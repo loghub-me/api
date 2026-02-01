@@ -3,6 +3,7 @@ package me.loghub.api.service.user
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.user.UpdateUsernameDTO
 import me.loghub.api.entity.user.User
+import me.loghub.api.exception.auth.PermissionDeniedException
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.lib.validation.isReservedUsername
 import me.loghub.api.mapper.user.UserMapper
@@ -11,6 +12,7 @@ import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserRepository
+import me.loghub.api.service.auth.token.RefreshTokenService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkField
 import me.loghub.api.util.requireNotEquals
@@ -25,6 +27,7 @@ class UserService(
     private val articleRepository: ArticleRepository,
     private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
+    private val refreshTokenService: RefreshTokenService,
     private val taskAPIProxy: TaskAPIProxy
 ) {
     @Transactional(readOnly = true)
@@ -61,4 +64,14 @@ class UserService(
     @Transactional
     fun updateAvatar(file: MultipartFile, user: User) =
         taskAPIProxy.uploadAvatar(file, user.id!!)
+
+    @Transactional
+    fun withdraw(user: User, refreshToken: String?) {
+        refreshToken?.let { refreshTokenService.revokeToken(it) }
+        val userId = user.id ?: throw PermissionDeniedException()
+
+        taskAPIProxy.deleteAvatar(userId)
+        taskAPIProxy.deleteImages(userId)
+        userRepository.deleteById(userId)
+    }
 }

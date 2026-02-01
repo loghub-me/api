@@ -8,9 +8,7 @@ import me.loghub.api.dto.task.markdown.*
 import me.loghub.api.proxy.config.TaskAPIConfig
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @FeignClient(
@@ -37,6 +35,9 @@ interface TaskAPIProxy {
         @RequestPart("userId") userId: Long,
     ): ImageUploadResponse
 
+    @DeleteMapping("/image/{userId}")
+    fun deleteImages(@PathVariable userId: Long)
+
     @PostMapping("/avatar/generate")
     fun generateAvatar(@RequestBody request: AvatarGenerateRequest)
 
@@ -48,6 +49,9 @@ interface TaskAPIProxy {
         @RequestPart("file") file: MultipartFile,
         @RequestPart("userId") userId: Long,
     )
+
+    @DeleteMapping("/avatar/{userId}")
+    fun deleteAvatar(@PathVariable userId: Long)
 
     @PostMapping("/answer/generate")
     fun generateAnswer(@RequestBody request: AnswerGenerateRequest): AnswerGenerateResponse

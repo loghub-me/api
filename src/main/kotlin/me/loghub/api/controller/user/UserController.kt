@@ -2,6 +2,7 @@ package me.loghub.api.controller.user
 
 import jakarta.validation.Valid
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.dto.user.UpdateUsernameDTO
@@ -52,5 +53,14 @@ class UserController(private val userService: UserService) {
     }
 
     @PostMapping("/withdraw")
-    fun withdraw(): ResponseEntity<ResponseBody> = TODO()
+    fun withdraw(
+        @AuthenticationPrincipal user: User,
+        @CookieValue(RefreshToken.Cookie.NAME, required = false) refreshToken: String?
+    ): ResponseEntity<ResponseBody> {
+        userService.withdraw(user, refreshToken)
+        return MessageResponseBody(
+            message = ResponseMessage.User.WITHDRAW_SUCCESS,
+            status = HttpStatus.OK,
+        ).toResponseEntity()
+    }
 }
