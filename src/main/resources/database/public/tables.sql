@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS public.user_meta
     github_verified             boolean           NOT NULL DEFAULT FALSE,
     total_posted_count          bigint            NOT NULL DEFAULT 0,
     total_added_star_count      bigint            NOT NULL DEFAULT 0,
-    total_gazed_star_count      bigint            NOT NULL DEFAULT 0
+    total_gazed_star_count      bigint            NOT NULL DEFAULT 0,
+    topic_usages                text              NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS public.topics

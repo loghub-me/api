@@ -152,6 +152,12 @@ VALUES ('admin@gmail.com', 'admin', 'admin', 'ADMIN'),
 
 INSERT INTO public.user_meta(user_id)
 VALUES (1), (2), (3), (4);
+UPDATE public.user_meta
+SET topic_usages = 'java:Java:3,c:C:2,cpp:C++:2,javascript:JavaScript:1'
+WHERE user_id = 3;
+UPDATE public.user_meta
+SET topic_usages = 'python:Python:2,django:Django:1'
+WHERE user_id = 4;
 
 INSERT INTO public.articles(slug, title, content, writer_id, writer_username, published, published_at, normalized_content)
 VALUES ('a-article', 'A Article',

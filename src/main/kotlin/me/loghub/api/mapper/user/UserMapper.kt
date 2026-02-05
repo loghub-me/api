@@ -35,5 +35,6 @@ object UserMapper {
         totalPostedCount = stats.totalPostedCount,
         totalAddedStarCount = stats.totalAddedStarCount,
         totalGazedStarCount = stats.totalGazedStarCount,
+        topicUsages = stats.topicUsages,
     )
 }

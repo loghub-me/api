@@ -20,9 +20,11 @@ class DataExceptionHandler {
         ).toResponseEntity()
 
     @ExceptionHandler(DataIntegrityViolationException::class)
-    fun handleException(e: DataIntegrityViolationException): ResponseEntity<ResponseBody> =
-        MessageResponseBody(
+    fun handleException(e: DataIntegrityViolationException): ResponseEntity<ResponseBody> {
+        e.printStackTrace()
+        return MessageResponseBody(
             message = ResponseMessage.Default.CONFLICT,
             status = HttpStatus.CONFLICT,
         ).toResponseEntity()
+    }
 }

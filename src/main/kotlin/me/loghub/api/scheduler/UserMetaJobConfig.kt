@@ -53,8 +53,11 @@ class UserMetaJobConfig(
     @Bean
     fun processor() = ItemProcessor<UserMeta, UserMeta> { meta ->
         val userId = meta.userId ?: return@ItemProcessor meta
-        val newStats = UserStats(userMetaRepository.countStatsByWriterId(userId))
-        
+        val newStats = UserStats(
+            userMetaRepository.countStatsByWriterId(userId),
+            userMetaRepository.findTopicUsageTop5ByWriter(userId),
+        )
+
         if (meta.stats == newStats) {
             return@ItemProcessor null
         }
