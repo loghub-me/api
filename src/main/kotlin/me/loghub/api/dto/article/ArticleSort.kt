@@ -6,7 +6,10 @@ import me.loghub.api.entity.article.QArticle
 import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
 
 enum class ArticleSort(vararg val orders: OrderSpecifier<*>) {
-    latest(QArticle.article.publishedAt.desc()),
+    latest(
+        QArticle.article.publishedAt.desc(),
+        QArticle.article.updatedAt.desc(),
+    ),
     oldest(QArticle.article.createdAt.asc()),
     relevant(
         Expressions.numberTemplate(
