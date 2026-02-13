@@ -8,8 +8,8 @@ CREATE OR REPLACE FUNCTION archive.archive_user_on_delete () RETURNS TRIGGER AS 
 
 CREATE OR REPLACE FUNCTION archive.archive_user_meta_on_delete () RETURNS TRIGGER AS '
     BEGIN
-        INSERT INTO archive.user_meta (user_id, readme, github_username, github_verified, total_posted_count, total_added_star_count, total_gazed_star_count) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.user_id, OLD.readme, OLD.github_username, OLD.github_verified, OLD.total_posted_count, OLD.total_added_star_count, OLD.total_gazed_star_count);
+        INSERT INTO archive.user_meta (user_id, readme, github_username, github_verified, total_posted_count, total_added_star_count, total_gazed_star_count, topic_usages) OVERRIDING SYSTEM VALUE
+        VALUES (OLD.user_id, OLD.readme, OLD.github_username, OLD.github_verified, OLD.total_posted_count, OLD.total_added_star_count, OLD.total_gazed_star_count, OLD.topic_usages);
         RETURN OLD;
     END
 ' LANGUAGE plpgsql;

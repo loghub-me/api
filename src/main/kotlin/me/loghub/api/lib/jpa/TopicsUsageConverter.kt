@@ -21,7 +21,7 @@ class TopicsUsageConverter : AttributeConverter<List<TopicUsageDTO>, String> {
         }
 
         return flatTopics.joinToString(TOPIC_DELIMITER) { topic ->
-            "${topic.slug}${ATTRIBUTES_DELIMITER}${topic.name}${ATTRIBUTES_DELIMITER}:${topic.count}"
+            "${topic.slug}${ATTRIBUTES_DELIMITER}${topic.name}${ATTRIBUTES_DELIMITER}${topic.count}"
         }
     }
 
