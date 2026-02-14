@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS public.series
     title           text         NOT NULL,
     description     text         NOT NULL DEFAULT '',
     thumbnail       varchar(255) NOT NULL DEFAULT '0/default-series-thumbnail.webp',
+    chapter_count   integer      NOT NULL DEFAULT 0,
     star_count      integer      NOT NULL DEFAULT 0,
     review_count    integer      NOT NULL DEFAULT 0,
     trending_score  real         NOT NULL DEFAULT 0,

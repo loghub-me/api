@@ -5,6 +5,9 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 class SeriesStats(
+    @Column(name = "chapter_count", nullable = false)
+    var chapterCount: Int = 0,
+
     @Column(name = "star_count", nullable = false)
     var starCount: Int = 0,
 

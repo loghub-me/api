@@ -224,7 +224,7 @@ VALUES ('This is a review on A Series.', 5,
         ( SELECT id FROM series WHERE slug = 'a-series' ),
         ( SELECT id FROM users WHERE username = 'member1' ));
 UPDATE public.series
-SET review_count = ( SELECT COUNT(*) FROM series_reviews WHERE series_id = series.id )
+SET chapter_count = ( SELECT COUNT(*) FROM series_chapters WHERE series_id = series.id )
 WHERE TRUE;
 
 INSERT INTO public.questions(slug, title, content, writer_id, writer_username, created_at, updated_at, normalized_content)

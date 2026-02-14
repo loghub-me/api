@@ -194,6 +194,10 @@ INSERT INTO public.series_reviews(content, rating, series_id, writer_id)
 VALUES ('Series review 1', 5, 1, ( SELECT id FROM users WHERE username = 'member1' )),
        ('Series review 2', 4, 1, ( SELECT id FROM users WHERE username = 'member2' ));
 UPDATE public.series
+SET chapter_count = c.cnt
+FROM ( SELECT series_id, COUNT(*) AS cnt FROM public.series_chapters GROUP BY series_id ) c
+WHERE id = c.series_id;
+UPDATE public.series
 SET review_count = c.cnt
 FROM ( SELECT series_id, COUNT(*) AS cnt FROM public.series_reviews GROUP BY series_id ) c
 WHERE id = c.series_id;

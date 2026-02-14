@@ -32,8 +32,8 @@ CREATE OR REPLACE FUNCTION archive.archive_article_comment_on_delete () RETURNS 
 
 CREATE OR REPLACE FUNCTION archive.archive_series_on_delete () RETURNS TRIGGER AS '
     BEGIN
-        INSERT INTO archive.series (id, slug, title, description, thumbnail, star_count, review_count, trending_score, created_at, updated_at, writer_id, writer_username, topics_flat) OVERRIDING SYSTEM VALUE
-        VALUES (OLD.id, OLD.slug, OLD.title, OLD.description, OLD.thumbnail, OLD.star_count, OLD.review_count, OLD.trending_score, OLD.created_at, OLD.updated_at, OLD.writer_id, OLD.writer_username, OLD.topics_flat);
+        INSERT INTO archive.series (id, slug, title, description, thumbnail, chapter_count, star_count, review_count, trending_score, created_at, updated_at, writer_id, writer_username, topics_flat) OVERRIDING SYSTEM VALUE
+        VALUES (OLD.id, OLD.slug, OLD.title, OLD.description, OLD.thumbnail, OLD.chapter_count, OLD.star_count, OLD.review_count, OLD.trending_score, OLD.created_at, OLD.updated_at, OLD.writer_id, OLD.writer_username, OLD.topics_flat);
         RETURN OLD;
     END
 ' LANGUAGE plpgsql;

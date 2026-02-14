@@ -31,6 +31,4 @@ interface SeriesChapterRepository : JpaRepository<SeriesChapter, Long> {
     fun findAllBySeriesIdAndSequenceGreaterThanOrderBySequenceAsc(seriesId: Long, sequence: Int): List<SeriesChapter>
 
     fun existsBySeriesAndIdAndWriter(series: Series, id: Long, writer: User): Boolean
-
-    fun countBySeries(series: Series): Int
 }

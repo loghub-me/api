@@ -2,10 +2,7 @@ package me.loghub.api.repository.series
 
 import me.loghub.api.dto.common.SitemapItemProjection
 import me.loghub.api.entity.series.Series
-import org.springframework.data.jpa.repository.EntityGraph
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
-import org.springframework.data.jpa.repository.Query
+import org.springframework.data.jpa.repository.*
 import org.springframework.data.repository.query.Param
 
 interface SeriesRepository : JpaRepository<Series, Long> {
@@ -62,6 +59,16 @@ interface SeriesRepository : JpaRepository<Series, Long> {
 
     @Query("$EXISTS_SERIES WHERE $BY_COMPOSITE_KEY AND s.id <> :id")
     fun existsByCompositeKeyAndIdNot(username: String, slug: String, id: Long): Boolean
+
+    @NativeQuery(
+        """
+        UPDATE series
+        SET chapter_count = chapter_count + 1
+        WHERE id = :id AND chapter_count < :maxChapterSize
+        RETURNING chapter_count
+    """
+    )
+    fun increaseAndGetChapterCount(@Param("id") id: Long, @Param("maxChapterSize") maxChapterSize: Int): Int
 
     @Modifying
     @Query("UPDATE Series s SET s.writerUsername = :newUsername WHERE s.writerUsername = :oldUsername")

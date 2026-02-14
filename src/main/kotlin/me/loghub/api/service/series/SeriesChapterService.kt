@@ -64,15 +64,14 @@ class SeriesChapterService(
             .orElseThrowNotFound { ResponseMessage.Series.NOT_FOUND }
 
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
+        checkConflict(series.stats.chapterCount >= MAX_CHAPTER_SIZE) { ResponseMessage.Series.Chapter.SIZE_LIMIT_EXCEEDED }
 
-        val chapterSize = seriesChapterRepository.countBySeries(series)
-        checkConflict(chapterSize >= MAX_CHAPTER_SIZE) { ResponseMessage.Series.Chapter.SIZE_LIMIT_EXCEEDED }
-
+        val newChapterCount = seriesRepository.increaseAndGetChapterCount(seriesId, MAX_CHAPTER_SIZE)
         val chapter = SeriesChapter(
             title = DEFAULT_CHAPTER_TITLE,
             content = DEFAULT_CHAPTER_CONTENT,
             normalizedContent = DEFAULT_CHAPTER_CONTENT,
-            sequence = chapterSize + 1,
+            sequence = newChapterCount,
             series = series,
             writer = writer,
             published = false,
@@ -86,18 +85,19 @@ class SeriesChapterService(
             .orElseThrowNotFound { ResponseMessage.Series.NOT_FOUND }
 
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
+        checkConflict(series.stats.chapterCount >= MAX_CHAPTER_SIZE) { ResponseMessage.Series.Chapter.SIZE_LIMIT_EXCEEDED }
 
         val article = articleRepository.findWithWriterById(articleId)
             ?: throw EntityNotFoundException(ResponseMessage.Article.NOT_FOUND)
 
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        val chapterSize = seriesChapterRepository.countBySeries(series)
+        val newChapterCount = seriesRepository.increaseAndGetChapterCount(seriesId, MAX_CHAPTER_SIZE)
         val chapter = SeriesChapter(
             title = article.title,
             content = article.content,
             normalizedContent = article.normalizedContent,
-            sequence = chapterSize + 1,
+            sequence = newChapterCount,
             series = series,
             writer = writer,
             published = false,
