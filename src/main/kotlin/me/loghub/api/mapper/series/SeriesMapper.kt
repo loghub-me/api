@@ -46,6 +46,5 @@ object SeriesMapper {
         chapters = series.chapters.map(SeriesChapterMapper::map),
     )
 
-    private fun mapStats(series: SeriesStats) =
-        SeriesStatsDTO(series.chapterCount, series.starCount, series.reviewCount)
+    private fun mapStats(series: SeriesStats) = SeriesStatsDTO(series.starCount, series.reviewCount)
 }
