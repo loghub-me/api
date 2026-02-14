@@ -36,16 +36,17 @@ interface ArticleCommentRepository : JpaRepository<ArticleComment, Long> {
     @Query("SELECT ac.writer FROM ArticleComment ac WHERE ac.id = :id")
     fun findWriterById(id: Long): User?
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying
     @Query("UPDATE ArticleComment ac SET ac.replyCount = ac.replyCount + 1 WHERE ac.id = :id")
     fun incrementReplyCount(id: Long)
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying
     @Query(
         """
         UPDATE ArticleComment ac
         SET ac.replyCount = CASE WHEN ac.replyCount > 0 then ac.replyCount - 1 else 0 END
-        WHERE ac.id = :id"""
+        WHERE ac.id = :id
+        """
     )
     fun decrementReplyCount(id: Long)
 }
