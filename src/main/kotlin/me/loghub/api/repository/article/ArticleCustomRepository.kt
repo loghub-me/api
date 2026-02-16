@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
 import me.loghub.api.dto.article.ArticleSort
+import me.loghub.api.dto.topic.TopicArticleSort
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.QArticle
 import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
@@ -37,6 +38,19 @@ class ArticleCustomRepository(private val entityManager: EntityManager) {
             ?: ArticleSort.latest
 
         return runQueryAndWrapPage(conditions = conditions, orders = resolvedSort.orders, pageable = pageable)
+    }
+
+    fun findByTopicSlug(
+        topicSlug: String,
+        sort: TopicArticleSort,
+        pageable: Pageable,
+        published: Boolean? = true,
+    ): Page<Article> {
+        val topicCondition = article.topics.any().slug.eq(topicSlug)
+        val publishedCondition = article.published.eq(published)
+        val conditions = arrayOf(topicCondition, publishedCondition)
+
+        return runQueryAndWrapPage(conditions = conditions, orders = sort.orders, pageable = pageable)
     }
 
     private fun createWriterCondition(username: String) = article.writerUsername.eq(username)

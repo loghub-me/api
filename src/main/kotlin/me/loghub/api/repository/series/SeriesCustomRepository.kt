@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
 import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.topic.TopicSeriesSort
 import me.loghub.api.entity.series.QSeries
 import me.loghub.api.entity.series.Series
 import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
@@ -35,6 +36,15 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
             ?: SeriesSort.latest
 
         return runQueryAndWrapPage(conditions = conditions, orders = resolvedSort.orders, pageable = pageable)
+    }
+
+    fun findByTopicSlug(
+        topicSlug: String,
+        sort: TopicSeriesSort,
+        pageable: Pageable,
+    ): Page<Series> {
+        val topicCondition = series.topics.any().slug.eq(topicSlug)
+        return runQueryAndWrapPage(conditions = arrayOf(topicCondition), orders = sort.orders, pageable = pageable)
     }
 
     private fun createWriterCondition(username: String) = series.writerUsername.eq(username)

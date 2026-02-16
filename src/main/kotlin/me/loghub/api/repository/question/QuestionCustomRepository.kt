@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery
 import jakarta.persistence.EntityManager
 import me.loghub.api.dto.question.QuestionFilter
 import me.loghub.api.dto.question.QuestionSort
+import me.loghub.api.dto.topic.TopicQuestionSort
 import me.loghub.api.entity.question.QQuestion
 import me.loghub.api.entity.question.Question
 import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
@@ -38,6 +39,15 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
             ?: QuestionSort.latest
 
         return runQueryAndWrapPage(conditions = conditions, orders = resolvedSort.orders, pageable = pageable)
+    }
+
+    fun findByTopicSlug(
+        topicSlug: String,
+        sort: TopicQuestionSort,
+        pageable: Pageable,
+    ): Page<Question> {
+        val topicCondition = question.topics.any().slug.eq(topicSlug)
+        return runQueryAndWrapPage(conditions = arrayOf(topicCondition), orders = sort.orders, pageable = pageable)
     }
 
     private fun createWriterCondition(username: String) = question.writerUsername.eq(username)

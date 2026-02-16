@@ -82,7 +82,7 @@ class Article(
 
     fun publish() {
         this.published = true
-        publishedAt = publishedAt ?: LocalDateTime.now()
+        this.publishedAt = this.publishedAt ?: LocalDateTime.now()
     }
 
     fun unpublish() {
