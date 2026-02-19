@@ -3,7 +3,7 @@ package me.loghub.api.dto.question
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.Expressions
 import me.loghub.api.entity.question.QQuestion
-import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
+import me.loghub.api.lib.hibernate.ParadeDBHibernateFunction
 
 enum class QuestionSort(vararg val orders: OrderSpecifier<*>) {
     latest(QQuestion.question.createdAt.desc()),
@@ -11,8 +11,8 @@ enum class QuestionSort(vararg val orders: OrderSpecifier<*>) {
     relevant(
         Expressions.numberTemplate(
             Double::class.java,
-            PGroongaHibernateFunction.PGROONGA_SCORE.template,
-            QQuestion.question.tableoid, QQuestion.question.ctid,
+            ParadeDBHibernateFunction.SCORE.template,
+            QQuestion.question.id,
         ).desc()
     ),
     trending(

@@ -10,7 +10,7 @@ import me.loghub.api.dto.question.QuestionSort
 import me.loghub.api.dto.topic.TopicQuestionSort
 import me.loghub.api.entity.question.QQuestion
 import me.loghub.api.entity.question.Question
-import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
+import me.loghub.api.lib.hibernate.ParadeDBHibernateFunction
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -52,7 +52,7 @@ class QuestionCustomRepository(private val entityManager: EntityManager) {
 
     private fun createWriterCondition(username: String) = question.writerUsername.eq(username)
     private fun createFullTextSearchCondition(query: String) =
-        Expressions.booleanTemplate(PGroongaHibernateFunction.QUESTIONS_FTS.template, query)
+        Expressions.booleanTemplate(ParadeDBHibernateFunction.QUESTIONS_FTS.template, query)
 
     private fun runQueryAndWrapPage(
         conditions: Array<BooleanExpression>,

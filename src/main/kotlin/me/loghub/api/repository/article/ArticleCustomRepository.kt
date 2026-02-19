@@ -9,7 +9,7 @@ import me.loghub.api.dto.article.ArticleSort
 import me.loghub.api.dto.topic.TopicArticleSort
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.QArticle
-import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
+import me.loghub.api.lib.hibernate.ParadeDBHibernateFunction
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -55,7 +55,7 @@ class ArticleCustomRepository(private val entityManager: EntityManager) {
 
     private fun createWriterCondition(username: String) = article.writerUsername.eq(username)
     private fun createFullTextSearchCondition(query: String) =
-        Expressions.booleanTemplate(PGroongaHibernateFunction.ARTICLES_FTS.template, query)
+        Expressions.booleanTemplate(ParadeDBHibernateFunction.ARTICLES_FTS.template, query)
 
     private fun runQueryAndWrapPage(
         conditions: Array<BooleanExpression>,
