@@ -10,7 +10,6 @@ import me.loghub.api.entity.user.User
 import me.loghub.api.lib.jpa.TopicsFlatConverter
 import me.loghub.api.util.checkField
 import org.hibernate.annotations.DynamicUpdate
-import org.hibernate.annotations.Formula
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -68,11 +67,6 @@ class Question(
     @Column(nullable = false)
     @Convert(converter = TopicsFlatConverter::class)
     var topicsFlat: List<TopicDTO>,  // for search(denormalization)
-
-    @Formula("tableoid")
-    val tableoid: String? = null,
-
-    @Formula("ctid")
     val ctid: String? = null,
 ) : PublicEntity() {
     enum class Status { OPEN, CLOSED, SOLVED }

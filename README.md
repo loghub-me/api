@@ -54,7 +54,7 @@
 - `application-test.yml` : 테스트 환경 애플리케이션 설정 파일입니다.
 - `database/` : 데이터베이스 초기화 및 테스트 데이터를 포함합니다.
 - `META-INF/`
-  - `services/org.hibernate.boot.model.FunctionContributor` : Hibernate 커스텀 함수 등록 파일입니다. (PGroonga 관련)
+  - `services/org.hibernate.boot.model.FunctionContributor` : Hibernate 커스텀 함수 등록 파일입니다. (ParadeDB 관련)
 
 ## 개발
 

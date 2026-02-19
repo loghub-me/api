@@ -9,7 +9,7 @@ import me.loghub.api.dto.series.SeriesSort
 import me.loghub.api.dto.topic.TopicSeriesSort
 import me.loghub.api.entity.series.QSeries
 import me.loghub.api.entity.series.Series
-import me.loghub.api.lib.hibernate.PGroongaHibernateFunction
+import me.loghub.api.lib.hibernate.ParadeDBHibernateFunction
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -49,7 +49,7 @@ class SeriesCustomRepository(private val entityManager: EntityManager) {
 
     private fun createWriterCondition(username: String) = series.writerUsername.eq(username)
     private fun createFullTextSearchCondition(query: String) =
-        Expressions.booleanTemplate(PGroongaHibernateFunction.SERIES_FTS.template, query)
+        Expressions.booleanTemplate(ParadeDBHibernateFunction.SERIES_FTS.template, query)
 
     private fun runQueryAndWrapPage(
         conditions: Array<BooleanExpression>,

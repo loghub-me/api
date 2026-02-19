@@ -5,7 +5,7 @@ import org.hibernate.boot.model.FunctionContributor
 
 class PostgresFunctionContributor : FunctionContributor {
     override fun contributeFunctions(fc: FunctionContributions) {
-        PGroongaHibernateFunction.entries.forEach { function ->
+        ParadeDBHibernateFunction.entries.forEach { function ->
             fc.functionRegistry.registerPattern(
                 function.funName,
                 function.pattern,
