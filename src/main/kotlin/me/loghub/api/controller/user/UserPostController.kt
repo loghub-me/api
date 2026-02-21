@@ -7,6 +7,7 @@ import me.loghub.api.dto.question.QuestionFilter
 import me.loghub.api.dto.question.QuestionSort
 import me.loghub.api.dto.series.SeriesDTO
 import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.user.post.UserPostProjection
 import me.loghub.api.service.user.UserPostService
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,12 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/users/@{username}")
 class UserPostController(private val userPostService: UserPostService) {
+    @GetMapping("/posts")
+    fun getUserPosts(@PathVariable username: String): ResponseEntity<List<UserPostProjection>> {
+        val posts = userPostService.getUserPosts(username)
+        return ResponseEntity.ok(posts)
+    }
+
     @GetMapping("/articles")
     fun searchUserArticles(
         @PathVariable username: String,

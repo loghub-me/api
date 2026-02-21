@@ -1,6 +1,7 @@
 package me.loghub.api.repository.series
 
 import me.loghub.api.dto.common.SitemapItemProjection
+import me.loghub.api.dto.user.post.UserPostProjection
 import me.loghub.api.entity.series.Series
 import org.springframework.data.jpa.repository.*
 import org.springframework.data.repository.query.Param
@@ -27,6 +28,24 @@ interface SeriesRepository : JpaRepository<Series, Long> {
 
     @Query("$SELECT_SERIES JOIN s.topics t WHERE t.slug = :topicSlug ORDER BY s.stats.trendingScore DESC LIMIT 10")
     fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Series>
+    @Query(
+        value = """
+        SELECT sc.title,
+            CONCAT(:clientHost, '/series/', s.writer_username, '/', s.slug, '/', sc.sequence) AS link,
+            to_char(sc.published_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS publishedAt
+        FROM series s
+        JOIN series_chapters sc ON sc.series_id = s.id
+        WHERE s.writer_username = :username
+          AND sc.published = TRUE
+        ORDER BY sc.published_at DESC
+        LIMIT :limit
+    """, nativeQuery = true
+    )
+    fun findRecentChapterPost(
+        @Param("username") username: String,
+        @Param("clientHost") clientHost: String,
+        @Param("limit") limit: Int,
+    ): List<UserPostProjection>
 
     @Query(
         value = """

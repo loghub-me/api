@@ -1,6 +1,7 @@
 package me.loghub.api.repository.article
 
 import me.loghub.api.dto.common.SitemapItemProjection
+import me.loghub.api.dto.user.post.UserPostProjection
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import org.springframework.data.jpa.repository.EntityGraph
@@ -27,6 +28,23 @@ interface ArticleRepository : JpaRepository<Article, Long> {
 
 //    @Query("$SELECT_ARTICLE JOIN a.topics t WHERE t.slug = :topicSlug AND a.published = true ORDER BY a.stats.trendingScore DESC LIMIT 10")
 //    fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Article>
+    @Query(
+        value = """
+        SELECT a.title,
+            CONCAT(:clientHost, '/articles/', a.writer_username, '/', a.slug) AS link,
+            to_char(a.published_at, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') AS publishedAt
+        FROM articles a
+        WHERE a.writer_username = :username
+          AND a.published = TRUE
+        ORDER BY a.published_at DESC
+        LIMIT :limit
+    """, nativeQuery = true
+    )
+    fun findRecentPost(
+        @Param("username") username: String,
+        @Param("clientHost") clientHost: String,
+        @Param("limit") limit: Int,
+    ): List<UserPostProjection>
 
     @Query(
         value = """

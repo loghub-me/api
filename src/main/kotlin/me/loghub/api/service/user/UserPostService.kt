@@ -1,5 +1,6 @@
 package me.loghub.api.service.user
 
+import me.loghub.api.config.ClientConfig
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.article.ArticleDTO
 import me.loghub.api.dto.article.ArticleSort
@@ -8,12 +9,15 @@ import me.loghub.api.dto.question.QuestionFilter
 import me.loghub.api.dto.question.QuestionSort
 import me.loghub.api.dto.series.SeriesDTO
 import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.user.post.UserPostProjection
 import me.loghub.api.mapper.article.ArticleMapper
 import me.loghub.api.mapper.question.QuestionMapper
 import me.loghub.api.mapper.series.SeriesMapper
 import me.loghub.api.repository.article.ArticleCustomRepository
+import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionCustomRepository
 import me.loghub.api.repository.series.SeriesCustomRepository
+import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.util.checkField
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -22,12 +26,25 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserPostService(
+    private val articleRepository: ArticleRepository,
+    private val seriesRepository: SeriesRepository,
     private val articleCustomRepository: ArticleCustomRepository,
     private val seriesCustomRepository: SeriesCustomRepository,
     private val questionCustomRepository: QuestionCustomRepository,
 ) {
     private companion object {
+        private const val POST_SIZE = 5
         private const val PAGE_SIZE = 20
+    }
+
+    @Transactional(readOnly = true)
+    fun getUserPosts(username: String): List<UserPostProjection> {
+        val recentArticlePosts = articleRepository.findRecentPost(username, ClientConfig.HOST, POST_SIZE)
+        val recentSeriesChapterPosts = seriesRepository.findRecentChapterPost(username, ClientConfig.HOST, POST_SIZE)
+
+        return (recentArticlePosts + recentSeriesChapterPosts)
+            .sortedByDescending { it.publishedAt }
+            .take(POST_SIZE)
     }
 
     @Transactional(readOnly = true)
