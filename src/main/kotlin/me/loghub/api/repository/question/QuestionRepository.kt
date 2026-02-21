@@ -25,9 +25,6 @@ interface QuestionRepository : JpaRepository<Question, Long> {
     @EntityGraph(attributePaths = ["writer"])
     fun findWithWriterByCompositeKey(username: String, slug: String): Question?
 
-    @Query("$SELECT_QUESTION JOIN q.topics t WHERE t.slug = :topicSlug ORDER BY q.stats.trendingScore DESC LIMIT 10")
-    fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Question>
-
     @Query(
         value = """
         SELECT CONCAT(:clientHost, '/questions/', q.writer_username, '/', q.slug) AS url,

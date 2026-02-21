@@ -26,8 +26,6 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     @EntityGraph(attributePaths = ["writer", "chapters"])
     fun findWithGraphByCompositeKey(username: String, slug: String): Series?
 
-    @Query("$SELECT_SERIES JOIN s.topics t WHERE t.slug = :topicSlug ORDER BY s.stats.trendingScore DESC LIMIT 10")
-    fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Series>
     @Query(
         value = """
         SELECT sc.title,

@@ -26,8 +26,6 @@ interface ArticleRepository : JpaRepository<Article, Long> {
     @EntityGraph(attributePaths = ["writer"])
     fun findWithWriterByCompositeKey(username: String, slug: String): Article?
 
-//    @Query("$SELECT_ARTICLE JOIN a.topics t WHERE t.slug = :topicSlug AND a.published = true ORDER BY a.stats.trendingScore DESC LIMIT 10")
-//    fun findTop10ByTopicIdOrderByTrendingScoreDesc(topicSlug: String): List<Article>
     @Query(
         value = """
         SELECT a.title,
