@@ -35,26 +35,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create .env.postgres.test
-        run: |
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env.postgres.test
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env.postgres.test
-
-      - name: Create .env.task-api.test
-        run: |
-          echo "PORT=${{ secrets.TASK_API_PORT }}" >> .env.task-api.test
-          echo "CLIENT_HOST=http://localhost:8080" >> .env.task-api.test
-          echo "INTERNAL_TOKEN=${{ secrets.TASK_API_INTERVAL_TOKEN }}" >> .env.task-api.test
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Set up Docker Compose
-        run: docker compose -f docker-compose.test.yml up -d
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v4

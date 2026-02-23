@@ -44,11 +44,7 @@
 
 ### `src/test/me.loghub.api`
 
-> [!NOTE]
-> 이 프로젝트의 테스트는 모킹 없는 `@SpringBootTest` 기반의 통합 테스트로 작성되어 있습니다. API 단위로 실제 데이터베이스와 연동하여 테스트합니다. `docker-compose.test.yml` 파일을 활용하여 테스트용 데이터베이스 컨테이너를 실행할 수 있습니다.
-
-- `controller/` : 컨트롤러 테스트 클래스를 포함합니다.
-  - `BaseControllerTest.kt` : 공통 설정 및 유틸리티 메서드를 포함하는 베이스 테스트 클래스입니다.
+- `service` : 서비스 클래스들의 단위 테스트를 포함합니다.
 
 ### `src/main/resources`
 
