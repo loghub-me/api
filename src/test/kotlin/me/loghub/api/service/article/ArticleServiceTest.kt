@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ArticleServiceTest {
     private lateinit var articleRepository: ArticleRepository
@@ -165,6 +166,7 @@ class ArticleServiceTest {
 
     @Nested
     inner class PostArticleTest {
+        @Test
         fun `should create and return article when post article request is valid`() {
             val requestBody = ArticleFixtures.postArticleDTO()
             val writer = ArticleFixtures.writer()
@@ -183,6 +185,7 @@ class ArticleServiceTest {
             verify(articleRepository).save(any<Article>())
         }
 
+        @Test
         fun `should generate unique slug when slug already exists`() {
             val requestBody = ArticleFixtures.postArticleDTO()
             val writer = ArticleFixtures.writer()
@@ -195,8 +198,10 @@ class ArticleServiceTest {
             val result = articleService.postArticle(requestBody, writer)
 
             assertEquals(article.id, result.id)
-            verify(articleRepository).existsByCompositeKey(writer.username, "test-article")
-            verify(articleRepository).existsByCompositeKey(writer.username, "test-article-1")
+            val slugCaptor = argumentCaptor<String>()
+            verify(articleRepository, times(2)).existsByCompositeKey(eq(writer.username), slugCaptor.capture())
+            assertEquals("test-article", slugCaptor.firstValue)
+            assertTrue(slugCaptor.secondValue.startsWith("test-article-"))
             verify(topicRepository).findBySlugIn(requestBody.topicSlugs)
             verify(markdownService).normalizeMarkdown(requestBody.content)
             verify(articleRepository).save(any<Article>())
@@ -205,6 +210,7 @@ class ArticleServiceTest {
 
     @Nested
     inner class EditArticleTest {
+        @Test
         fun `should update and return article when edit article request is valid`() {
             val requestBody = ArticleFixtures.postArticleDTO()
             val writer = ArticleFixtures.writer()
@@ -219,7 +225,6 @@ class ArticleServiceTest {
             ).thenReturn(false)
             whenever(topicRepository.findBySlugIn(any<List<String>>())).thenReturn(emptySet())
             whenever(markdownService.normalizeMarkdown(any<String>())).thenReturn("normalized content")
-            whenever(articleRepository.save(any<Article>())).thenReturn(article)
 
             val result = articleService.editArticle(1L, requestBody, writer)
 
@@ -228,12 +233,13 @@ class ArticleServiceTest {
             verify(articleRepository).existsByCompositeKeyAndIdNot(writer.username, "test-article", 1L)
             verify(topicRepository).findBySlugIn(requestBody.topicSlugs)
             verify(markdownService).normalizeMarkdown(requestBody.content)
-            verify(articleRepository).save(any<Article>())
+            verify(articleRepository, never()).save(any<Article>())
         }
     }
 
     @Nested
     inner class DeleteArticleTest {
+        @Test
         fun `should delete article when article exists and user has permission`() {
             val writer = ArticleFixtures.writer()
             val article = ArticleFixtures.article(writer = writer)
@@ -245,6 +251,7 @@ class ArticleServiceTest {
             verify(articleRepository).delete(article)
         }
 
+        @Test
         fun `should throw EntityNotFoundException when article does not exist`() {
             whenever(articleRepository.findWithWriterById(any<Long>())).thenReturn(null)
 
@@ -253,6 +260,7 @@ class ArticleServiceTest {
             }
         }
 
+        @Test
         fun `should throw PermissionDeniedException when user does not have permission`() {
             val writer = ArticleFixtures.writer(id = 1L, username = "writer")
             val reader = ArticleFixtures.writer(id = 2L, username = "reader")
