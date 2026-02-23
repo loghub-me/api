@@ -42,6 +42,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.batch:spring-batch-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     ksp("io.github.openfeign.querydsl:querydsl-ksp-codegen:6.11")
