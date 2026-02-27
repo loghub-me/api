@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.spring") version "2.2.21"
     kotlin("plugin.jpa") version "2.2.21"
 
-    id("org.springframework.boot") version "4.0.1"
+    id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.devtools.ksp") version "2.2.21-2.0.4"
 }
@@ -15,7 +15,6 @@ java { toolchain { languageVersion = JavaLanguageVersion.of(24) } }
 
 repositories { mavenCentral() }
 
-extra["springAiVersion"] = "1.0.3"
 extra["springCloudVersion"] = "2025.1.0"
 
 dependencies {
@@ -50,7 +49,6 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.ai:spring-ai-bom:${property("springAiVersion")}")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     }
 }
