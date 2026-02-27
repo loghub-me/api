@@ -20,11 +20,8 @@ import org.springframework.transaction.annotation.Transactional
 class UserGitHubService(
     private val userRepository: UserRepository,
     private val githubAPIProxy: GitHubAPIProxy,
+    private val clientConfig: ClientConfig,
 ) {
-    private companion object {
-        val LOGHUB_USER_PAGE_PREFIX = ClientConfig.HOST
-    }
-
     @Transactional(readOnly = true)
     fun getGitHub(user: User) = userRepository.findWithMetaByUsername(user.username)
         ?.let { UserMapper.mapGitHub(it.meta.github) }
@@ -60,7 +57,7 @@ class UserGitHubService(
         }
 
         try {
-            val userPageURL = "$LOGHUB_USER_PAGE_PREFIX/${foundUser.username}"
+            val userPageURL = "${clientConfig.host}/${foundUser.username}"
             val isVerified = checkGitHubProfile(userPageURL, githubUsername)
             if (!isVerified) {
                 throw GitHubUserNotFoundException(ResponseMessage.User.GitHub.VERIFICATION_FAILED)

@@ -31,6 +31,7 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(
         httpSecurity: HttpSecurity,
+        clientConfig: ClientConfig,
         userDetailsService: UserDetailsService,
         accessTokenService: AccessTokenService,
         oauth2UserService: CustomOAuth2UserService,
@@ -46,7 +47,7 @@ class SecurityConfig {
         .cors {
             it.configurationSource { _ ->
                 CorsConfiguration().apply {
-                    allowedOrigins = listOf(ClientConfig.HOST)
+                    allowedOrigins = listOf(clientConfig.host)
                     allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                     allowedHeaders = listOf("*")
                     allowCredentials = true

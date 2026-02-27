@@ -25,18 +25,21 @@ import kotlin.test.assertTrue
 class UserGitHubServiceTest {
     private lateinit var userRepository: UserRepository
     private lateinit var githubAPIProxy: GitHubAPIProxy
+    private lateinit var clientConfig: ClientConfig
 
     private lateinit var userGitHubService: UserGitHubService
 
     @BeforeEach
     fun setUp() {
-        ClientConfig.HOST = "https://loghub.me"
-        ClientConfig.DOMAIN = "loghub.me"
+        clientConfig = ClientConfig().apply {
+            host = "https://loghub.me"
+            domain = "loghub.me"
+        }
 
         userRepository = mock()
         githubAPIProxy = mock()
 
-        userGitHubService = UserGitHubService(userRepository, githubAPIProxy)
+        userGitHubService = UserGitHubService(userRepository, githubAPIProxy, clientConfig)
     }
 
     @Nested
