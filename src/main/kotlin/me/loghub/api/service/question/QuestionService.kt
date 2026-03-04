@@ -68,7 +68,7 @@ class QuestionService(
 
     @Transactional
     fun postQuestion(requestBody: PostQuestionDTO, writer: User): Question {
-        val slug = SlugBuilder.generateUniqueSlug(
+        val slug = SlugBuilder.buildUniqueSlug(
             slug = requestBody.title.toSlug(),
             exists = { slug -> questionRepository.existsByCompositeKey(writer.username, slug) }
         )
@@ -86,7 +86,7 @@ class QuestionService(
 
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
-        val slug = SlugBuilder.generateUniqueSlug(
+        val slug = SlugBuilder.buildUniqueSlug(
             slug = requestBody.title.toSlug(),
             exists = { slug -> questionRepository.existsByCompositeKeyAndIdNot(writer.username, slug, questionId) }
         )

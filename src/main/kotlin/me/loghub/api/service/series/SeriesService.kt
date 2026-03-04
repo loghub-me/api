@@ -59,7 +59,7 @@ class SeriesService(
 
     @Transactional
     fun postSeries(requestBody: PostSeriesDTO, writer: User): Series {
-        val slug = SlugBuilder.generateUniqueSlug(
+        val slug = SlugBuilder.buildUniqueSlug(
             slug = requestBody.title.toSlug(),
             exists = { slug -> seriesRepository.existsByCompositeKey(writer.username, slug) }
         )
@@ -76,7 +76,7 @@ class SeriesService(
 
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        val slug = SlugBuilder.generateUniqueSlug(
+        val slug = SlugBuilder.buildUniqueSlug(
             slug = requestBody.title.toSlug(),
             exists = { slug -> seriesRepository.existsByCompositeKeyAndIdNot(writer.username, slug, seriesId) }
         )

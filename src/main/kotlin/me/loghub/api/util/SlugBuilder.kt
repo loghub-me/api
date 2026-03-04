@@ -7,18 +7,18 @@ object SlugBuilder {
     private const val DEFAULT_OTP_LENGTH = 6
     private val secureRandom = SecureRandom()
 
-    fun generateUniqueSlug(
+    fun buildUniqueSlug(
         slug: String,
         exists: (String) -> Boolean,
     ): String {
         var uniqueSlug = slug
         while (exists(uniqueSlug)) {
-            uniqueSlug = "$slug-${generateRandomSuffix()}"
+            uniqueSlug = "$slug-${buildRandomSuffix()}"
         }
         return uniqueSlug
     }
 
-    private fun generateRandomSuffix(length: Int = DEFAULT_OTP_LENGTH): String {
+    private fun buildRandomSuffix(length: Int = DEFAULT_OTP_LENGTH): String {
         return (1..length)
             .map { CHARSET[secureRandom.nextInt(CHARSET.length)] }
             .joinToString("")

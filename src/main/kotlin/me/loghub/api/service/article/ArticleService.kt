@@ -66,7 +66,7 @@ class ArticleService(
 
     @Transactional
     fun postArticle(requestBody: PostArticleDTO, writer: User): Article {
-        val slug = SlugBuilder.generateUniqueSlug(
+        val slug = SlugBuilder.buildUniqueSlug(
             slug = requestBody.title.toSlug(),
             exists = { slug -> articleRepository.existsByCompositeKey(writer.username, slug) }
         )
@@ -84,7 +84,7 @@ class ArticleService(
 
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
-        val slug = SlugBuilder.generateUniqueSlug(
+        val slug = SlugBuilder.buildUniqueSlug(
             slug = requestBody.title.toSlug(),
             exists = { slug -> articleRepository.existsByCompositeKeyAndIdNot(writer.username, slug, articleId) }
         )
