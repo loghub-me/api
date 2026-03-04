@@ -13,7 +13,6 @@ import java.util.*
 class EmailBlockService(
     private val redisTemplate: RedisTemplate<String, String>
 ) {
-
     fun generateBlockToken(email: String): UUID {
         val token = UUID.randomUUID()
         val redisKey = EmailBlockTokenRedisKey(token)

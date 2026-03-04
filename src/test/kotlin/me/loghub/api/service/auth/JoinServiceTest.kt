@@ -19,6 +19,7 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
+import java.util.UUID
 import kotlin.test.assertEquals
 
 class JoinServiceTest {
@@ -26,6 +27,7 @@ class JoinServiceTest {
     private lateinit var valueOperations: ValueOperations<String, JoinInfoDTO>
     private lateinit var userRepository: UserRepository
     private lateinit var tokenService: TokenService
+    private lateinit var emailBlockService: EmailBlockService
     private lateinit var mailService: MailService
     private lateinit var taskAPIProxy: TaskAPIProxy
 
@@ -40,6 +42,7 @@ class JoinServiceTest {
         valueOperations = mock()
         userRepository = mock()
         tokenService = mock()
+        emailBlockService = mock()
         mailService = mock()
         taskAPIProxy = mock()
 
@@ -48,6 +51,7 @@ class JoinServiceTest {
         joinService = JoinService(
             redisTemplate,
             userRepository,
+            emailBlockService,
             tokenService,
             mailService,
             taskAPIProxy
@@ -63,22 +67,29 @@ class JoinServiceTest {
                 username = "joinuser",
                 nickname = "joinuser"
             )
+            val emailBlockToken = UUID.randomUUID()
             whenever(userRepository.existsByEmail(requestBody.email)).thenReturn(false)
             whenever(userRepository.existsByUsernameIgnoreCase(requestBody.username)).thenReturn(false)
+            whenever(emailBlockService.isDeniedEmail(requestBody.email)).thenReturn(false)
+            whenever(emailBlockService.generateBlockToken(requestBody.email)).thenReturn(emailBlockToken)
 
             joinService.requestJoin(requestBody)
 
             val infoCaptor = argumentCaptor<JoinInfoDTO>()
+            val mailCaptor = argumentCaptor<JoinMailSendRequest>()
             verify(valueOperations).set(
                 eq(JoinOTPRedisKey(requestBody.email)),
                 infoCaptor.capture(),
                 eq(JoinOTPRedisKey.TTL)
             )
-            verify(mailService).sendMailAsync(any<JoinMailSendRequest>())
+            verify(mailService).sendMailAsync(mailCaptor.capture())
             assertEquals(requestBody.email, infoCaptor.firstValue.email)
             assertEquals(requestBody.username, infoCaptor.firstValue.username)
             assertEquals(requestBody.nickname, infoCaptor.firstValue.nickname)
             assertEquals(6, infoCaptor.firstValue.otp.length)
+            assertEquals(requestBody.email, mailCaptor.firstValue.to)
+            assertEquals(infoCaptor.firstValue.otp, mailCaptor.firstValue.otp)
+            assertEquals(emailBlockToken, mailCaptor.firstValue.emailBlockToken)
         }
 
         @Test
