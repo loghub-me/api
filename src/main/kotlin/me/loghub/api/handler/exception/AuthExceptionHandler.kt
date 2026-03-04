@@ -38,11 +38,11 @@ class AuthExceptionHandler {
             message = e.message,
             status = HttpStatus.BAD_REQUEST
         )
-        val emptyRefreshTokenCookie = generateEmptyRefreshTokenCookie()
-        val emptySessionCookie = generateEmptySessionCookie()
+        val expiredRefreshTokenCookie = expireEmptyRefreshTokenCookie()
+        val expiredSessionCookie = expireEmptySessionCookie()
         return ResponseEntity.status(responseBody.status)
-            .header(HttpHeaders.SET_COOKIE, emptyRefreshTokenCookie.toString())
-            .header(HttpHeaders.SET_COOKIE, emptySessionCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, expiredRefreshTokenCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, expiredSessionCookie.toString())
             .body(responseBody)
     }
 
@@ -53,7 +53,7 @@ class AuthExceptionHandler {
             status = HttpStatus.FORBIDDEN
         ).toResponseEntity()
 
-    private fun generateEmptyRefreshTokenCookie() = ResponseCookie
+    private fun expireEmptyRefreshTokenCookie() = ResponseCookie
         .from(RefreshToken.Cookie.NAME, "")
         .domain(ClientConfig.DOMAIN)
         .httpOnly(true)
@@ -63,7 +63,7 @@ class AuthExceptionHandler {
         .maxAge(0)
         .build()
 
-    private fun generateEmptySessionCookie() = ResponseCookie
+    private fun expireEmptySessionCookie() = ResponseCookie
         .from(SessionDTO.Cookie.NAME, "")
         .domain(ClientConfig.DOMAIN)
         .httpOnly(true)

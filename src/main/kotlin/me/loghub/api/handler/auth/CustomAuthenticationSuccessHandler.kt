@@ -31,14 +31,14 @@ class CustomAuthenticationSuccessHandler(
 
         // Join new user
         if (existingUser == null) {
-            val token = oAuth2JoinService.issueToken(email, provider)
+            val token = oAuth2JoinService.generateToken(email, provider)
             response.sendRedirect("${ClientConfig.HOST}/join/confirm/social?email=${email}&token=${token}")
             return
         }
 
         // Login existing user
         if (existingUser.provider == provider) {
-            val otp = loginService.issueOTP(email)
+            val otp = loginService.generateOTP(email)
             response.sendRedirect("${ClientConfig.HOST}/login/confirm?email=${email}&otp=${otp}")
             return
         }

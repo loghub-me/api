@@ -26,7 +26,7 @@ class AccessTokenAuthenticationFilter(private val accessTokenService: AccessToke
         }
 
         try {
-            val authentication = accessTokenService.generateAuthentication(accessToken)
+            val authentication = accessTokenService.buildAuthentication(accessToken)
             SecurityContextHolder.getContext().authentication = authentication
         } catch (_: JWTVerificationException) {
             SecurityContextHolder.clearContext()

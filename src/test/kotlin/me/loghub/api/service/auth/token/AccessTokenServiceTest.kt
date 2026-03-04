@@ -32,9 +32,9 @@ class AccessTokenServiceTest {
     }
 
     @Nested
-    inner class GenerateTokenTest {
+    inner class IssueTokenTest {
         @Test
-        fun `should generate access token and authentication`() {
+        fun `should issue access token and authentication`() {
             val user = AuthFixtures.user(
                 id = 1L,
                 email = "token@loghub.me",
@@ -44,8 +44,8 @@ class AccessTokenServiceTest {
                 role = User.Role.ADMIN,
             )
 
-            val token = accessTokenService.generateToken(user)
-            val authentication = accessTokenService.generateAuthentication(token.value)
+            val token = accessTokenService.issueToken(user)
+            val authentication = accessTokenService.buildAuthentication(token.value)
             val principal = authentication.principal as User
 
             assertTrue(token.value.isNotBlank())
@@ -59,7 +59,7 @@ class AccessTokenServiceTest {
     }
 
     @Nested
-    inner class GeneratePrincipalTest {
+    inner class BuildPrincipalTest {
         @Test
         fun `should throw IllegalArgumentException when required claims are missing`() {
             val decodedToken = mock<DecodedJWT>()
@@ -67,19 +67,19 @@ class AccessTokenServiceTest {
             whenever(decodedToken.subject).thenReturn("1")
 
             assertThrows<IllegalArgumentException> {
-                accessTokenService.generatePrincipal(decodedToken)
+                accessTokenService.buildPrincipal(decodedToken)
             }
         }
     }
 
     @Nested
-    inner class GenerateAuthoritiesTest {
+    inner class BuildAuthoritiesTest {
         @Test
-        fun `should generate spring authorities from role claim`() {
+        fun `should build spring authorities from role claim`() {
             val roleClaim = mock<Claim>()
             whenever(roleClaim.asString()).thenReturn("MEMBER")
 
-            val result = accessTokenService.generateAuthorities(mapOf("role" to roleClaim))
+            val result = accessTokenService.buildAuthorities(mapOf("role" to roleClaim))
 
             assertEquals(1, result.size)
             assertEquals("ROLE_MEMBER", result.first().authority)

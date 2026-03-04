@@ -31,7 +31,7 @@ class AccessTokenService(
         const val ROLE = "role"
     }
 
-    fun generateToken(user: User): AccessToken {
+    fun issueToken(user: User): AccessToken {
         val value = JWT.create()
             .withIssuer(issuer)
             .withSubject(user.id.toString())
@@ -46,16 +46,16 @@ class AccessTokenService(
         return AccessToken(value)
     }
 
-    fun generateAuthentication(token: String): UsernamePasswordAuthenticationToken {
+    fun buildAuthentication(token: String): UsernamePasswordAuthenticationToken {
         val decodedToken = jwtVerifier.verify(token)
         return UsernamePasswordAuthenticationToken(
-            generatePrincipal(decodedToken),
+            buildPrincipal(decodedToken),
             null,
-            generateAuthorities(decodedToken.claims)
+            buildAuthorities(decodedToken.claims)
         );
     }
 
-    fun generatePrincipal(decodedToken: DecodedJWT): User {
+    fun buildPrincipal(decodedToken: DecodedJWT): User {
         val claims = decodedToken.claims
         val email = claims[JwtClaims.EMAIL]?.asString()
         val username = claims[JwtClaims.USERNAME]?.asString()
@@ -83,7 +83,7 @@ class AccessTokenService(
         )
     }
 
-    fun generateAuthorities(claims: Map<String, Claim>): List<GrantedAuthority> =
+    fun buildAuthorities(claims: Map<String, Claim>): List<GrantedAuthority> =
         claims["role"]!!.asString()
             .let { User.Role.valueOf(it) }
             .let { AuthorityUtils.commaSeparatedStringToAuthorityList(it.getAuthority()) }

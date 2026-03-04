@@ -12,7 +12,7 @@ class TokenService(
 ) {
     @Transactional
     fun generateToken(user: User) = TokenDTO(
-        accessToken = accessTokenService.generateToken(user),
+        accessToken = accessTokenService.issueToken(user),
         refreshToken = refreshTokenService.generateToken(user),
     )
 }

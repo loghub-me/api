@@ -36,7 +36,7 @@ class JoinService(
     fun requestJoin(requestBody: JoinRequestDTO) {
         checkJoinable(requestBody)
 
-        val otp = issueOTP(requestBody)
+        val otp = generateOTP(requestBody)
         val emailBlockToken = emailBlockService.generateBlockToken(requestBody.email)
         val mail = JoinMailSendRequest(to = requestBody.email, otp = otp, emailBlockToken = emailBlockToken)
         mailService.sendMailAsync(mail)
@@ -78,8 +78,8 @@ class JoinService(
         ) { ResponseMessage.Auth.DENIED_EMAIL }
     }
 
-    private fun issueOTP(requestBody: JoinRequestDTO): String {
-        val otp = OTPBuilder.generateOTP()
+    private fun generateOTP(requestBody: JoinRequestDTO): String {
+        val otp = OTPBuilder.build()
         val info = JoinInfoDTO(otp, requestBody.email, requestBody.username, requestBody.nickname)
         val redisKey = JoinOTPRedisKey(requestBody.email)
         redisTemplate.opsForValue().set(redisKey, info, JoinOTPRedisKey.TTL)

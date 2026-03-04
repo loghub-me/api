@@ -24,7 +24,7 @@ class OAuth2JoinService(
     private val redisTemplate: RedisTemplate<String, OAuth2JoinInfoDTO>,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
-    fun issueToken(email: String, provider: User.Provider): String {
+    fun generateToken(email: String, provider: User.Provider): String {
         val info = OAuth2JoinInfoDTO(
             token = UUID.randomUUID().toString(),
             email = email,

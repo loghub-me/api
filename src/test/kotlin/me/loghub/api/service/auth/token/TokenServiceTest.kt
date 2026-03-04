@@ -2,7 +2,6 @@ package me.loghub.api.service.auth.token
 
 import me.loghub.api.dto.auth.token.AccessToken
 import me.loghub.api.dto.auth.token.RefreshToken
-import me.loghub.api.entity.user.User
 import me.loghub.api.service.auth.AuthFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,14 +29,14 @@ class TokenServiceTest {
         val user = AuthFixtures.user(id = 1L)
         val accessToken = AccessToken("access")
         val refreshToken = RefreshToken("1:refresh")
-        whenever(accessTokenService.generateToken(user)).thenReturn(accessToken)
+        whenever(accessTokenService.issueToken(user)).thenReturn(accessToken)
         whenever(refreshTokenService.generateToken(user)).thenReturn(refreshToken)
 
         val result = tokenService.generateToken(user)
 
         assertEquals(accessToken, result.accessToken)
         assertEquals(refreshToken, result.refreshToken)
-        verify(accessTokenService).generateToken(user)
+        verify(accessTokenService).issueToken(user)
         verify(refreshTokenService).generateToken(user)
     }
 }

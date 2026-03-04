@@ -33,7 +33,7 @@ class LoginService(
             userRepository.existsByEmail(requestBody.email)
         ) { ResponseMessage.User.NOT_FOUND }
 
-        val otp = issueOTP(requestBody.email)
+        val otp = generateOTP(requestBody.email)
         val mail = LoginMailSendRequest(to = requestBody.email, otp = otp)
         mailService.sendMailAsync(mail)
     }
@@ -54,8 +54,8 @@ class LoginService(
         return Pair(tokenService.generateToken(user), SessionDTO(user))
     }
 
-    fun issueOTP(email: String): String {
-        val otp = OTPBuilder.generateOTP()
+    fun generateOTP(email: String): String {
+        val otp = OTPBuilder.build()
         val redisKey = LoginOTPRedisKey(email)
         redisTemplate.opsForValue().set(redisKey, otp, LoginOTPRedisKey.TTL)
         return otp

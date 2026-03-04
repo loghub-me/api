@@ -46,12 +46,12 @@ class OAuth2JoinServiceTest {
     }
 
     @Nested
-    inner class IssueTokenTest {
+    inner class GenerateTokenTest {
         @Test
-        fun `should issue oauth2 join token and store info in redis`() {
+        fun `should generate oauth2 join token and store info in redis`() {
             val email = "oauth@loghub.me"
 
-            val token = oAuth2JoinService.issueToken(email, User.Provider.GITHUB)
+            val token = oAuth2JoinService.generateToken(email, User.Provider.GITHUB)
 
             val infoCaptor = argumentCaptor<OAuth2JoinInfoDTO>()
             verify(valueOperations).set(
