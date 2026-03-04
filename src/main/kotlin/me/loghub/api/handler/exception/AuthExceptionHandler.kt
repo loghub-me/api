@@ -6,8 +6,9 @@ import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.response.MessageResponseBody
 import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.exception.auth.BadOTPException
-import me.loghub.api.exception.auth.BadRefreshTokenException
 import me.loghub.api.exception.auth.PermissionDeniedException
+import me.loghub.api.exception.auth.token.BadEmailBlockTokenException
+import me.loghub.api.exception.auth.token.BadRefreshTokenException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -19,6 +20,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class AuthExceptionHandler {
     @ExceptionHandler(BadOTPException::class)
     fun handleException(e: BadOTPException): ResponseEntity<ResponseBody> =
+        MessageResponseBody(
+            message = e.message,
+            status = HttpStatus.BAD_REQUEST
+        ).toResponseEntity()
+
+    @ExceptionHandler(BadEmailBlockTokenException::class)
+    fun handleException(e: BadEmailBlockTokenException): ResponseEntity<ResponseBody> =
         MessageResponseBody(
             message = e.message,
             status = HttpStatus.BAD_REQUEST

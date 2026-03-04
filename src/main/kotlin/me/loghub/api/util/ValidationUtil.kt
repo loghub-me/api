@@ -10,6 +10,7 @@ import me.loghub.api.exception.entity.EntityNotFoundFieldException
 import me.loghub.api.exception.validation.ConflictFieldException
 import me.loghub.api.exception.validation.CooldownNotElapsedException
 import me.loghub.api.exception.validation.IllegalFieldException
+import me.loghub.api.exception.validation.LockedException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -97,6 +98,21 @@ inline fun checkConflict(
     if (condition) {
         val message = lazyMessage()
         throw EntityExistsFieldException(field, message)
+    }
+}
+
+inline fun checkLocked(
+    field: String,
+    condition: Boolean,
+    lazyMessage: () -> String,
+) {
+    contract {
+        returns() implies !condition
+    }
+
+    if (condition) {
+        val message = lazyMessage()
+        throw LockedException(field, message)
     }
 }
 

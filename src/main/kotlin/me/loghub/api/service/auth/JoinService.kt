@@ -19,6 +19,7 @@ import me.loghub.api.service.common.MailService
 import me.loghub.api.util.OTPBuilder
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkField
+import me.loghub.api.util.checkLocked
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service
 class JoinService(
     private val redisTemplate: RedisTemplate<String, JoinInfoDTO>,
     private val userRepository: UserRepository,
+    private val emailBlockService: EmailBlockService,
     private val tokenService: TokenService,
     private val mailService: MailService,
     private val taskAPIProxy: TaskAPIProxy,
@@ -35,7 +37,8 @@ class JoinService(
         checkJoinable(requestBody)
 
         val otp = issueOTP(requestBody)
-        val mail = JoinMailSendRequest(to = requestBody.email, otp = otp)
+        val emailBlockToken = emailBlockService.generateBlockToken(requestBody.email)
+        val mail = JoinMailSendRequest(to = requestBody.email, otp = otp, emailBlockToken = emailBlockToken)
         mailService.sendMailAsync(mail)
     }
 
@@ -69,6 +72,10 @@ class JoinService(
             JoinRequestDTO::username.name,
             userRepository.existsByUsernameIgnoreCase(username),
         ) { ResponseMessage.User.USERNAME_ALREADY_EXISTS }
+        checkLocked(
+            JoinRequestDTO::email.name,
+            emailBlockService.isDeniedEmail(email),
+        ) { ResponseMessage.Auth.DENIED_EMAIL }
     }
 
     private fun issueOTP(requestBody: JoinRequestDTO): String {

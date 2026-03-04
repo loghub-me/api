@@ -5,9 +5,9 @@ import me.loghub.api.dto.task.markdown.MarkdownNormalizeRequest
 import me.loghub.api.dto.task.markdown.MarkdownRenderRequest
 import me.loghub.api.lib.redis.key.common.MarkdownCacheRedisKey
 import me.loghub.api.proxy.TaskAPIProxy
+import me.loghub.api.util.sha256
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import java.security.MessageDigest
 
 @Service
 class MarkdownService(
@@ -37,9 +37,4 @@ class MarkdownService(
         redisTemplate.opsForValue().set(redisKey, result, MarkdownCacheRedisKey.TTL)
         return result
     }
-
-    private fun sha256(input: String): String = MessageDigest
-        .getInstance(HASH_ALGORITHM)
-        .digest(input.toByteArray())
-        .joinToString("") { "%02x".format(it) }
 }

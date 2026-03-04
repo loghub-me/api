@@ -1,7 +1,6 @@
 package me.loghub.api.service.auth
 
-import me.loghub.api.dto.auth.token.RefreshToken
-import me.loghub.api.exception.auth.BadRefreshTokenException
+import me.loghub.api.exception.auth.token.BadRefreshTokenException
 import me.loghub.api.exception.validation.IllegalFieldException
 import me.loghub.api.lib.redis.key.auth.RefreshTokenRedisKey
 import me.loghub.api.repository.user.UserRepository
@@ -14,7 +13,7 @@ import org.mockito.kotlin.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import java.time.Duration
-import java.util.Optional
+import java.util.*
 import kotlin.test.assertEquals
 
 class RefreshServiceTest {

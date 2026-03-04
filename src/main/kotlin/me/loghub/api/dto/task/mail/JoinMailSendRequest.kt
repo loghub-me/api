@@ -1,11 +1,13 @@
 package me.loghub.api.dto.task.mail
 
 import me.loghub.api.config.ClientConfig
+import java.util.*
 
 class JoinMailSendRequest(
     override val to: String,
     override val subject: String = "[LogHub] 가입을 완료해주세요!",
     val otp: String,
+    val emailBlockToken: UUID,
     override val html: String = """
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
@@ -52,6 +54,13 @@ class JoinMailSendRequest(
                                 ><!--[if mso]><i style="mso-font-width:400%" hidden>&#8202;&#8202;&#8202;&#8203;</i><![endif]--></span
                               ></a
                             >
+                            <p style="font-size:12px;line-height:20px;margin:16px 0 0 0;text-align:left;">
+                              본인이 요청하지 않은 가입 시도라면,
+                              <a href="${ClientConfig.HOST}/join/email/block?token=$emailBlockToken" target="_blank" style="color:#0366d6;text-decoration-line:none;">
+                                여기
+                              </a>
+                              를 클릭하여 이메일 임시 차단을 요청할 수 있습니다.
+                            </p>
                           </td>
                         </tr>
                       </tbody>

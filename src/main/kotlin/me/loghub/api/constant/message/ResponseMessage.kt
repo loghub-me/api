@@ -11,6 +11,7 @@ object ResponseMessage {
         const val CONFLICT = "요청이 현재 상태와 충돌합니다."
         const val CONFLICT_FIELD = "필드 값이 충돌합니다."
         const val MISSING_COOKIE = "쿠키가 전달되지 않았습니다."
+        const val LOCKED = "해당 리소스는 잠겨 있습니다."
         const val TOO_MANY_REQUESTS = "너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요."
         const val COOLDOWN_NOT_ELAPSED = "쿨타임이 지나지 않았습니다."
         const val INTERNAL_SERVER_ERROR = "알 수 없는 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
@@ -32,6 +33,8 @@ object ResponseMessage {
         const val INVALID_TOKEN = "유효하지 않은 토큰입니다."
         const val AUTHENTICATION_FAILED = "인증에 실패했습니다."
         const val UNSUPPORTED_OAUTH2_PROVIDER = "지원하지 않는 공급자입니다."
+        const val DENIED_EMAIL = "거부된 이메일입니다. 다른 이메일을 사용해주세요."
+        const val DENY_EMAIL_SUCCESS = "이메일이 성공적으로 차단되었습니다!"
     }
 
     object Join {

@@ -5,7 +5,7 @@ import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.token.RefreshToken
 import me.loghub.api.dto.auth.token.TokenDTO
-import me.loghub.api.exception.auth.BadRefreshTokenException
+import me.loghub.api.exception.auth.token.BadRefreshTokenException
 import me.loghub.api.lib.redis.key.auth.RefreshTokenRedisKey
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
