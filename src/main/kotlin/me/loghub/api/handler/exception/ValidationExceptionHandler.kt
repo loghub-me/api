@@ -7,6 +7,7 @@ import me.loghub.api.dto.response.ResponseBody
 import me.loghub.api.exception.validation.ConflictFieldException
 import me.loghub.api.exception.validation.CooldownNotElapsedException
 import me.loghub.api.exception.validation.IllegalFieldException
+import me.loghub.api.exception.validation.LockedFieldException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -49,6 +50,14 @@ class ValidationExceptionHandler {
         return MessageResponseBody(
             message = ResponseMessage.Default.MISSING_COOKIE,
             status = HttpStatus.BAD_REQUEST
+        ).toResponseEntity()
+    }
+
+    @ExceptionHandler(LockedFieldException::class)
+    fun handleException(e: LockedFieldException): ResponseEntity<ResponseBody> {
+        return FieldErrorsResponseBody(
+            fieldErrors = mapOf(e.field to e.message),
+            status = HttpStatus.LOCKED
         ).toResponseEntity()
     }
 

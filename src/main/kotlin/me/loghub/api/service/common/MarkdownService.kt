@@ -14,10 +14,6 @@ class MarkdownService(
     private val redisTemplate: RedisTemplate<String, RenderedMarkdownDTO>,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
-    private companion object {
-        private const val HASH_ALGORITHM = "SHA-256"
-    }
-
     fun findOrGenerateMarkdownCache(markdown: String): RenderedMarkdownDTO {
         val redisKey = MarkdownCacheRedisKey(sha256(markdown))
         return redisTemplate.opsForValue().get(redisKey) ?: generateMarkdownCache(redisKey, markdown)

@@ -22,9 +22,9 @@ class EmailBlockService(
 
     fun blockEmail(token: UUID) {
         val tokenKey = EmailBlockTokenRedisKey(token)
-        val email = redisTemplate.opsForValue().getAndDelete(tokenKey)
+        val hashedEmail = redisTemplate.opsForValue().getAndDelete(tokenKey)
             ?: throw BadEmailBlockTokenException(ResponseMessage.Auth.INVALID_TOKEN)
-        val deniedKey = BlockedEmailRedisKey(email)
+        val deniedKey = BlockedEmailRedisKey(hashedEmail)
         redisTemplate.opsForValue().set(deniedKey, true.toString(), BlockedEmailRedisKey.TTL)
     }
 

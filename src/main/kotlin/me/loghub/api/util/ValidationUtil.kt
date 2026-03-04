@@ -10,7 +10,7 @@ import me.loghub.api.exception.entity.EntityNotFoundFieldException
 import me.loghub.api.exception.validation.ConflictFieldException
 import me.loghub.api.exception.validation.CooldownNotElapsedException
 import me.loghub.api.exception.validation.IllegalFieldException
-import me.loghub.api.exception.validation.LockedException
+import me.loghub.api.exception.validation.LockedFieldException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -112,7 +112,7 @@ inline fun checkLocked(
 
     if (condition) {
         val message = lazyMessage()
-        throw LockedException(field, message)
+        throw LockedFieldException(field, message)
     }
 }
 
