@@ -1,5 +1,6 @@
 package me.loghub.api.service.auth
 
+import me.loghub.api.dto.auth.email.EmailBlockDTO
 import me.loghub.api.exception.auth.token.BadEmailBlockTokenException
 import me.loghub.api.lib.redis.key.auth.BlockedEmailRedisKey
 import me.loghub.api.lib.redis.key.auth.EmailBlockTokenRedisKey
@@ -8,12 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import java.util.*
@@ -58,10 +54,11 @@ class EmailBlockServiceTest {
         @Test
         fun `should block email when token is valid`() {
             val token = UUID.randomUUID()
+            val requestBody = EmailBlockDTO(token)
             val hashedEmail = sha256("blocked@loghub.me")
             whenever(valueOperations.getAndDelete(EmailBlockTokenRedisKey(token))).thenReturn(hashedEmail)
 
-            emailBlockService.blockEmail(token)
+            emailBlockService.blockEmail(requestBody)
 
             verify(valueOperations).getAndDelete(EmailBlockTokenRedisKey(token))
             verify(valueOperations).set(
@@ -74,10 +71,11 @@ class EmailBlockServiceTest {
         @Test
         fun `should throw BadEmailBlockTokenException when token is invalid`() {
             val token = UUID.randomUUID()
+            val requestBody = EmailBlockDTO(token)
             whenever(valueOperations.getAndDelete(EmailBlockTokenRedisKey(token))).thenReturn(null)
 
             assertThrows<BadEmailBlockTokenException> {
-                emailBlockService.blockEmail(token)
+                emailBlockService.blockEmail(requestBody)
             }
 
             verify(valueOperations, never()).set(any(), any(), any<java.time.Duration>())

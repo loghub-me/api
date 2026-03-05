@@ -1,6 +1,7 @@
 package me.loghub.api.service.auth
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.auth.email.EmailBlockDTO
 import me.loghub.api.exception.auth.token.BadEmailBlockTokenException
 import me.loghub.api.lib.redis.key.auth.BlockedEmailRedisKey
 import me.loghub.api.lib.redis.key.auth.EmailBlockTokenRedisKey
@@ -20,8 +21,8 @@ class EmailBlockService(
         return token
     }
 
-    fun blockEmail(token: UUID) {
-        val tokenKey = EmailBlockTokenRedisKey(token)
+    fun blockEmail(requestBody: EmailBlockDTO) {
+        val tokenKey = EmailBlockTokenRedisKey(requestBody.token)
         val hashedEmail = redisTemplate.opsForValue().getAndDelete(tokenKey)
             ?: throw BadEmailBlockTokenException(ResponseMessage.Auth.INVALID_TOKEN)
         val deniedKey = BlockedEmailRedisKey(hashedEmail)
