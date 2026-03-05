@@ -17,7 +17,7 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
-import java.util.Optional
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -244,6 +244,7 @@ class SeriesChapterServiceTest {
 
             seriesChapterService.deleteChapter(1L, 2L, writer)
 
+            verify(seriesRepository).decreaseAndGetChapterCount(1L)
             verify(seriesChapterRepository).delete(chapter)
             assertEquals(2, chapter3.sequence)
             assertEquals(3, chapter4.sequence)

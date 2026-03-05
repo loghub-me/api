@@ -87,6 +87,16 @@ interface SeriesRepository : JpaRepository<Series, Long> {
     )
     fun increaseAndGetChapterCount(@Param("id") id: Long, @Param("maxChapterSize") maxChapterSize: Int): Int
 
+    @NativeQuery(
+        """
+        UPDATE series
+        SET chapter_count = chapter_count - 1
+        WHERE id = :id AND chapter_count > 0
+        RETURNING chapter_count
+        """
+    )
+    fun decreaseAndGetChapterCount(@Param("id") id: Long): Int
+
     @Modifying
     @Query("UPDATE Series s SET s.writerUsername = :newUsername WHERE s.writerUsername = :oldUsername")
     fun updateWriterUsernameByWriterUsername(

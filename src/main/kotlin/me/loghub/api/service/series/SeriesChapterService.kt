@@ -133,7 +133,9 @@ class SeriesChapterService(
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
+        seriesRepository.decreaseAndGetChapterCount(seriesId)
         seriesChapterRepository.delete(chapter)
+
         chaptersToShift.forEach { it.updateSequence(it.sequence - 1) }
     }
 
