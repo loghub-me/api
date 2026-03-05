@@ -6,7 +6,7 @@ import me.loghub.api.entity.user.UserStar
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.series.SeriesStatsRepository
 import me.loghub.api.repository.user.UserStarRepository
-import me.loghub.api.service.common.IStarService
+import me.loghub.api.service.common.StarService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkExists
 import org.springframework.stereotype.Service
@@ -17,7 +17,7 @@ class SeriesStarService(
     private val userStarRepository: UserStarRepository,
     private val seriesRepository: SeriesRepository,
     private val seriesStatsRepository: SeriesStatsRepository,
-) : IStarService {
+) : StarService {
     @Transactional(readOnly = true)
     override fun existsStar(id: Long, stargazer: User): Boolean {
         val seriesRef = seriesRepository.getReferenceById(id)

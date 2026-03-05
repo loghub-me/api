@@ -3,7 +3,7 @@ package me.loghub.api.service.common
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserStar
 
-interface IStarService {
+interface StarService {
     fun existsStar(id: Long, stargazer: User): Boolean
 
     fun addStar(id: Long, stargazer: User): UserStar

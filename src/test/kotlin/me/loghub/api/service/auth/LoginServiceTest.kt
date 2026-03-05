@@ -42,8 +42,8 @@ class LoginServiceTest {
         loginService = LoginService(
             redisTemplate,
             userRepository,
+            emailService,
             tokenService,
-            emailService
         )
     }
 

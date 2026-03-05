@@ -27,9 +27,9 @@ import org.springframework.stereotype.Service
 class JoinService(
     private val redisTemplate: RedisTemplate<String, JoinInfoDTO>,
     private val userRepository: UserRepository,
+    private val emailService: EmailService,
     private val emailBlockService: EmailBlockService,
     private val tokenService: TokenService,
-    private val emailService: EmailService,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
     @Transactional

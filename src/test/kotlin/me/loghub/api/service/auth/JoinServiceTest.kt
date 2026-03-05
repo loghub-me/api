@@ -26,9 +26,9 @@ class JoinServiceTest {
     private lateinit var redisTemplate: RedisTemplate<String, JoinInfoDTO>
     private lateinit var valueOperations: ValueOperations<String, JoinInfoDTO>
     private lateinit var userRepository: UserRepository
-    private lateinit var tokenService: TokenService
-    private lateinit var emailBlockService: EmailBlockService
     private lateinit var emailService: EmailService
+    private lateinit var emailBlockService: EmailBlockService
+    private lateinit var tokenService: TokenService
     private lateinit var taskAPIProxy: TaskAPIProxy
 
     private lateinit var joinService: JoinService
@@ -51,9 +51,9 @@ class JoinServiceTest {
         joinService = JoinService(
             redisTemplate,
             userRepository,
+            emailService,
             emailBlockService,
             tokenService,
-            emailService,
             taskAPIProxy
         )
     }
