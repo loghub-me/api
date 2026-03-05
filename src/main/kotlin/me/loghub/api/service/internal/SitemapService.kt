@@ -1,7 +1,7 @@
 package me.loghub.api.service.internal
 
-import me.loghub.api.config.AssetsConfig
-import me.loghub.api.config.ClientConfig
+import me.loghub.api.dto.config.AssetsProperties
+import me.loghub.api.dto.config.ClientProperties
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.series.SeriesRepository
@@ -15,6 +15,8 @@ class SitemapService(
     private val seriesRepository: SeriesRepository,
     private val questionRepository: QuestionRepository,
     private val topicRepository: TopicRepository,
+    private val clientProps: ClientProperties,
+    private val assetsProps: AssetsProperties,
 ) {
     private companion object {
         const val ARTICLE_PRIORITY = 1.0
@@ -27,21 +29,21 @@ class SitemapService(
     @Transactional(readOnly = true)
     fun getDynamicSitemap() = (
             articleRepository.findSitemap(
-                ClientConfig.HOST,
-                AssetsConfig.HOST,
+                clientProps.host,
+                assetsProps.host,
                 ARTICLE_PRIORITY
             ) + seriesRepository.findSitemap(
-                ClientConfig.HOST,
-                AssetsConfig.HOST,
+                clientProps.host,
+                assetsProps.host,
                 SERIES_PRIORITY,
                 SERIES_CHAPTER_PRIORITY
             ) + questionRepository.findSitemap(
-                ClientConfig.HOST,
-                AssetsConfig.HOST,
+                clientProps.host,
+                assetsProps.host,
                 QUESTION_PRIORITY
             ) + topicRepository.findSitemap(
-                ClientConfig.HOST,
-                AssetsConfig.HOST,
+                clientProps.host,
+                assetsProps.host,
                 TOPIC_PRIORITY
             ))
 }

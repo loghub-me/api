@@ -1,6 +1,6 @@
 package me.loghub.api.service.user
 
-import me.loghub.api.config.ClientConfig
+import me.loghub.api.dto.config.ClientProperties
 import me.loghub.api.dto.task.github.GitHubSocialAccount
 import me.loghub.api.dto.task.github.GitHubUserResponse
 import me.loghub.api.dto.user.UpdateUserGitHubDTO
@@ -25,21 +25,21 @@ import kotlin.test.assertTrue
 class UserGitHubServiceTest {
     private lateinit var userRepository: UserRepository
     private lateinit var githubAPIProxy: GitHubAPIProxy
-    private lateinit var clientConfig: ClientConfig
+    private lateinit var clientProps: ClientProperties
 
     private lateinit var userGitHubService: UserGitHubService
 
     @BeforeEach
     fun setUp() {
-        clientConfig = ClientConfig().apply {
-            host = "https://loghub.me"
+        clientProps = ClientProperties(
+            host = "https://loghub.me",
             domain = "loghub.me"
-        }
+        )
 
         userRepository = mock()
         githubAPIProxy = mock()
 
-        userGitHubService = UserGitHubService(userRepository, githubAPIProxy, clientConfig)
+        userGitHubService = UserGitHubService(userRepository, githubAPIProxy, clientProps)
     }
 
     @Nested

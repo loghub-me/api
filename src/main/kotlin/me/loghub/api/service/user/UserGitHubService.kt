@@ -1,8 +1,8 @@
 package me.loghub.api.service.user
 
 import feign.FeignException
-import me.loghub.api.config.ClientConfig
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.config.ClientProperties
 import me.loghub.api.dto.user.UpdateUserGitHubDTO
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserGitHub
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserGitHubService(
     private val userRepository: UserRepository,
     private val githubAPIProxy: GitHubAPIProxy,
-    private val clientConfig: ClientConfig,
+    private val clientProps: ClientProperties,
 ) {
     @Transactional(readOnly = true)
     fun getGitHub(user: User) = userRepository.findWithMetaByUsername(user.username)
@@ -57,7 +57,7 @@ class UserGitHubService(
         }
 
         try {
-            val userPageURL = "${clientConfig.host}/${foundUser.username}"
+            val userPageURL = "${clientProps.host}/${foundUser.username}"
             val isVerified = checkGitHubProfile(userPageURL, githubUsername)
             if (!isVerified) {
                 throw GitHubUserNotFoundException(ResponseMessage.User.GitHub.VERIFICATION_FAILED)

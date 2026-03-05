@@ -3,6 +3,7 @@ package me.loghub.api.config
 import jakarta.servlet.DispatcherType
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.constant.message.ServerMessage
+import me.loghub.api.dto.config.ClientProperties
 import me.loghub.api.entity.user.User
 import me.loghub.api.filter.AccessTokenAuthenticationFilter
 import me.loghub.api.handler.auth.*
@@ -31,7 +32,7 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(
         httpSecurity: HttpSecurity,
-        clientConfig: ClientConfig,
+        clientProps: ClientProperties,
         userDetailsService: UserDetailsService,
         accessTokenService: AccessTokenService,
         oauth2UserService: CustomOAuth2UserService,
@@ -47,7 +48,7 @@ class SecurityConfig {
         .cors {
             it.configurationSource { _ ->
                 CorsConfiguration().apply {
-                    allowedOrigins = listOf(clientConfig.host)
+                    allowedOrigins = listOf(clientProps.host)
                     allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                     allowedHeaders = listOf("*")
                     allowCredentials = true

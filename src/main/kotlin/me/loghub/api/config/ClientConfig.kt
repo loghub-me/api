@@ -1,15 +1,13 @@
 package me.loghub.api.config
 
 import jakarta.annotation.PostConstruct
-import org.springframework.boot.context.properties.ConfigurationProperties
+import me.loghub.api.dto.config.ClientProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConfigurationProperties(prefix = "client")
-class ClientConfig {
-    lateinit var host: String
-    lateinit var domain: String
-
+@EnableConfigurationProperties(ClientProperties::class)
+class ClientConfig(private val props: ClientProperties) {
     companion object {
         lateinit var HOST: String
         lateinit var DOMAIN: String
@@ -17,7 +15,7 @@ class ClientConfig {
 
     @PostConstruct
     fun init() {
-        Companion.HOST = host
-        Companion.DOMAIN = domain
+        HOST = props.host
+        DOMAIN = props.domain
     }
 }
