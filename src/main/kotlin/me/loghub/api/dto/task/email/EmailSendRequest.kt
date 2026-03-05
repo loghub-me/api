@@ -1,6 +1,6 @@
-package me.loghub.api.dto.task.mail
+package me.loghub.api.dto.task.email
 
-interface MailSendRequest {
+interface EmailSendRequest {
     val to: String;
     val subject: String;
     val html: String;

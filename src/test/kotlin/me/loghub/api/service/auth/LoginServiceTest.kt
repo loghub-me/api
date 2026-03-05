@@ -1,13 +1,13 @@
 package me.loghub.api.service.auth
 
 import me.loghub.api.config.ClientConfig
-import me.loghub.api.dto.task.mail.LoginMailSendRequest
+import me.loghub.api.dto.task.email.LoginEmailSendRequest
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.exception.entity.EntityNotFoundFieldException
 import me.loghub.api.lib.redis.key.auth.LoginOTPRedisKey
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
-import me.loghub.api.service.common.MailService
+import me.loghub.api.service.email.EmailService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class LoginServiceTest {
     private lateinit var valueOperations: ValueOperations<String, String>
     private lateinit var userRepository: UserRepository
     private lateinit var tokenService: TokenService
-    private lateinit var mailService: MailService
+    private lateinit var emailService: EmailService
 
     private lateinit var loginService: LoginService
 
@@ -35,7 +35,7 @@ class LoginServiceTest {
         valueOperations = mock()
         userRepository = mock()
         tokenService = mock()
-        mailService = mock()
+        emailService = mock()
 
         whenever(redisTemplate.opsForValue()).thenReturn(valueOperations)
 
@@ -43,7 +43,7 @@ class LoginServiceTest {
             redisTemplate,
             userRepository,
             tokenService,
-            mailService
+            emailService
         )
     }
 
@@ -63,7 +63,7 @@ class LoginServiceTest {
                 otpCaptor.capture(),
                 eq(LoginOTPRedisKey.TTL)
             )
-            verify(mailService).sendMailAsync(any<LoginMailSendRequest>())
+            verify(emailService).sendEmailAsync(any<LoginEmailSendRequest>())
             assertEquals(6, otpCaptor.firstValue.length)
         }
 
@@ -76,7 +76,7 @@ class LoginServiceTest {
                 loginService.requestLogin(requestBody)
             }
 
-            verify(mailService, never()).sendMailAsync(any())
+            verify(emailService, never()).sendEmailAsync(any())
             verify(valueOperations, never()).set(
                 any<String>(),
                 any<String>(),

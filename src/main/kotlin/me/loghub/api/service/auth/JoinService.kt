@@ -8,14 +8,14 @@ import me.loghub.api.dto.auth.join.JoinInfoDTO
 import me.loghub.api.dto.auth.join.JoinRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
-import me.loghub.api.dto.task.mail.JoinMailSendRequest
+import me.loghub.api.dto.task.email.JoinEmailSendRequest
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.lib.redis.key.auth.JoinOTPRedisKey
 import me.loghub.api.lib.validation.isReservedUsername
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
-import me.loghub.api.service.common.MailService
+import me.loghub.api.service.email.EmailService
 import me.loghub.api.util.OTPBuilder
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkField
@@ -29,7 +29,7 @@ class JoinService(
     private val userRepository: UserRepository,
     private val emailBlockService: EmailBlockService,
     private val tokenService: TokenService,
-    private val mailService: MailService,
+    private val emailService: EmailService,
     private val taskAPIProxy: TaskAPIProxy,
 ) {
     @Transactional
@@ -38,8 +38,8 @@ class JoinService(
 
         val otp = generateOTP(requestBody)
         val emailBlockToken = emailBlockService.generateBlockToken(requestBody.email)
-        val mail = JoinMailSendRequest(to = requestBody.email, otp = otp, emailBlockToken = emailBlockToken)
-        mailService.sendMailAsync(mail)
+        val mail = JoinEmailSendRequest(to = requestBody.email, otp = otp, emailBlockToken = emailBlockToken)
+        emailService.sendEmailAsync(mail)
     }
 
     @Transactional

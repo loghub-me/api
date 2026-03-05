@@ -1,8 +1,8 @@
-package me.loghub.api.dto.task.mail
+package me.loghub.api.dto.task.email
 
 import me.loghub.api.config.ClientConfig
 
-class LoginMailSendRequest(
+class LoginEmailSendRequest(
     override val to: String,
     override val subject: String = "[LogHub] 로그인을 완료해주세요!",
     val otp: String,
@@ -88,4 +88,4 @@ class LoginMailSendRequest(
   </body>
 </html>
 """,
-) : MailSendRequest
+) : EmailSendRequest

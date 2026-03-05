@@ -3,7 +3,7 @@ package me.loghub.api.service.auth
 import me.loghub.api.config.ClientConfig
 import me.loghub.api.dto.auth.join.JoinInfoDTO
 import me.loghub.api.dto.task.avatar.AvatarGenerateRequest
-import me.loghub.api.dto.task.mail.JoinMailSendRequest
+import me.loghub.api.dto.task.email.JoinEmailSendRequest
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.exception.entity.EntityExistsFieldException
 import me.loghub.api.exception.validation.IllegalFieldException
@@ -11,7 +11,7 @@ import me.loghub.api.lib.redis.key.auth.JoinOTPRedisKey
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
-import me.loghub.api.service.common.MailService
+import me.loghub.api.service.email.EmailService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 
 class JoinServiceTest {
@@ -28,7 +28,7 @@ class JoinServiceTest {
     private lateinit var userRepository: UserRepository
     private lateinit var tokenService: TokenService
     private lateinit var emailBlockService: EmailBlockService
-    private lateinit var mailService: MailService
+    private lateinit var emailService: EmailService
     private lateinit var taskAPIProxy: TaskAPIProxy
 
     private lateinit var joinService: JoinService
@@ -43,7 +43,7 @@ class JoinServiceTest {
         userRepository = mock()
         tokenService = mock()
         emailBlockService = mock()
-        mailService = mock()
+        emailService = mock()
         taskAPIProxy = mock()
 
         whenever(redisTemplate.opsForValue()).thenReturn(valueOperations)
@@ -53,7 +53,7 @@ class JoinServiceTest {
             userRepository,
             emailBlockService,
             tokenService,
-            mailService,
+            emailService,
             taskAPIProxy
         )
     }
@@ -76,13 +76,13 @@ class JoinServiceTest {
             joinService.requestJoin(requestBody)
 
             val infoCaptor = argumentCaptor<JoinInfoDTO>()
-            val mailCaptor = argumentCaptor<JoinMailSendRequest>()
+            val mailCaptor = argumentCaptor<JoinEmailSendRequest>()
             verify(valueOperations).set(
                 eq(JoinOTPRedisKey(requestBody.email)),
                 infoCaptor.capture(),
                 eq(JoinOTPRedisKey.TTL)
             )
-            verify(mailService).sendMailAsync(mailCaptor.capture())
+            verify(emailService).sendEmailAsync(mailCaptor.capture())
             assertEquals(requestBody.email, infoCaptor.firstValue.email)
             assertEquals(requestBody.username, infoCaptor.firstValue.username)
             assertEquals(requestBody.nickname, infoCaptor.firstValue.nickname)
@@ -101,7 +101,7 @@ class JoinServiceTest {
             }
 
             verify(userRepository, never()).existsByEmail(any())
-            verify(mailService, never()).sendMailAsync(any())
+            verify(emailService, never()).sendEmailAsync(any())
         }
 
         @Test
@@ -114,7 +114,7 @@ class JoinServiceTest {
             }
 
             verify(userRepository, never()).existsByUsernameIgnoreCase(any())
-            verify(mailService, never()).sendMailAsync(any())
+            verify(emailService, never()).sendEmailAsync(any())
         }
     }
 

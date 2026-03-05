@@ -6,14 +6,14 @@ import me.loghub.api.dto.auth.SessionDTO
 import me.loghub.api.dto.auth.login.LoginConfirmDTO
 import me.loghub.api.dto.auth.login.LoginRequestDTO
 import me.loghub.api.dto.auth.token.TokenDTO
-import me.loghub.api.dto.task.mail.LoginMailSendRequest
+import me.loghub.api.dto.task.email.LoginEmailSendRequest
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.auth.BadOTPException
 import me.loghub.api.exception.entity.EntityNotFoundFieldException
 import me.loghub.api.lib.redis.key.auth.LoginOTPRedisKey
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.token.TokenService
-import me.loghub.api.service.common.MailService
+import me.loghub.api.service.email.EmailService
 import me.loghub.api.util.OTPBuilder
 import me.loghub.api.util.checkExists
 import org.springframework.data.redis.core.RedisTemplate
@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service
 class LoginService(
     private val redisTemplate: RedisTemplate<String, String>,
     private val userRepository: UserRepository,
+    private val emailService: EmailService,
     private val tokenService: TokenService,
-    private val mailService: MailService,
 ) {
     @Transactional
     fun requestLogin(requestBody: LoginRequestDTO) {
@@ -34,8 +34,8 @@ class LoginService(
         ) { ResponseMessage.User.NOT_FOUND }
 
         val otp = generateOTP(requestBody.email)
-        val mail = LoginMailSendRequest(to = requestBody.email, otp = otp)
-        mailService.sendMailAsync(mail)
+        val mail = LoginEmailSendRequest(to = requestBody.email, otp = otp)
+        emailService.sendEmailAsync(mail)
     }
 
     @Transactional
