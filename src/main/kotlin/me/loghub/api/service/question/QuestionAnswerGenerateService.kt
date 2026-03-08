@@ -53,9 +53,8 @@ class QuestionAnswerGenerateService(
             val res = taskAPIProxy.generateAnswer(req)
             val answer = createAnswer(res, question, bot)
             questionAnswerRepository.save(answer)
-        } catch (e: FeignException) {
-            // TODO
-            e.printStackTrace()
+        } catch (_: FeignException) {
+            deleteGeneratingCooldown(req.questionId)
         } finally {
             deleteGeneratingStatus(req.questionId)
         }
@@ -92,6 +91,11 @@ class QuestionAnswerGenerateService(
             true.toString(),
             QuestionAnswerGenerateCooldownRedisKey.TTL
         )
+    }
+
+    private fun deleteGeneratingCooldown(questionId: Long) {
+        val redisKey = QuestionAnswerGenerateCooldownRedisKey(questionId)
+        redisTemplate.delete(redisKey)
     }
 
     private fun deleteGeneratingStatus(questionId: Long) {
