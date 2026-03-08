@@ -32,7 +32,7 @@ interface UserMetaRepository : JpaRepository<UserMeta, Long> {
             SELECT at.topic_id AS topic_id
             FROM public.article_topics at
             LEFT JOIN public.articles a ON at.article_id = a.id
-            WHERE a.writer_id = :writerId
+            WHERE a.writer_id = :writerId AND a.published = true
             UNION ALL
             SELECT st.topic_id AS topic_id
             FROM public.series_topics st
