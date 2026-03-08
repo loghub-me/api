@@ -1,6 +1,5 @@
 package me.loghub.api.filter
 
-import com.auth0.jwt.exceptions.JWTVerificationException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -28,7 +27,7 @@ class AccessTokenAuthenticationFilter(private val accessTokenService: AccessToke
         try {
             val authentication = accessTokenService.buildAuthentication(accessToken)
             SecurityContextHolder.getContext().authentication = authentication
-        } catch (_: JWTVerificationException) {
+        } catch (_: Exception) {
             SecurityContextHolder.clearContext()
         }
 
