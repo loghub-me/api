@@ -15,6 +15,7 @@ import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.question.QuestionStatsRepository
 import me.loghub.api.service.common.MarkdownService
+import me.loghub.api.service.notification.NotificationService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -33,6 +34,7 @@ class QuestionAnswerServiceTest {
     private lateinit var markdownService: MarkdownService
     private lateinit var redisTemplate: RedisTemplate<String, String>
     private lateinit var valueOperations: ValueOperations<String, String>
+    private lateinit var notificationService: NotificationService
 
     private lateinit var questionAnswerService: QuestionAnswerService
 
@@ -45,6 +47,7 @@ class QuestionAnswerServiceTest {
         markdownService = mock()
         redisTemplate = mock()
         valueOperations = mock()
+        notificationService = mock()
 
         whenever(redisTemplate.opsForValue()).thenReturn(valueOperations)
 
@@ -54,7 +57,8 @@ class QuestionAnswerServiceTest {
             questionStatsRepository,
             questionAnswerGenerateService,
             markdownService,
-            redisTemplate
+            redisTemplate,
+            notificationService,
         )
     }
 

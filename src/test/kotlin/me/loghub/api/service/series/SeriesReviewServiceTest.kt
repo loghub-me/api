@@ -6,6 +6,7 @@ import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.series.SeriesReviewRepository
 import me.loghub.api.repository.series.SeriesStatsRepository
+import me.loghub.api.service.notification.NotificationService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -19,6 +20,7 @@ class SeriesReviewServiceTest {
     private lateinit var seriesRepository: SeriesRepository
     private lateinit var seriesStatsRepository: SeriesStatsRepository
     private lateinit var seriesReviewRepository: SeriesReviewRepository
+    private lateinit var notificationService: NotificationService
 
     private lateinit var seriesReviewService: SeriesReviewService
 
@@ -27,11 +29,13 @@ class SeriesReviewServiceTest {
         seriesRepository = mock()
         seriesStatsRepository = mock()
         seriesReviewRepository = mock()
+        notificationService = mock()
 
         seriesReviewService = SeriesReviewService(
             seriesRepository,
             seriesStatsRepository,
-            seriesReviewRepository
+            seriesReviewRepository,
+            notificationService,
         )
     }
 

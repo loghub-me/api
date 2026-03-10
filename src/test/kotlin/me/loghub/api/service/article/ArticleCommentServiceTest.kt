@@ -10,6 +10,7 @@ import me.loghub.api.exception.validation.IllegalFieldException
 import me.loghub.api.repository.article.ArticleCommentRepository
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.article.ArticleStatsRepository
+import me.loghub.api.service.notification.NotificationService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -25,6 +26,7 @@ class ArticleCommentServiceTest {
     private lateinit var articleRepository: ArticleRepository
     private lateinit var articleStatsRepository: ArticleStatsRepository
     private lateinit var articleCommentRepository: ArticleCommentRepository
+    private lateinit var notificationService: NotificationService
 
     private lateinit var articleCommentService: ArticleCommentService
 
@@ -33,11 +35,13 @@ class ArticleCommentServiceTest {
         articleRepository = mock()
         articleStatsRepository = mock()
         articleCommentRepository = mock()
+        notificationService = mock()
 
         articleCommentService = ArticleCommentService(
             articleRepository,
             articleStatsRepository,
-            articleCommentRepository
+            articleCommentRepository,
+            notificationService,
         )
     }
 
