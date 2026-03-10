@@ -3,14 +3,17 @@ package me.loghub.api.service.article
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.article.comment.ArticleCommentDTO
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
+import me.loghub.api.dto.notification.CreateNotificationDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleComment
+import me.loghub.api.entity.notification.Notification
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.article.ArticleCommentMapper
 import me.loghub.api.repository.article.ArticleCommentRepository
 import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.article.ArticleStatsRepository
+import me.loghub.api.service.notification.NotificationService
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
@@ -23,6 +26,7 @@ class ArticleCommentService(
     private val articleRepository: ArticleRepository,
     private val articleStatsRepository: ArticleStatsRepository,
     private val articleCommentRepository: ArticleCommentRepository,
+    private val notificationService: NotificationService,
 ) {
     private companion object {
         const val DEFAULT_PAGE_SIZE = 10
@@ -59,6 +63,7 @@ class ArticleCommentService(
 
         articleStatsRepository.incrementCommentCount(articleId)
         parent?.let { articleCommentRepository.incrementReplyCount(it.id!!) }
+        createNotifications(savedComment)
 
         return savedComment
     }
@@ -108,4 +113,30 @@ class ArticleCommentService(
             }
             return it
         }
+
+    private fun createNotifications(comment: ArticleComment) {
+        val article = comment.article
+
+        comment.mention?.let { mention ->
+            if (mention == comment.writer) return@let
+
+            val request = CreateNotificationDTO(
+                targetType = Notification.TargetType.ARTICLE_COMMENT,
+                article = article,
+                actor = comment.writer,
+                recipient = mention,
+            )
+            notificationService.createNotification(request)
+        }
+
+        if (article.writer == comment.mention || article.writer == comment.writer) return
+
+        val request = CreateNotificationDTO(
+            targetType = Notification.TargetType.ARTICLE_COMMENT,
+            article = article,
+            actor = comment.writer,
+            recipient = article.writer,
+        )
+        notificationService.createNotification(request)
+    }
 }

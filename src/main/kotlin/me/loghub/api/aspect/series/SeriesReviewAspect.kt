@@ -1,11 +1,9 @@
 package me.loghub.api.aspect.series
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.series.SeriesReview
 import me.loghub.api.entity.user.User
 import me.loghub.api.lib.redis.key.series.SeriesTrendingScoreRedisKey
-import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Component
 @Component
 class SeriesReviewAspect(
     private val redisTemplate: RedisTemplate<String, String>,
-    private val notificationService: NotificationService,
 ) {
     private object TrendingScoreDelta {
         const val REVIEW = 1.toDouble()
@@ -37,7 +34,6 @@ class SeriesReviewAspect(
     fun afterPostReview(postedReview: SeriesReview) {
         val seriesId = postedReview.series.id!!
         updateTrendingScoreAfterPostReview(seriesId)
-        sendNotificationsAfterPostReview(postedReview)
         logAfterPostReview(postedReview)
     }
 
@@ -62,19 +58,6 @@ class SeriesReviewAspect(
 
     private fun updateTrendingScoreAfterDeleteReview(seriesId: Long) =
         zSetOps.incrementScore(trendingScoreKey, seriesId.toString(), -TrendingScoreDelta.REVIEW)
-
-    private fun sendNotificationsAfterPostReview(postedReview: SeriesReview) {
-        val series = postedReview.series
-
-        if (series.writer == postedReview.writer) return
-
-        val notification = NotificationDTO(
-            href = "/series/${series.writerUsername}/${series.slug}",
-            title = series.title,
-            message = "@${postedReview.writer.username}님이 회원님의 시리즈에 리뷰를 남겼습니다.",
-        )
-        notificationService.addNotification(series.writer.id!!, notification)
-    }
 
     private fun logAfterPostReview(review: SeriesReview) =
         logger.info { "[SeriesReview] posted: { seriesId=${review.series.id}, reviewId=${review.id}, writerId=${review.writer.id}, content=\"${review.content}\" }" }

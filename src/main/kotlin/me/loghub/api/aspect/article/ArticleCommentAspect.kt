@@ -1,11 +1,9 @@
 package me.loghub.api.aspect.article
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.article.ArticleComment
 import me.loghub.api.entity.user.User
 import me.loghub.api.lib.redis.key.article.ArticleTrendingScoreRedisKey
-import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Component
 @Component
 class ArticleCommentAspect(
     private val redisTemplate: RedisTemplate<String, String>,
-    private val notificationService: NotificationService,
 ) {
     private object TrendingScoreDelta {
         const val COMMENT = 1.toDouble()
@@ -37,7 +34,6 @@ class ArticleCommentAspect(
     fun afterPostComment(postedComment: ArticleComment) {
         val articleId = postedComment.article.id!!
         updateTrendingScoreAfterPostComment(articleId)
-        sendNotificationsAfterPostComment(postedComment)
         logAfterPostComment(postedComment)
     }
 
@@ -60,29 +56,6 @@ class ArticleCommentAspect(
 
     private fun updateTrendingScoreAfterDeleteComment(articleId: Long) =
         zSetOps.incrementScore(trendingScoreKey, articleId.toString(), -TrendingScoreDelta.COMMENT)
-
-    private fun sendNotificationsAfterPostComment(postedComment: ArticleComment) {
-        val article = postedComment.article
-        val href = "/articles/${article.writerUsername}/${article.slug}"
-        val title = article.title
-
-        postedComment.mention?.let { mention ->
-            if (mention == postedComment.writer) return@let
-
-            val message = "@${postedComment.writer.username}님이 회원님의 댓글에 답글을 남겼습니다."
-            val notification = NotificationDTO(href, title, message)
-            notificationService.addNotification(mention.id!!, notification)
-        }
-
-        if (article.writer == postedComment.mention) return
-
-        postedComment.writer.let { commentWriter ->
-            if (article.writer == commentWriter) return@let
-            val message = "@${postedComment.writer.username}님이 회원님의 아티클에 댓글을 남겼습니다."
-            val notification = NotificationDTO(href, title, message)
-            notificationService.addNotification(article.writer.id!!, notification)
-        }
-    }
 
     private fun logAfterPostComment(comment: ArticleComment) =
         logger.info { "[ArticleComment] posted: { articleId=${comment.article.id}, commentId=${comment.id}, writerId=${comment.writer.id}, content=\"${comment.content}\" }" }

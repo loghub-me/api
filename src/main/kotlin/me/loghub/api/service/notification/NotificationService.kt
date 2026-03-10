@@ -1,40 +1,81 @@
 package me.loghub.api.service.notification
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.notification.CreateNotificationDTO
 import me.loghub.api.dto.notification.NotificationDTO
+import me.loghub.api.dto.notification.event.NotificationCreatedEvent
+import me.loghub.api.dto.notification.event.NotificationDeletedEvent
+import me.loghub.api.dto.notification.event.NotificationReadAllEvent
+import me.loghub.api.dto.notification.event.NotificationReadEvent
 import me.loghub.api.entity.user.User
-import me.loghub.api.lib.redis.key.user.NotificationsRedisKey
-import me.loghub.api.util.checkExists
-import org.springframework.data.redis.core.RedisTemplate
+import me.loghub.api.exception.entity.EntityNotFoundException
+import me.loghub.api.mapper.notification.NotificationMapper
+import me.loghub.api.repository.notification.NotificationRepository
+import me.loghub.api.util.checkPermission
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
-class NotificationService(private val redisTemplate: RedisTemplate<String, NotificationDTO>) {
-    private companion object {
-        private const val PAGE_SIZE = 20L
+class NotificationService(
+    private val notificationRepository: NotificationRepository,
+    private val eventPublisher: ApplicationEventPublisher,
+) {
+    @Transactional(readOnly = true)
+    fun getNotifications(user: User, cursor: Long?): List<NotificationDTO> =
+        notificationRepository.findByRecipientLimit20(
+            recipient = user,
+            cursor = cursor,
+        ).map(NotificationMapper::map)
+
+    @Transactional(readOnly = true)
+    fun countUnreadNotifications(user: User): Long =
+        notificationRepository.countByRecipientAndReadAtIsNull(user)
+
+    @Transactional
+    fun createNotification(requestBody: CreateNotificationDTO): NotificationDTO {
+        val notification = notificationRepository.save(requestBody.toEntity())
+        val notificationDTO = NotificationMapper.map(notification)
+        val recipientId = notification.recipient.id!!
+
+        eventPublisher.publishEvent(NotificationCreatedEvent(notificationDTO, recipientId))
+        return notificationDTO
     }
 
-    fun getNotifications(user: User): List<NotificationDTO> {
-        val redisKey = NotificationsRedisKey(user.id!!)
-        val notifications = redisTemplate.opsForZSet().reverseRange(redisKey, 0, PAGE_SIZE - 1)
-        return notifications?.toList() ?: emptyList()
+    @Transactional
+    fun readNotification(user: User, notificationId: Long) {
+        val notification = notificationRepository.findWithRecipientById(notificationId)
+            ?: throw EntityNotFoundException(ResponseMessage.Notification.NOT_FOUND)
+
+        checkPermission(notification.recipient == user) { ResponseMessage.Notification.PERMISSION_DENIED }
+        if (notification.read) return
+
+        notification.markAsRead()
+
+        val recipientId = notification.recipient.id!!
+        eventPublisher.publishEvent(NotificationReadEvent(notificationId, recipientId))
     }
 
-    fun countNotifications(user: User): Long {
-        val redisKey = NotificationsRedisKey(user.id!!)
-        return redisTemplate.opsForZSet().zCard(redisKey) ?: 0L
+    @Transactional
+    fun readAllNotifications(user: User) {
+        val readCount = notificationRepository.markAllAsRead(user.id!!, LocalDateTime.now())
+        if (readCount == 0) return
+
+        val recipientId = user.id!!
+        eventPublisher.publishEvent(NotificationReadAllEvent(readCount, recipientId))
     }
 
-    fun addNotification(userId: Long, notification: NotificationDTO) {
-        val redisKey = NotificationsRedisKey(userId)
-        redisTemplate.opsForZSet().add(redisKey, notification, notification.timestamp.toDouble())
-    }
+    @Transactional
+    fun deleteNotification(user: User, notificationId: Long) {
+        val notification = notificationRepository.findWithRecipientById(notificationId)
+            ?: throw EntityNotFoundException(ResponseMessage.Notification.NOT_FOUND)
 
-    fun deleteNotification(user: User, timestamp: Long) {
-        val redisKey = NotificationsRedisKey(user.id!!)
-        val removedCount =
-            redisTemplate.opsForZSet().removeRangeByScore(redisKey, timestamp.toDouble(), timestamp.toDouble())
+        checkPermission(notification.recipient == user) { ResponseMessage.Notification.PERMISSION_DENIED }
 
-        checkExists(removedCount == null || removedCount > 0) { ResponseMessage.Notification.NOT_FOUND }
+        notificationRepository.delete(notification)
+
+        val recipientId = notification.recipient.id!!
+        eventPublisher.publishEvent(NotificationDeletedEvent(notificationId, recipientId))
     }
 }

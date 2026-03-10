@@ -1,8 +1,10 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.notification.CreateNotificationDTO
 import me.loghub.api.dto.series.review.PostSeriesReviewDTO
 import me.loghub.api.dto.series.review.SeriesReviewDTO
+import me.loghub.api.entity.notification.Notification
 import me.loghub.api.entity.series.SeriesReview
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -10,6 +12,7 @@ import me.loghub.api.mapper.series.SeriesReviewMapper
 import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.series.SeriesReviewRepository
 import me.loghub.api.repository.series.SeriesStatsRepository
+import me.loghub.api.service.notification.NotificationService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkPermission
 import org.springframework.data.domain.Page
@@ -23,6 +26,7 @@ class SeriesReviewService(
     private val seriesRepository: SeriesRepository,
     private val seriesStatsRepository: SeriesStatsRepository,
     private val seriesReviewRepository: SeriesReviewRepository,
+    private val notificationService: NotificationService,
 ) {
     private companion object {
         const val DEFAULT_PAGE_SIZE = 10
@@ -52,6 +56,9 @@ class SeriesReviewService(
         val savedReview = seriesReviewRepository.save(review)
 
         seriesStatsRepository.incrementReviewCount(seriesId)
+        if (series.writer != writer) {
+            createNotification(savedReview)
+        }
 
         return savedReview
     }
@@ -76,5 +83,17 @@ class SeriesReviewService(
 
         seriesStatsRepository.decrementReviewCount(seriesId)
         seriesReviewRepository.delete(review)
+    }
+
+    private fun createNotification(review: SeriesReview) {
+        val series = review.series
+
+        val request = CreateNotificationDTO(
+            targetType = Notification.TargetType.SERIES_REVIEW,
+            series = series,
+            actor = review.writer,
+            recipient = series.writer,
+        )
+        notificationService.createNotification(request)
     }
 }

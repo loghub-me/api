@@ -1,14 +1,12 @@
 package me.loghub.api.aspect.question
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserActivity
 import me.loghub.api.lib.redis.key.question.QuestionTrendingScoreRedisKey
 import me.loghub.api.repository.user.UserActivityRepository
 import me.loghub.api.repository.user.saveActivityIgnoreConflict
-import me.loghub.api.service.notification.NotificationService
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.data.redis.core.RedisTemplate
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component
 @Component
 class QuestionAnswerAspect(
     private val redisTemplate: RedisTemplate<String, String>,
-    private val notificationService: NotificationService,
     private val userActivityRepository: UserActivityRepository,
 ) {
     private object TrendingScoreDelta {
@@ -41,7 +38,6 @@ class QuestionAnswerAspect(
     fun afterPostAnswer(postedAnswer: QuestionAnswer) {
         val questionId = postedAnswer.question.id!!
         updateTrendingScoreAfterPostAnswer(questionId)
-        sendNotificationsAfterPostAnswer(postedAnswer)
         addUserActivityAfterPostAnswer(postedAnswer)
         logAfterPostAnswer(postedAnswer)
     }
@@ -73,17 +69,6 @@ class QuestionAnswerAspect(
 
     private fun updateTrendingScoreAfterDeleteAnswer(questionId: Long) =
         zSetOps.incrementScore(trendingScoreKey, questionId.toString(), -TrendingScoreDelta.ANSWER)
-
-    private fun sendNotificationsAfterPostAnswer(postedAnswer: QuestionAnswer) {
-        val question = postedAnswer.question
-
-        val notification = NotificationDTO(
-            href = "/questions/${question.writerUsername}/${question.slug}",
-            title = question.title,
-            message = "@${postedAnswer.writer.username}님이 회원님의 질문에 답변을 남겼습니다.",
-        )
-        notificationService.addNotification(question.writer.id!!, notification)
-    }
 
     private fun addUserActivityAfterPostAnswer(postedAnswer: QuestionAnswer) {
         userActivityRepository.saveActivityIgnoreConflict(

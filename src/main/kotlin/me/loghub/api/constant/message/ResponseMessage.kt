@@ -173,7 +173,10 @@ object ResponseMessage {
 
     object Notification {
         const val NOT_FOUND = "알림을 찾을 수 없습니다."
+        const val READ_SUCCESS = "알림을 읽음 처리했습니다!"
+        const val READ_ALL_SUCCESS = "모든 알림을 읽음 처리했습니다!"
         const val DELETE_SUCCESS = "알림이 성공적으로 삭제되었습니다!"
+        const val PERMISSION_DENIED = "이 알림에 대한 권한이 없습니다!"
     }
 
     object Multipart {

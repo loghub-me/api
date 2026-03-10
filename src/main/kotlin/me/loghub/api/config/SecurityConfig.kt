@@ -78,9 +78,9 @@ class SecurityConfig {
             it.accessDeniedHandler(accessDeniedHandler)
         }
         .authorizeHttpRequests {
-            it.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+            it.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR, DispatcherType.ASYNC).permitAll()
             it.requestMatchers(HttpMethod.GET, "/*/star/*").hasRole(User.Role.MEMBER.name)
-            it.requestMatchers(HttpMethod.GET, "/notifications", "/notifications/*").hasRole(User.Role.MEMBER.name)
+            it.requestMatchers(HttpMethod.GET, "/notifications", "/notifications/**").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.GET, "/users/articles/for-import").hasRole(User.Role.MEMBER.name)
             it.requestMatchers(HttpMethod.GET, "/users/profile", "/users/privacy", "/users/github")
                 .hasRole(User.Role.MEMBER.name)

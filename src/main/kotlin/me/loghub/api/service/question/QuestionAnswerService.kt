@@ -1,11 +1,13 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.dto.notification.CreateNotificationDTO
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
 import me.loghub.api.dto.question.answer.RequestGenerateAnswerDTO
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
+import me.loghub.api.entity.notification.Notification
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.entity.user.User
@@ -16,6 +18,7 @@ import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
 import me.loghub.api.repository.question.QuestionStatsRepository
 import me.loghub.api.service.common.MarkdownService
+import me.loghub.api.service.notification.NotificationService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkCooldown
 import me.loghub.api.util.checkField
@@ -32,6 +35,7 @@ class QuestionAnswerService(
     private val questionAnswerGenerateService: QuestionAnswerGenerateService,
     private val markdownService: MarkdownService,
     private val redisTemplate: RedisTemplate<String, String>,
+    private val notificationService: NotificationService,
 ) {
     @Transactional(readOnly = true)
     fun getAnswers(questionId: Long): List<QuestionAnswerDTO> {
@@ -65,6 +69,9 @@ class QuestionAnswerService(
         val savedAnswer = questionAnswerRepository.save(answer)
 
         questionStatsRepository.incrementAnswerCount(questionId)
+        if (question.writer != writer) {
+            createNotification(savedAnswer)
+        }
 
         return savedAnswer
     }
@@ -128,5 +135,17 @@ class QuestionAnswerService(
         ) { ResponseMessage.Question.Answer.ALREADY_ACCEPTED }
 
         return answer
+    }
+
+    private fun createNotification(answer: QuestionAnswer) {
+        val question = answer.question
+
+        val request = CreateNotificationDTO(
+            targetType = Notification.TargetType.ARTICLE_COMMENT,
+            question = question,
+            actor = answer.writer,
+            recipient = question.writer,
+        )
+        notificationService.createNotification(request)
     }
 }
