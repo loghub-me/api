@@ -55,7 +55,7 @@ class NotificationStreamService(
 
     private fun replayMissedNotifications(recipientId: Long, lastEventId: LastEventId, emitter: SseEmitter) {
         val recipient = userRepository.getReferenceById(recipientId)
-        notificationRepository.findAllByRecipientAndIdGreaterThanOrderByIdAsc(recipient, lastEventId.value)
+        notificationRepository.findTop20ByRecipientAndIdGreaterThanOrderByIdAsc(recipient, lastEventId.value)
             .map(NotificationMapper::map)
             .forEach { notification ->
                 sendToEmitter(

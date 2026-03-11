@@ -51,7 +51,7 @@ class NotificationServiceTest {
                     readAt = LocalDateTime.now()
                 ),
             )
-            whenever(notificationRepository.findByRecipientLimit20(eq(recipient), eq(null)))
+            whenever(notificationRepository.findTop20ByRecipient(eq(recipient), eq(null)))
                 .thenReturn(notifications)
 
             val result = notificationService.getNotifications(recipient, null)

@@ -141,7 +141,7 @@ class QuestionAnswerService(
         val question = answer.question
 
         val request = CreateNotificationDTO(
-            targetType = Notification.TargetType.ARTICLE_COMMENT,
+            targetType = Notification.TargetType.QUESTION_ANSWER,
             question = question,
             actor = answer.writer,
             recipient = question.writer,

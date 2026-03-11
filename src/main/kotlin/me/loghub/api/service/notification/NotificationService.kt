@@ -24,7 +24,7 @@ class NotificationService(
 ) {
     @Transactional(readOnly = true)
     fun getNotifications(user: User, cursor: Long?): List<NotificationDTO> =
-        notificationRepository.findByRecipientLimit20(
+        notificationRepository.findTop20ByRecipient(
             recipient = user,
             cursor = cursor,
         ).map(NotificationMapper::map)

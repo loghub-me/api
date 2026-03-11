@@ -16,14 +16,14 @@ interface NotificationRepository : JpaRepository<Notification, Long> {
         WHERE n.recipient = :recipient
           AND (:cursor IS NULL OR n.id < :cursor)
         ORDER BY n.id DESC
-        LIMIT 50
+        LIMIT 20
         """
     )
     @EntityGraph(attributePaths = ["actor"])
-    fun findByRecipientLimit20(recipient: User, cursor: Long?): List<Notification>
+    fun findTop20ByRecipient(recipient: User, cursor: Long?): List<Notification>
 
     @EntityGraph(attributePaths = ["actor"])
-    fun findAllByRecipientAndIdGreaterThanOrderByIdAsc(recipient: User, id: Long): List<Notification>
+    fun findTop20ByRecipientAndIdGreaterThanOrderByIdAsc(recipient: User, id: Long): List<Notification>
 
     @EntityGraph(attributePaths = ["recipient"])
     fun findWithRecipientById(id: Long): Notification?

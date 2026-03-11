@@ -33,11 +33,11 @@ CREATE TABLE IF NOT EXISTS public.notifications
     created_at     timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     article_id     bigint
-        CONSTRAINT user_stars_article_id_fk REFERENCES public.articles ON DELETE CASCADE,
+        CONSTRAINT notifications_article_id_fk REFERENCES public.articles ON DELETE CASCADE,
     series_id      bigint
-        CONSTRAINT user_stars_series_id_fk REFERENCES public.series ON DELETE CASCADE,
+        CONSTRAINT notifications_series_id_fk REFERENCES public.series ON DELETE CASCADE,
     question_id    bigint
-        CONSTRAINT user_stars_question_id_fk REFERENCES public.questions ON DELETE CASCADE,
+        CONSTRAINT notifications_question_id_fk REFERENCES public.questions ON DELETE CASCADE,
     actor_id       bigint       NOT NULL
         CONSTRAINT notifications_actor_id_fk REFERENCES public.users ON DELETE CASCADE,
     recipient_id   bigint       NOT NULL
