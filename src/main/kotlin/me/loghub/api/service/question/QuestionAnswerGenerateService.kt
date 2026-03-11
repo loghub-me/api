@@ -4,6 +4,7 @@ import feign.FeignException
 import me.loghub.api.config.AsyncConfig
 import me.loghub.api.constant.ai.Bot
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.trending.QuestionTrendingScoreDelta
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.entity.question.Question
@@ -15,6 +16,7 @@ import me.loghub.api.lib.redis.key.question.QuestionAnswerGeneratingRedisKey
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
+import me.loghub.api.repository.question.QuestionStatsRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.data.redis.core.RedisTemplate
@@ -25,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class QuestionAnswerGenerateService(
     private val questionRepository: QuestionRepository,
+    private val questionStatsRepository: QuestionStatsRepository,
     private val questionAnswerRepository: QuestionAnswerRepository,
+    private val questionTrendingScoreService: QuestionTrendingScoreService,
     private val redisTemplate: RedisTemplate<String, String>,
     private val userRepository: UserRepository,
     private val taskAPIProxy: TaskAPIProxy,
@@ -43,7 +47,8 @@ class QuestionAnswerGenerateService(
     @Async(AsyncConfig.AnswerGenerateExecutor.NAME)
     @Transactional
     fun generateAnswerAsync(req: AnswerGenerateRequest) {
-        setGeneratingStatusAndCooldown(req.questionId)
+        val questionId = req.questionId
+        setGeneratingStatusAndCooldown(questionId)
         try {
             val bot = userRepository.findByUsername(Bot.USERNAME)
                 ?: throw EntityNotFoundException(ResponseMessage.User.BOT_NOT_FOUND)
@@ -52,11 +57,14 @@ class QuestionAnswerGenerateService(
 
             val res = taskAPIProxy.generateAnswer(req)
             val answer = createAnswer(res, question, bot)
+
             questionAnswerRepository.save(answer)
+            questionStatsRepository.decrementAnswerCount(questionId)
+            questionTrendingScoreService.updateTrendingScore(questionId, QuestionTrendingScoreDelta.ANSWER)
         } catch (_: FeignException) {
-            deleteGeneratingCooldown(req.questionId)
+            deleteGeneratingCooldown(questionId)
         } finally {
-            deleteGeneratingStatus(req.questionId)
+            deleteGeneratingStatus(questionId)
         }
     }
 

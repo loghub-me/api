@@ -27,6 +27,7 @@ class QuestionService(
     private val questionCustomRepository: QuestionCustomRepository,
     private val topicRepository: TopicRepository,
     private val markdownService: MarkdownService,
+    private val questionTrendingScoreService: QuestionTrendingScoreService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
@@ -106,6 +107,7 @@ class QuestionService(
         checkPermission(question.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
         questionRepository.delete(question)
+        questionTrendingScoreService.clearTrendingScore(questionId)
     }
 
     @Transactional

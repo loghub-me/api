@@ -1,6 +1,7 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.trending.SeriesTrendingScoreDelta
 import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserStar
 import me.loghub.api.repository.series.SeriesRepository
@@ -17,6 +18,7 @@ class SeriesStarService(
     private val userStarRepository: UserStarRepository,
     private val seriesRepository: SeriesRepository,
     private val seriesStatsRepository: SeriesStatsRepository,
+    private val seriesTrendingScoreService: SeriesTrendingScoreService,
 ) : StarService {
     @Transactional(readOnly = true)
     override fun existsStar(id: Long, stargazer: User): Boolean {
@@ -36,6 +38,7 @@ class SeriesStarService(
         ) { ResponseMessage.Series.NOT_FOUND }
 
         seriesStatsRepository.incrementStarCount(id)
+        seriesTrendingScoreService.updateTrendingScore(id, SeriesTrendingScoreDelta.STAR)
         val newStar = UserStar(stargazer = stargazer, series = seriesRef, target = UserStar.Target.SERIES);
         return userStarRepository.save(newStar)
     }
@@ -48,5 +51,6 @@ class SeriesStarService(
         checkExists(deletedRows > 0) { ResponseMessage.Star.NOT_FOUND }
 
         seriesStatsRepository.decrementStarCount(id)
+        seriesTrendingScoreService.updateTrendingScore(id, -SeriesTrendingScoreDelta.STAR)
     }
 }

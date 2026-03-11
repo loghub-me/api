@@ -24,6 +24,7 @@ class ArticleService(
     private val articleCustomRepository: ArticleCustomRepository,
     private val topicRepository: TopicRepository,
     private val markdownService: MarkdownService,
+    private val articleTrendingScoreService: ArticleTrendingScoreService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private companion object {
@@ -106,5 +107,6 @@ class ArticleService(
         checkPermission(article.writer == writer) { ResponseMessage.Article.PERMISSION_DENIED }
 
         articleRepository.delete(article)
+        articleTrendingScoreService.clearTrendingScore(articleId)
     }
 }

@@ -1,6 +1,7 @@
 package me.loghub.api.service.article
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.trending.ArticleTrendingScoreDelta
 import me.loghub.api.dto.article.comment.ArticleCommentDTO
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
 import me.loghub.api.dto.notification.CreateNotificationDTO
@@ -26,6 +27,7 @@ class ArticleCommentService(
     private val articleRepository: ArticleRepository,
     private val articleStatsRepository: ArticleStatsRepository,
     private val articleCommentRepository: ArticleCommentRepository,
+    private val articleTrendingScoreService: ArticleTrendingScoreService,
     private val notificationService: NotificationService,
 ) {
     private companion object {
@@ -62,6 +64,7 @@ class ArticleCommentService(
         val savedComment = articleCommentRepository.save(comment)
 
         articleStatsRepository.incrementCommentCount(articleId)
+        articleTrendingScoreService.updateTrendingScore(articleId, ArticleTrendingScoreDelta.COMMENT)
         parent?.let { articleCommentRepository.incrementReplyCount(it.id!!) }
         createNotifications(savedComment)
 
@@ -96,6 +99,7 @@ class ArticleCommentService(
         comment.delete()
         comment.parent?.let { articleCommentRepository.decrementReplyCount(it.id!!) }
         articleStatsRepository.decrementCommentCount(articleId)
+        articleTrendingScoreService.updateTrendingScore(articleId, -ArticleTrendingScoreDelta.COMMENT)
     }
 
     private fun getAvailableParent(article: Article, parentId: Long?): ArticleComment? =

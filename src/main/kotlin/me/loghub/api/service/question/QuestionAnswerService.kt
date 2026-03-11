@@ -1,6 +1,7 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.trending.QuestionTrendingScoreDelta
 import me.loghub.api.dto.notification.CreateNotificationDTO
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerDTO
@@ -32,6 +33,7 @@ class QuestionAnswerService(
     private val questionAnswerRepository: QuestionAnswerRepository,
     private val questionRepository: QuestionRepository,
     private val questionStatsRepository: QuestionStatsRepository,
+    private val questionTrendingScoreService: QuestionTrendingScoreService,
     private val questionAnswerGenerateService: QuestionAnswerGenerateService,
     private val markdownService: MarkdownService,
     private val redisTemplate: RedisTemplate<String, String>,
@@ -69,6 +71,7 @@ class QuestionAnswerService(
         val savedAnswer = questionAnswerRepository.save(answer)
 
         questionStatsRepository.incrementAnswerCount(questionId)
+        questionTrendingScoreService.updateTrendingScore(questionId, QuestionTrendingScoreDelta.ANSWER)
         if (question.writer != writer) {
             createNotification(savedAnswer)
         }
@@ -91,6 +94,7 @@ class QuestionAnswerService(
         checkPermission(answer.writer == writer) { ResponseMessage.Question.PERMISSION_DENIED }
 
         questionStatsRepository.decrementAnswerCount(questionId)
+        questionTrendingScoreService.updateTrendingScore(questionId, -QuestionTrendingScoreDelta.ANSWER)
         questionAnswerRepository.delete(answer)
     }
 

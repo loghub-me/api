@@ -23,6 +23,7 @@ class SeriesService(
     private val seriesRepository: SeriesRepository,
     private val seriesCustomRepository: SeriesCustomRepository,
     private val topicRepository: TopicRepository,
+    private val seriesTrendingScoreService: SeriesTrendingScoreService,
 ) {
     private companion object {
         private const val PAGE_SIZE = 20
@@ -95,5 +96,6 @@ class SeriesService(
         checkPermission(series.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
         seriesRepository.delete(series)
+        seriesTrendingScoreService.clearTrendingScore(seriesId)
     }
 }

@@ -1,6 +1,7 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
+import me.loghub.api.constant.trending.SeriesTrendingScoreDelta
 import me.loghub.api.dto.notification.CreateNotificationDTO
 import me.loghub.api.dto.series.review.PostSeriesReviewDTO
 import me.loghub.api.dto.series.review.SeriesReviewDTO
@@ -26,6 +27,7 @@ class SeriesReviewService(
     private val seriesRepository: SeriesRepository,
     private val seriesStatsRepository: SeriesStatsRepository,
     private val seriesReviewRepository: SeriesReviewRepository,
+    private val seriesTrendingScoreService: SeriesTrendingScoreService,
     private val notificationService: NotificationService,
 ) {
     private companion object {
@@ -56,6 +58,7 @@ class SeriesReviewService(
         val savedReview = seriesReviewRepository.save(review)
 
         seriesStatsRepository.incrementReviewCount(seriesId)
+        seriesTrendingScoreService.updateTrendingScore(seriesId, SeriesTrendingScoreDelta.REVIEW)
         if (series.writer != writer) {
             createNotification(savedReview)
         }
@@ -81,8 +84,9 @@ class SeriesReviewService(
 
         checkPermission(review.writer == writer) { ResponseMessage.Series.Review.PERMISSION_DENIED }
 
-        seriesStatsRepository.decrementReviewCount(seriesId)
         seriesReviewRepository.delete(review)
+        seriesStatsRepository.decrementReviewCount(seriesId)
+        seriesTrendingScoreService.updateTrendingScore(seriesId, -SeriesTrendingScoreDelta.REVIEW)
     }
 
     private fun createNotification(review: SeriesReview) {
