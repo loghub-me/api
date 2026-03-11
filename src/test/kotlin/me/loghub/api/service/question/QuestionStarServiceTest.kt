@@ -1,5 +1,6 @@
 package me.loghub.api.service.question
 
+import me.loghub.api.constant.trending.QuestionTrendingScoreDelta
 import me.loghub.api.entity.user.UserStar
 import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -18,6 +19,7 @@ class QuestionStarServiceTest {
     private lateinit var userStarRepository: UserStarRepository
     private lateinit var questionRepository: QuestionRepository
     private lateinit var questionStatsRepository: QuestionStatsRepository
+    private lateinit var questionTrendingScoreService: QuestionTrendingScoreService
 
     private lateinit var questionStarService: QuestionStarService
 
@@ -26,8 +28,14 @@ class QuestionStarServiceTest {
         userStarRepository = mock()
         questionRepository = mock()
         questionStatsRepository = mock()
+        questionTrendingScoreService = mock()
 
-        questionStarService = QuestionStarService(userStarRepository, questionRepository, questionStatsRepository)
+        questionStarService = QuestionStarService(
+            userStarRepository,
+            questionRepository,
+            questionStatsRepository,
+            questionTrendingScoreService,
+        )
     }
 
     @Nested
@@ -51,7 +59,7 @@ class QuestionStarServiceTest {
     @Nested
     inner class AddStarTest {
         @Test
-        fun `should add star when question exists and star does not exist`() {
+        fun `should add star when question exists and user has not starred yet`() {
             val questionId = 1L
             val stargazer = QuestionFixtures.writer(id = 10L, username = "stargazer")
             val questionRef = QuestionFixtures.question(id = questionId)
@@ -68,6 +76,13 @@ class QuestionStarServiceTest {
             assertEquals(questionRef, result.question)
             assertEquals(stargazer, result.stargazer)
             verify(questionStatsRepository).incrementStarCount(questionId)
+            verify(questionTrendingScoreService).updateTrendingScore(questionId, QuestionTrendingScoreDelta.STAR)
+
+            val savedStarCaptor = argumentCaptor<UserStar>()
+            verify(userStarRepository).save(savedStarCaptor.capture())
+            assertEquals(UserStar.Target.QUESTION, savedStarCaptor.firstValue.target)
+            assertEquals(questionRef, savedStarCaptor.firstValue.question)
+            assertEquals(stargazer, savedStarCaptor.firstValue.stargazer)
         }
 
         @Test
@@ -82,9 +97,12 @@ class QuestionStarServiceTest {
                 questionStarService.addStar(questionId, stargazer)
             }
 
+            verify(questionRepository).getReferenceById(questionId)
+            verify(userStarRepository).existsByQuestionAndStargazer(questionRef, stargazer)
             verify(questionRepository, never()).existsById(any())
             verify(questionStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
+            verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -100,8 +118,10 @@ class QuestionStarServiceTest {
                 questionStarService.addStar(questionId, stargazer)
             }
 
+            verify(questionRepository).existsById(questionId)
             verify(questionStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
+            verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 
@@ -119,6 +139,7 @@ class QuestionStarServiceTest {
 
             verify(userStarRepository).deleteByQuestionAndStargazer(questionRef, stargazer)
             verify(questionStatsRepository).decrementStarCount(questionId)
+            verify(questionTrendingScoreService).updateTrendingScore(questionId, -QuestionTrendingScoreDelta.STAR)
         }
 
         @Test
@@ -133,7 +154,9 @@ class QuestionStarServiceTest {
                 questionStarService.deleteStar(questionId, stargazer)
             }
 
+            verify(userStarRepository).deleteByQuestionAndStargazer(questionRef, stargazer)
             verify(questionStatsRepository, never()).decrementStarCount(any())
+            verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 }

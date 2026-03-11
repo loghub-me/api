@@ -1,6 +1,7 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.ai.LogHubChatModel
+import me.loghub.api.constant.trending.QuestionTrendingScoreDelta
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.question.answer.PostQuestionAnswerDTO
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
@@ -30,6 +31,7 @@ class QuestionAnswerServiceTest {
     private lateinit var questionAnswerRepository: QuestionAnswerRepository
     private lateinit var questionRepository: QuestionRepository
     private lateinit var questionStatsRepository: QuestionStatsRepository
+    private lateinit var questionTrendingScoreService: QuestionTrendingScoreService
     private lateinit var questionAnswerGenerateService: QuestionAnswerGenerateService
     private lateinit var markdownService: MarkdownService
     private lateinit var redisTemplate: RedisTemplate<String, String>
@@ -43,6 +45,7 @@ class QuestionAnswerServiceTest {
         questionAnswerRepository = mock()
         questionRepository = mock()
         questionStatsRepository = mock()
+        questionTrendingScoreService = mock()
         questionAnswerGenerateService = mock()
         markdownService = mock()
         redisTemplate = mock()
@@ -55,6 +58,7 @@ class QuestionAnswerServiceTest {
             questionAnswerRepository,
             questionRepository,
             questionStatsRepository,
+            questionTrendingScoreService,
             questionAnswerGenerateService,
             markdownService,
             redisTemplate,
@@ -134,12 +138,15 @@ class QuestionAnswerServiceTest {
             val requestBody = QuestionFixtures.postQuestionAnswerDTO()
             val savedAnswer = QuestionFixtures.answer(id = 3L, question = question, writer = answerWriter)
             whenever(questionRepository.findWithWriterById(1L)).thenReturn(question)
-            whenever(questionAnswerRepository.save(any<me.loghub.api.entity.question.QuestionAnswer>())).thenReturn(savedAnswer)
+            whenever(questionAnswerRepository.save(any<me.loghub.api.entity.question.QuestionAnswer>())).thenReturn(
+                savedAnswer
+            )
 
             val result = questionAnswerService.postAnswer(1L, requestBody, answerWriter)
 
             assertEquals(savedAnswer.id, result.id)
             verify(questionStatsRepository).incrementAnswerCount(1L)
+            verify(questionTrendingScoreService).updateTrendingScore(1L, QuestionTrendingScoreDelta.ANSWER)
         }
 
         @Test
@@ -147,8 +154,16 @@ class QuestionAnswerServiceTest {
             whenever(questionRepository.findWithWriterById(1L)).thenReturn(null)
 
             assertThrows<EntityNotFoundException> {
-                questionAnswerService.postAnswer(1L, QuestionFixtures.postQuestionAnswerDTO(), QuestionFixtures.writer())
+                questionAnswerService.postAnswer(
+                    1L,
+                    QuestionFixtures.postQuestionAnswerDTO(),
+                    QuestionFixtures.writer()
+                )
             }
+
+            verify(questionAnswerRepository, never()).save(any())
+            verify(questionStatsRepository, never()).incrementAnswerCount(any())
+            verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -163,6 +178,7 @@ class QuestionAnswerServiceTest {
 
             verify(questionAnswerRepository, never()).save(any())
             verify(questionStatsRepository, never()).incrementAnswerCount(any())
+            verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 
@@ -221,6 +237,7 @@ class QuestionAnswerServiceTest {
 
             verify(questionStatsRepository).decrementAnswerCount(1L)
             verify(questionAnswerRepository).delete(answer)
+            verify(questionTrendingScoreService).updateTrendingScore(1L, -QuestionTrendingScoreDelta.ANSWER)
         }
     }
 

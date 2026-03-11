@@ -1,5 +1,6 @@
 package me.loghub.api.service.article
 
+import me.loghub.api.constant.trending.ArticleTrendingScoreDelta
 import me.loghub.api.entity.user.UserStar
 import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -18,6 +19,7 @@ class ArticleStarServiceTest {
     private lateinit var userStarRepository: UserStarRepository
     private lateinit var articleRepository: ArticleRepository
     private lateinit var articleStatsRepository: ArticleStatsRepository
+    private lateinit var articleTrendingScoreService: ArticleTrendingScoreService
 
     private lateinit var articleStarService: ArticleStarService
 
@@ -26,8 +28,14 @@ class ArticleStarServiceTest {
         userStarRepository = mock()
         articleRepository = mock()
         articleStatsRepository = mock()
+        articleTrendingScoreService = mock()
 
-        articleStarService = ArticleStarService(userStarRepository, articleRepository, articleStatsRepository)
+        articleStarService = ArticleStarService(
+            userStarRepository,
+            articleRepository,
+            articleStatsRepository,
+            articleTrendingScoreService,
+        )
     }
 
     @Nested
@@ -68,6 +76,7 @@ class ArticleStarServiceTest {
             assertEquals(articleRef, result.article)
             assertEquals(stargazer, result.stargazer)
             verify(articleStatsRepository).incrementStarCount(articleId)
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, ArticleTrendingScoreDelta.STAR)
 
             val savedStarCaptor = argumentCaptor<UserStar>()
             verify(userStarRepository).save(savedStarCaptor.capture())
@@ -93,6 +102,7 @@ class ArticleStarServiceTest {
             verify(articleRepository, never()).existsById(any())
             verify(articleStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -111,6 +121,7 @@ class ArticleStarServiceTest {
             verify(articleRepository).existsById(articleId)
             verify(articleStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 
@@ -128,6 +139,7 @@ class ArticleStarServiceTest {
 
             verify(userStarRepository).deleteByArticleAndStargazer(articleRef, stargazer)
             verify(articleStatsRepository).decrementStarCount(articleId)
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, -ArticleTrendingScoreDelta.STAR)
         }
 
         @Test
@@ -144,6 +156,7 @@ class ArticleStarServiceTest {
 
             verify(userStarRepository).deleteByArticleAndStargazer(articleRef, stargazer)
             verify(articleStatsRepository, never()).decrementStarCount(any())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 }

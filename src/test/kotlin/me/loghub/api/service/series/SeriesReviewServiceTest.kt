@@ -1,5 +1,6 @@
 package me.loghub.api.service.series
 
+import me.loghub.api.constant.trending.SeriesTrendingScoreDelta
 import me.loghub.api.exception.auth.PermissionDeniedException
 import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -20,6 +21,7 @@ class SeriesReviewServiceTest {
     private lateinit var seriesRepository: SeriesRepository
     private lateinit var seriesStatsRepository: SeriesStatsRepository
     private lateinit var seriesReviewRepository: SeriesReviewRepository
+    private lateinit var seriesTrendingScoreService: SeriesTrendingScoreService
     private lateinit var notificationService: NotificationService
 
     private lateinit var seriesReviewService: SeriesReviewService
@@ -29,12 +31,14 @@ class SeriesReviewServiceTest {
         seriesRepository = mock()
         seriesStatsRepository = mock()
         seriesReviewRepository = mock()
+        seriesTrendingScoreService = mock()
         notificationService = mock()
 
         seriesReviewService = SeriesReviewService(
             seriesRepository,
             seriesStatsRepository,
             seriesReviewRepository,
+            seriesTrendingScoreService,
             notificationService,
         )
     }
@@ -66,13 +70,16 @@ class SeriesReviewServiceTest {
             val savedReview = SeriesFixtures.review(id = 3L, series = series, writer = writer, content = "great")
             whenever(seriesRepository.findWithWriterById(1L)).thenReturn(series)
             whenever(seriesReviewRepository.existsBySeriesAndWriter(series, writer)).thenReturn(false)
-            whenever(seriesReviewRepository.save(any<me.loghub.api.entity.series.SeriesReview>())).thenReturn(savedReview)
+            whenever(seriesReviewRepository.save(any<me.loghub.api.entity.series.SeriesReview>())).thenReturn(
+                savedReview
+            )
 
             val result = seriesReviewService.postReview(1L, requestBody, writer)
 
             assertEquals(savedReview.id, result.id)
-            verify(seriesStatsRepository).incrementReviewCount(1L)
             verify(seriesReviewRepository).save(any())
+            verify(seriesStatsRepository).incrementReviewCount(1L)
+            verify(seriesTrendingScoreService).updateTrendingScore(1L, SeriesTrendingScoreDelta.REVIEW)
         }
 
         @Test
@@ -89,6 +96,7 @@ class SeriesReviewServiceTest {
 
             verify(seriesReviewRepository, never()).save(any())
             verify(seriesStatsRepository, never()).incrementReviewCount(any())
+            verify(seriesTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 
@@ -134,8 +142,9 @@ class SeriesReviewServiceTest {
 
             seriesReviewService.deleteReview(1L, 2L, writer)
 
-            verify(seriesStatsRepository).decrementReviewCount(1L)
             verify(seriesReviewRepository).delete(review)
+            verify(seriesStatsRepository).decrementReviewCount(1L)
+            verify(seriesTrendingScoreService).updateTrendingScore(1L, -SeriesTrendingScoreDelta.REVIEW)
         }
 
         @Test
@@ -145,6 +154,9 @@ class SeriesReviewServiceTest {
             assertThrows<EntityNotFoundException> {
                 seriesReviewService.deleteReview(1L, 2L, SeriesFixtures.writer())
             }
+
+            verify(seriesStatsRepository, never()).decrementReviewCount(any())
+            verify(seriesTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 }

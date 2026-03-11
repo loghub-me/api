@@ -1,5 +1,6 @@
 package me.loghub.api.service.series
 
+import me.loghub.api.constant.trending.SeriesTrendingScoreDelta
 import me.loghub.api.entity.user.UserStar
 import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -18,6 +19,7 @@ class SeriesStarServiceTest {
     private lateinit var userStarRepository: UserStarRepository
     private lateinit var seriesRepository: SeriesRepository
     private lateinit var seriesStatsRepository: SeriesStatsRepository
+    private lateinit var seriesTrendingScoreService: SeriesTrendingScoreService
 
     private lateinit var seriesStarService: SeriesStarService
 
@@ -26,8 +28,14 @@ class SeriesStarServiceTest {
         userStarRepository = mock()
         seriesRepository = mock()
         seriesStatsRepository = mock()
+        seriesTrendingScoreService = mock()
 
-        seriesStarService = SeriesStarService(userStarRepository, seriesRepository, seriesStatsRepository)
+        seriesStarService = SeriesStarService(
+            userStarRepository,
+            seriesRepository,
+            seriesStatsRepository,
+            seriesTrendingScoreService,
+        )
     }
 
     @Nested
@@ -51,7 +59,7 @@ class SeriesStarServiceTest {
     @Nested
     inner class AddStarTest {
         @Test
-        fun `should add star when series exists and star does not exist`() {
+        fun `should add star when series exists and user has not starred yet`() {
             val seriesId = 1L
             val stargazer = SeriesFixtures.writer(id = 10L, username = "stargazer")
             val seriesRef = SeriesFixtures.series(id = seriesId)
@@ -68,6 +76,13 @@ class SeriesStarServiceTest {
             assertEquals(seriesRef, result.series)
             assertEquals(stargazer, result.stargazer)
             verify(seriesStatsRepository).incrementStarCount(seriesId)
+            verify(seriesTrendingScoreService).updateTrendingScore(seriesId, SeriesTrendingScoreDelta.STAR)
+
+            val savedStarCaptor = argumentCaptor<UserStar>()
+            verify(userStarRepository).save(savedStarCaptor.capture())
+            assertEquals(UserStar.Target.SERIES, savedStarCaptor.firstValue.target)
+            assertEquals(seriesRef, savedStarCaptor.firstValue.series)
+            assertEquals(stargazer, savedStarCaptor.firstValue.stargazer)
         }
 
         @Test
@@ -82,9 +97,12 @@ class SeriesStarServiceTest {
                 seriesStarService.addStar(seriesId, stargazer)
             }
 
+            verify(seriesRepository).getReferenceById(seriesId)
+            verify(userStarRepository).existsBySeriesAndStargazer(seriesRef, stargazer)
             verify(seriesRepository, never()).existsById(any())
             verify(seriesStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
+            verify(seriesTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -100,8 +118,10 @@ class SeriesStarServiceTest {
                 seriesStarService.addStar(seriesId, stargazer)
             }
 
+            verify(seriesRepository).existsById(seriesId)
             verify(seriesStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
+            verify(seriesTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 
@@ -119,6 +139,7 @@ class SeriesStarServiceTest {
 
             verify(userStarRepository).deleteBySeriesAndStargazer(seriesRef, stargazer)
             verify(seriesStatsRepository).decrementStarCount(seriesId)
+            verify(seriesTrendingScoreService).updateTrendingScore(seriesId, -SeriesTrendingScoreDelta.STAR)
         }
 
         @Test
@@ -133,7 +154,9 @@ class SeriesStarServiceTest {
                 seriesStarService.deleteStar(seriesId, stargazer)
             }
 
+            verify(userStarRepository).deleteBySeriesAndStargazer(seriesRef, stargazer)
             verify(seriesStatsRepository, never()).decrementStarCount(any())
+            verify(seriesTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 }

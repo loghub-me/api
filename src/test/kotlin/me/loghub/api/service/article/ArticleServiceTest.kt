@@ -28,6 +28,7 @@ class ArticleServiceTest {
     private lateinit var articleCustomRepository: ArticleCustomRepository
     private lateinit var topicRepository: TopicRepository
     private lateinit var markdownService: MarkdownService
+    private lateinit var articleTrendingScoreService: ArticleTrendingScoreService
     private lateinit var redisTemplate: RedisTemplate<String, String>
     private lateinit var valueOperations: ValueOperations<String, String>
 
@@ -39,6 +40,7 @@ class ArticleServiceTest {
         articleCustomRepository = mock()
         topicRepository = mock()
         markdownService = mock()
+        articleTrendingScoreService = mock()
         redisTemplate = mock()
         valueOperations = mock()
 
@@ -49,6 +51,7 @@ class ArticleServiceTest {
             articleCustomRepository,
             topicRepository,
             markdownService,
+            articleTrendingScoreService,
             redisTemplate
         )
     }
@@ -249,6 +252,7 @@ class ArticleServiceTest {
 
             verify(articleRepository).findWithWriterById(1L)
             verify(articleRepository).delete(article)
+            verify(articleTrendingScoreService).clearTrendingScore(1L)
         }
 
         @Test
@@ -258,6 +262,9 @@ class ArticleServiceTest {
             assertThrows<EntityNotFoundException> {
                 articleService.deleteArticle(1L, ArticleFixtures.writer())
             }
+
+            verify(articleRepository, never()).delete(any())
+            verify(articleTrendingScoreService, never()).clearTrendingScore(any())
         }
 
         @Test
@@ -270,6 +277,9 @@ class ArticleServiceTest {
             assertThrows<PermissionDeniedException> {
                 articleService.deleteArticle(1L, reader)
             }
+
+            verify(articleRepository, never()).delete(any())
+            verify(articleTrendingScoreService, never()).clearTrendingScore(any())
         }
     }
 }

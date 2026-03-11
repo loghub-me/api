@@ -1,5 +1,6 @@
 package me.loghub.api.service.article
 
+import me.loghub.api.constant.trending.ArticleTrendingScoreDelta
 import me.loghub.api.dto.article.comment.PostArticleCommentDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleComment
@@ -26,6 +27,7 @@ class ArticleCommentServiceTest {
     private lateinit var articleRepository: ArticleRepository
     private lateinit var articleStatsRepository: ArticleStatsRepository
     private lateinit var articleCommentRepository: ArticleCommentRepository
+    private lateinit var articleTrendingScoreService: ArticleTrendingScoreService
     private lateinit var notificationService: NotificationService
 
     private lateinit var articleCommentService: ArticleCommentService
@@ -35,12 +37,14 @@ class ArticleCommentServiceTest {
         articleRepository = mock()
         articleStatsRepository = mock()
         articleCommentRepository = mock()
+        articleTrendingScoreService = mock()
         notificationService = mock()
 
         articleCommentService = ArticleCommentService(
             articleRepository,
             articleStatsRepository,
             articleCommentRepository,
+            articleTrendingScoreService,
             notificationService,
         )
     }
@@ -129,6 +133,7 @@ class ArticleCommentServiceTest {
             assertEquals(savedComment.id, result.id)
             verify(articleStatsRepository).incrementCommentCount(articleId)
             verify(articleCommentRepository, never()).incrementReplyCount(any())
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, ArticleTrendingScoreDelta.COMMENT)
 
             val savedCaptor = argumentCaptor<ArticleComment>()
             verify(articleCommentRepository).save(savedCaptor.capture())
@@ -164,6 +169,7 @@ class ArticleCommentServiceTest {
             assertEquals(savedComment.id, result.id)
             verify(articleStatsRepository).incrementCommentCount(articleId)
             verify(articleCommentRepository).incrementReplyCount(parentId)
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, ArticleTrendingScoreDelta.COMMENT)
 
             val savedCaptor = argumentCaptor<ArticleComment>()
             verify(articleCommentRepository).save(savedCaptor.capture())
@@ -178,7 +184,8 @@ class ArticleCommentServiceTest {
             val writer = ArticleFixtures.writer(id = 10L, username = "writer")
             val mention = ArticleFixtures.writer(id = 12L, username = "mention")
             val article = ArticleFixtures.article(id = articleId)
-            val rootParent = comment(id = 20L, article = article, writer = ArticleFixtures.writer(id = 13L, username = "root"))
+            val rootParent =
+                comment(id = 20L, article = article, writer = ArticleFixtures.writer(id = 13L, username = "root"))
             val nestedReply = comment(id = replyId, article = article, writer = mention, parent = rootParent)
             val requestBody = PostArticleCommentDTO(content = "nested reply", parentId = replyId)
             whenever(articleRepository.findWithWriterById(articleId)).thenReturn(article)
@@ -193,6 +200,7 @@ class ArticleCommentServiceTest {
             assertEquals("nested reply", result.content)
             verify(articleStatsRepository).incrementCommentCount(articleId)
             verify(articleCommentRepository).incrementReplyCount(rootParent.id!!)
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, ArticleTrendingScoreDelta.COMMENT)
 
             val savedCaptor = argumentCaptor<ArticleComment>()
             verify(articleCommentRepository).save(savedCaptor.capture())
@@ -212,6 +220,7 @@ class ArticleCommentServiceTest {
 
             verify(articleCommentRepository, never()).save(any<ArticleComment>())
             verify(articleStatsRepository, never()).incrementCommentCount(any())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -231,6 +240,7 @@ class ArticleCommentServiceTest {
             verify(articleCommentRepository, never()).findWriterById(any())
             verify(articleCommentRepository, never()).save(any<ArticleComment>())
             verify(articleStatsRepository, never()).incrementCommentCount(any())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -328,6 +338,7 @@ class ArticleCommentServiceTest {
             assertTrue(reply.deleted)
             verify(articleCommentRepository).decrementReplyCount(parent.id!!)
             verify(articleStatsRepository).decrementCommentCount(articleId)
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, -ArticleTrendingScoreDelta.COMMENT)
         }
 
         @Test
@@ -338,13 +349,19 @@ class ArticleCommentServiceTest {
             val articleRef = ArticleFixtures.article(id = articleId)
             val rootComment = comment(id = commentId, article = articleRef, writer = writer)
             whenever(articleRepository.getReferenceById(articleId)).thenReturn(articleRef)
-            whenever(articleCommentRepository.findWithGraphByArticleAndId(articleRef, commentId)).thenReturn(rootComment)
+            whenever(
+                articleCommentRepository.findWithGraphByArticleAndId(
+                    articleRef,
+                    commentId
+                )
+            ).thenReturn(rootComment)
 
             articleCommentService.deleteComment(articleId, commentId, writer)
 
             assertTrue(rootComment.deleted)
             verify(articleCommentRepository, never()).decrementReplyCount(any())
             verify(articleStatsRepository).decrementCommentCount(articleId)
+            verify(articleTrendingScoreService).updateTrendingScore(articleId, -ArticleTrendingScoreDelta.COMMENT)
         }
 
         @Test
@@ -361,6 +378,7 @@ class ArticleCommentServiceTest {
             }
 
             verify(articleStatsRepository, never()).decrementCommentCount(any())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
 
         @Test
@@ -380,6 +398,7 @@ class ArticleCommentServiceTest {
 
             verify(articleCommentRepository, never()).decrementReplyCount(any())
             verify(articleStatsRepository, never()).decrementCommentCount(any())
+            verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
         }
     }
 

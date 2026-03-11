@@ -1,6 +1,7 @@
 package me.loghub.api.service.question
 
 import me.loghub.api.constant.ai.Bot
+import me.loghub.api.constant.trending.QuestionTrendingScoreDelta
 import me.loghub.api.dto.task.answer.AnswerGenerateRequest
 import me.loghub.api.dto.task.answer.AnswerGenerateResponse
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -9,6 +10,7 @@ import me.loghub.api.lib.redis.key.question.QuestionAnswerGeneratingRedisKey
 import me.loghub.api.proxy.TaskAPIProxy
 import me.loghub.api.repository.question.QuestionAnswerRepository
 import me.loghub.api.repository.question.QuestionRepository
+import me.loghub.api.repository.question.QuestionStatsRepository
 import me.loghub.api.repository.user.UserRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -17,13 +19,15 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
-import java.util.Optional
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class QuestionAnswerGenerateServiceTest {
     private lateinit var questionRepository: QuestionRepository
+    private lateinit var questionStatsRepository: QuestionStatsRepository
     private lateinit var questionAnswerRepository: QuestionAnswerRepository
+    private lateinit var questionTrendingScoreService: QuestionTrendingScoreService
     private lateinit var redisTemplate: RedisTemplate<String, String>
     private lateinit var valueOperations: ValueOperations<String, String>
     private lateinit var userRepository: UserRepository
@@ -34,7 +38,9 @@ class QuestionAnswerGenerateServiceTest {
     @BeforeEach
     fun setUp() {
         questionRepository = mock()
+        questionStatsRepository = mock()
         questionAnswerRepository = mock()
+        questionTrendingScoreService = mock()
         redisTemplate = mock()
         valueOperations = mock()
         userRepository = mock()
@@ -44,7 +50,9 @@ class QuestionAnswerGenerateServiceTest {
 
         questionAnswerGenerateService = QuestionAnswerGenerateService(
             questionRepository,
+            questionStatsRepository,
             questionAnswerRepository,
+            questionTrendingScoreService,
             redisTemplate,
             userRepository,
             taskAPIProxy
@@ -113,6 +121,8 @@ class QuestionAnswerGenerateServiceTest {
             )
             val captor = argumentCaptor<me.loghub.api.entity.question.QuestionAnswer>()
             verify(questionAnswerRepository).save(captor.capture())
+            verify(questionStatsRepository).decrementAnswerCount(1L)
+            verify(questionTrendingScoreService).updateTrendingScore(1L, QuestionTrendingScoreDelta.ANSWER)
             assertEquals("generated title", captor.firstValue.title)
             assertEquals("generated content", captor.firstValue.content)
             assertEquals(bot, captor.firstValue.writer)
@@ -147,6 +157,8 @@ class QuestionAnswerGenerateServiceTest {
 
             val captor = argumentCaptor<me.loghub.api.entity.question.QuestionAnswer>()
             verify(questionAnswerRepository).save(captor.capture())
+            verify(questionStatsRepository).decrementAnswerCount(1L)
+            verify(questionTrendingScoreService).updateTrendingScore(1L, QuestionTrendingScoreDelta.ANSWER)
             assertEquals("답변이 거절되었습니다", captor.firstValue.title)
             assertEquals(AnswerGenerateResponse.RejectionReason.OFF_TOPIC.message, captor.firstValue.content)
         }
@@ -167,6 +179,8 @@ class QuestionAnswerGenerateServiceTest {
             }
 
             verify(questionAnswerRepository, never()).save(any())
+            verify(questionStatsRepository, never()).decrementAnswerCount(any())
+            verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
             verify(redisTemplate).delete(QuestionAnswerGeneratingRedisKey(1L))
         }
     }

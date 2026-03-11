@@ -20,6 +20,7 @@ class SeriesServiceTest {
     private lateinit var seriesRepository: SeriesRepository
     private lateinit var seriesCustomRepository: SeriesCustomRepository
     private lateinit var topicRepository: TopicRepository
+    private lateinit var seriesTrendingScoreService: SeriesTrendingScoreService
 
     private lateinit var seriesService: SeriesService
 
@@ -28,11 +29,13 @@ class SeriesServiceTest {
         seriesRepository = mock()
         seriesCustomRepository = mock()
         topicRepository = mock()
+        seriesTrendingScoreService = mock()
 
         seriesService = SeriesService(
             seriesRepository,
             seriesCustomRepository,
-            topicRepository
+            topicRepository,
+            seriesTrendingScoreService,
         )
     }
 
@@ -160,7 +163,9 @@ class SeriesServiceTest {
             val series = SeriesFixtures.series(id = 1L, writer = writer)
             val requestBody = SeriesFixtures.postSeriesDTO(title = "Updated Series")
             whenever(seriesRepository.findWithWriterById(1L)).thenReturn(series)
-            whenever(seriesRepository.existsByCompositeKeyAndIdNot(writer.username, "updated-series", 1L)).thenReturn(false)
+            whenever(seriesRepository.existsByCompositeKeyAndIdNot(writer.username, "updated-series", 1L)).thenReturn(
+                false
+            )
             whenever(topicRepository.findBySlugIn(requestBody.topicSlugs)).thenReturn(emptySet())
 
             val result = seriesService.editSeries(1L, requestBody, writer)
@@ -198,6 +203,7 @@ class SeriesServiceTest {
 
             verify(seriesRepository).findWithWriterById(1L)
             verify(seriesRepository).delete(series)
+            verify(seriesTrendingScoreService).clearTrendingScore(1L)
         }
 
         @Test
@@ -207,6 +213,9 @@ class SeriesServiceTest {
             assertThrows<EntityNotFoundException> {
                 seriesService.deleteSeries(1L, SeriesFixtures.writer())
             }
+
+            verify(seriesRepository, never()).delete(any())
+            verify(seriesTrendingScoreService, never()).clearTrendingScore(any())
         }
     }
 }

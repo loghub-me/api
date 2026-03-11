@@ -27,6 +27,7 @@ class QuestionServiceTest {
     private lateinit var questionCustomRepository: QuestionCustomRepository
     private lateinit var topicRepository: TopicRepository
     private lateinit var markdownService: MarkdownService
+    private lateinit var questionTrendingScoreService: QuestionTrendingScoreService
     private lateinit var redisTemplate: RedisTemplate<String, String>
     private lateinit var valueOperations: ValueOperations<String, String>
 
@@ -38,6 +39,7 @@ class QuestionServiceTest {
         questionCustomRepository = mock()
         topicRepository = mock()
         markdownService = mock()
+        questionTrendingScoreService = mock()
         redisTemplate = mock()
         valueOperations = mock()
 
@@ -48,7 +50,8 @@ class QuestionServiceTest {
             questionCustomRepository,
             topicRepository,
             markdownService,
-            redisTemplate
+            questionTrendingScoreService,
+            redisTemplate,
         )
     }
 
@@ -176,7 +179,13 @@ class QuestionServiceTest {
             val question = QuestionFixtures.question(id = 1L, writer = writer)
             val requestBody = QuestionFixtures.postQuestionDTO(title = "Updated Question", content = "updated content")
             whenever(questionRepository.findWithWriterById(1L)).thenReturn(question)
-            whenever(questionRepository.existsByCompositeKeyAndIdNot(writer.username, "updated-question", 1L)).thenReturn(false)
+            whenever(
+                questionRepository.existsByCompositeKeyAndIdNot(
+                    writer.username,
+                    "updated-question",
+                    1L
+                )
+            ).thenReturn(false)
             whenever(markdownService.normalizeMarkdown(requestBody.content)).thenReturn("normalized updated content")
             whenever(topicRepository.findBySlugIn(requestBody.topicSlugs)).thenReturn(emptySet())
 
@@ -198,6 +207,7 @@ class QuestionServiceTest {
             questionService.deleteQuestion(1L, writer)
 
             verify(questionRepository).delete(question)
+            verify(questionTrendingScoreService).clearTrendingScore(1L)
         }
     }
 
