@@ -37,10 +37,11 @@ class SeriesStarService(
             seriesRepository.existsById(id)
         ) { ResponseMessage.Series.NOT_FOUND }
 
-        seriesStatsRepository.incrementStarCount(id)
-        seriesTrendingScoreService.updateTrendingScore(id, SeriesTrendingScoreDelta.STAR)
         val newStar = UserStar(stargazer = stargazer, series = seriesRef, target = UserStar.Target.SERIES);
-        return userStarRepository.save(newStar)
+        val savedStar = userStarRepository.save(newStar)
+        seriesStatsRepository.incrementStarCount(id);
+        seriesTrendingScoreService.updateTrendingScore(id, SeriesTrendingScoreDelta.STAR)
+        return savedStar
     }
 
     @Transactional

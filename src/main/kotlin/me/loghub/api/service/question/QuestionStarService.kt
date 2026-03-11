@@ -37,10 +37,11 @@ class QuestionStarService(
             questionRepository.existsById(id)
         ) { ResponseMessage.Question.NOT_FOUND }
 
+        val newStar = UserStar(stargazer = stargazer, question = questionRef, target = UserStar.Target.QUESTION)
+        val savedStar = userStarRepository.save(newStar)
         questionStatsRepository.incrementStarCount(id)
         questionTrendingScoreService.updateTrendingScore(id, QuestionTrendingScoreDelta.STAR)
-        val newStar = UserStar(stargazer = stargazer, question = questionRef, target = UserStar.Target.QUESTION)
-        return userStarRepository.save(newStar)
+        return savedStar
     }
 
     @Transactional

@@ -59,7 +59,7 @@ class QuestionAnswerGenerateService(
             val answer = createAnswer(res, question, bot)
 
             questionAnswerRepository.save(answer)
-            questionStatsRepository.decrementAnswerCount(questionId)
+            questionStatsRepository.incrementAnswerCount(questionId)
             questionTrendingScoreService.updateTrendingScore(questionId, QuestionTrendingScoreDelta.ANSWER)
         } catch (_: FeignException) {
             deleteGeneratingCooldown(questionId)

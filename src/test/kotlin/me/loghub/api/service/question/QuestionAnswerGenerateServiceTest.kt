@@ -121,7 +121,7 @@ class QuestionAnswerGenerateServiceTest {
             )
             val captor = argumentCaptor<me.loghub.api.entity.question.QuestionAnswer>()
             verify(questionAnswerRepository).save(captor.capture())
-            verify(questionStatsRepository).decrementAnswerCount(1L)
+            verify(questionStatsRepository).incrementAnswerCount(1L)
             verify(questionTrendingScoreService).updateTrendingScore(1L, QuestionTrendingScoreDelta.ANSWER)
             assertEquals("generated title", captor.firstValue.title)
             assertEquals("generated content", captor.firstValue.content)
@@ -157,7 +157,7 @@ class QuestionAnswerGenerateServiceTest {
 
             val captor = argumentCaptor<me.loghub.api.entity.question.QuestionAnswer>()
             verify(questionAnswerRepository).save(captor.capture())
-            verify(questionStatsRepository).decrementAnswerCount(1L)
+            verify(questionStatsRepository).incrementAnswerCount(1L)
             verify(questionTrendingScoreService).updateTrendingScore(1L, QuestionTrendingScoreDelta.ANSWER)
             assertEquals("답변이 거절되었습니다", captor.firstValue.title)
             assertEquals(AnswerGenerateResponse.RejectionReason.OFF_TOPIC.message, captor.firstValue.content)
@@ -179,7 +179,7 @@ class QuestionAnswerGenerateServiceTest {
             }
 
             verify(questionAnswerRepository, never()).save(any())
-            verify(questionStatsRepository, never()).decrementAnswerCount(any())
+            verify(questionStatsRepository, never()).incrementAnswerCount(any())
             verify(questionTrendingScoreService, never()).updateTrendingScore(any(), any())
             verify(redisTemplate).delete(QuestionAnswerGeneratingRedisKey(1L))
         }

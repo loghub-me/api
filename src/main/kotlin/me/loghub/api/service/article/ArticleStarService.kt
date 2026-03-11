@@ -37,10 +37,11 @@ class ArticleStarService(
             articleRepository.existsById(id)
         ) { ResponseMessage.Article.NOT_FOUND }
 
+        val newStar = UserStar(stargazer = stargazer, article = articleRef, target = UserStar.Target.ARTICLE)
+        val savedStar = userStarRepository.save(newStar)
         articleStatsRepository.incrementStarCount(id);
         articleTrendingScoreService.updateTrendingScore(id, ArticleTrendingScoreDelta.STAR)
-        val newStar = UserStar(stargazer = stargazer, article = articleRef, target = UserStar.Target.ARTICLE)
-        return userStarRepository.save(newStar)
+        return savedStar
     }
 
     @Transactional
