@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
@@ -46,7 +46,7 @@ class RedisConfig {
         val template = RedisTemplate<String, RenderedMarkdownDTO>()
         template.connectionFactory = redisConnectionFactory
         template.keySerializer = StringRedisSerializer()
-        template.valueSerializer = Jackson2JsonRedisSerializer(RenderedMarkdownDTO::class.java)
+        template.valueSerializer = JacksonJsonRedisSerializer(RenderedMarkdownDTO::class.java)
         return template
     }
 }
