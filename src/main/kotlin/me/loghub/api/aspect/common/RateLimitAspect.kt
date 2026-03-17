@@ -1,6 +1,7 @@
 package me.loghub.api.aspect.common
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import me.loghub.api.constant.message.ServerMessage
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.common.TooManyRequestsException
 import me.loghub.api.lib.ratelimit.RateLimit
@@ -22,16 +23,16 @@ class RateLimitAspect(private val rateLimitService: RateLimitService) {
     @Before("@annotation(rateLimit)")
     fun checkRateLimit(joinPoint: JoinPoint, rateLimit: RateLimit) {
         val authentication = SecurityContextHolder.getContext().authentication
-            ?: throw IllegalStateException("No authentication found")
+            ?: error(ServerMessage.AUTHENTICATION_NOT_FOUND)
 
         val principal = authentication.principal as? User
-            ?: throw IllegalStateException("Principal is not User")
+            ?: error(ServerMessage.PRINCIPAL_NOT_USER)
 
         val methodSignature = joinPoint.signature as MethodSignature
         val method = methodSignature.method
 
         val allowed = rateLimitService.tryConsume(
-            userId = principal.id!!,
+            userId = principal.persistedId,
             className = method.declaringClass.name,
             methodName = method.name,
             limit = rateLimit.limit,
