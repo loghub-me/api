@@ -47,7 +47,7 @@ class SeriesChapterController(
     ): ResponseEntity<ResponseBody> {
         val createdChapter = seriesChapterService.createChapter(seriesId, writer)
         return MethodResponseBody(
-            id = createdChapter.id!!,
+            id = createdChapter.persistedId,
             message = ResponseMessage.Series.Chapter.CREATE_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -61,7 +61,7 @@ class SeriesChapterController(
     ): ResponseEntity<ResponseBody> {
         val importedChapter = seriesChapterService.importChapter(seriesId, articleId, writer)
         return MethodResponseBody(
-            id = importedChapter.id!!,
+            id = importedChapter.persistedId,
             message = ResponseMessage.Series.Chapter.IMPORT_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()

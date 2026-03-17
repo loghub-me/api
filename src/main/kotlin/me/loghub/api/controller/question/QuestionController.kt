@@ -95,7 +95,7 @@ class QuestionController(
     ): ResponseEntity<ResponseBody> {
         val closedQuestion = questionService.closeQuestion(id, writer)
         return MethodResponseBody(
-            id = closedQuestion.id!!,
+            id = closedQuestion.persistedId,
             message = ResponseMessage.Question.CLOSE_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

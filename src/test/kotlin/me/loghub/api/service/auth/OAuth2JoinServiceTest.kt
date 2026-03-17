@@ -90,7 +90,7 @@ class OAuth2JoinServiceTest {
             assertEquals(tokenDTO, result.first)
             assertEquals(joinedUser.id, result.second.id)
             verify(redisTemplate).delete(OAuth2JoinTokenRedisKey(requestBody.email))
-            verify(taskAPIProxy).generateAvatar(AvatarGenerateRequest(joinedUser.id!!))
+            verify(taskAPIProxy).generateAvatar(AvatarGenerateRequest(joinedUser.persistedId))
         }
 
         @Test

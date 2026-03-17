@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 
 object SeriesReviewMapper {
     fun map(review: SeriesReview) = SeriesReviewDTO(
-        id = review.id!!,
+        id = review.persistedId,
         content = review.content,
         rating = review.rating,
         writer = UserMapper.map(review.writer),

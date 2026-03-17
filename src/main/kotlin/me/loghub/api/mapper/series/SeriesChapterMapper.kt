@@ -10,14 +10,14 @@ import java.time.format.DateTimeFormatter
 
 object SeriesChapterMapper {
     fun map(chapter: SeriesChapter) = SeriesChapterDTO(
-        id = chapter.id!!,
+        id = chapter.persistedId,
         title = chapter.title,
         sequence = chapter.sequence,
         published = chapter.published,
     )
 
     fun mapDetail(chapter: SeriesChapter, renderedMarkdown: RenderedMarkdownDTO) = SeriesChapterDetailDTO(
-        id = chapter.id!!,
+        id = chapter.persistedId,
         title = chapter.title,
         content = ContentDTO(
             html = renderedMarkdown.html,
@@ -30,7 +30,7 @@ object SeriesChapterMapper {
     )
 
     fun mapForEdit(chapter: SeriesChapter, draft: String?) = SeriesChapterForEditDTO(
-        id = chapter.id!!,
+        id = chapter.persistedId,
         title = chapter.title,
         content = chapter.content,
         draft = draft,

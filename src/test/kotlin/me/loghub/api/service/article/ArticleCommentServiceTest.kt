@@ -199,7 +199,7 @@ class ArticleCommentServiceTest {
 
             assertEquals("nested reply", result.content)
             verify(articleStatsRepository).incrementCommentCount(articleId)
-            verify(articleCommentRepository).incrementReplyCount(rootParent.id!!)
+            verify(articleCommentRepository).incrementReplyCount(rootParent.persistedId)
             verify(articleTrendingScoreService).updateTrendingScore(articleId, ArticleTrendingScoreDelta.COMMENT)
 
             val savedCaptor = argumentCaptor<ArticleComment>()
@@ -336,7 +336,7 @@ class ArticleCommentServiceTest {
             articleCommentService.deleteComment(articleId, commentId, writer)
 
             assertTrue(reply.deleted)
-            verify(articleCommentRepository).decrementReplyCount(parent.id!!)
+            verify(articleCommentRepository).decrementReplyCount(parent.persistedId)
             verify(articleStatsRepository).decrementCommentCount(articleId)
             verify(articleTrendingScoreService).updateTrendingScore(articleId, -ArticleTrendingScoreDelta.COMMENT)
         }

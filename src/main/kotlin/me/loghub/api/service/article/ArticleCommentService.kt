@@ -65,7 +65,7 @@ class ArticleCommentService(
 
         articleStatsRepository.incrementCommentCount(articleId)
         articleTrendingScoreService.updateTrendingScore(articleId, ArticleTrendingScoreDelta.COMMENT)
-        parent?.let { articleCommentRepository.incrementReplyCount(it.id!!) }
+        parent?.let { articleCommentRepository.incrementReplyCount(it.persistedId) }
         createNotifications(savedComment)
 
         return savedComment
@@ -97,7 +97,7 @@ class ArticleCommentService(
         checkPermission(comment.writer.id == writer.id) { ResponseMessage.Article.Comment.PERMISSION_DENIED }
 
         comment.delete()
-        comment.parent?.let { articleCommentRepository.decrementReplyCount(it.id!!) }
+        comment.parent?.let { articleCommentRepository.decrementReplyCount(it.persistedId) }
         articleStatsRepository.decrementCommentCount(articleId)
         articleTrendingScoreService.updateTrendingScore(articleId, -ArticleTrendingScoreDelta.COMMENT)
     }

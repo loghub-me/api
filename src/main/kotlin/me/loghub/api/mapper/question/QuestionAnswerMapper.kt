@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 
 object QuestionAnswerMapper {
     fun map(answer: QuestionAnswer, renderedMarkdown: RenderedMarkdownDTO) = QuestionAnswerDTO(
-        id = answer.id!!,
+        id = answer.persistedId,
         title = answer.title,
         contentHTML = renderedMarkdown.html,
         anchors = renderedMarkdown.anchors,
@@ -20,7 +20,7 @@ object QuestionAnswerMapper {
     )
 
     fun mapForEdit(answer: QuestionAnswer, draft: String?) = QuestionAnswerForEditDTO(
-        id = answer.id!!,
+        id = answer.persistedId,
         title = answer.title,
         content = answer.content,
         draft = draft,

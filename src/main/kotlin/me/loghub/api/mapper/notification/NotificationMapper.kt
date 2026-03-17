@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 
 object NotificationMapper {
     fun map(notification: Notification) = NotificationDTO(
-        id = notification.id!!,
+        id = notification.persistedId,
         href = mapHref(notification),
         title = when (notification.targetType) {
             Notification.TargetType.ARTICLE, Notification.TargetType.ARTICLE_COMMENT -> notification.article?.title

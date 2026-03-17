@@ -43,7 +43,7 @@ class ArticleCommentController(private val articleCommentService: ArticleComment
     ): ResponseEntity<ResponseBody> {
         val postedComment = articleCommentService.postComment(articleId, requestBody, writer)
         return MethodResponseBody(
-            id = postedComment.id!!,
+            id = postedComment.persistedId,
             message = ResponseMessage.Article.Comment.POST_SUCCESS,
             status = HttpStatus.CREATED
         ).toResponseEntity()
@@ -58,7 +58,7 @@ class ArticleCommentController(private val articleCommentService: ArticleComment
     ): ResponseEntity<ResponseBody> {
         val editedComment = articleCommentService.editComment(articleId, commentId, requestBody, writer)
         return MethodResponseBody(
-            id = editedComment.id!!,
+            id = editedComment.persistedId,
             message = ResponseMessage.Article.Comment.EDIT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

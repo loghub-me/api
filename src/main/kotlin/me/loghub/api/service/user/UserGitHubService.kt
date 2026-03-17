@@ -29,7 +29,7 @@ class UserGitHubService(
 
     @Transactional
     fun updateGitHub(requestBody: UpdateUserGitHubDTO, user: User) {
-        val foundUser = userRepository.findWithMetaById(user.id!!)
+        val foundUser = userRepository.findWithMetaById(user.persistedId)
             ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
         val newGitHub = UserGitHub(requestBody.username)
         foundUser.updateGitHub(newGitHub)
@@ -37,14 +37,14 @@ class UserGitHubService(
 
     @Transactional
     fun deleteGitHub(user: User) {
-        val foundUser = userRepository.findWithMetaById(user.id!!)
+        val foundUser = userRepository.findWithMetaById(user.persistedId)
             ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
         foundUser.updateGitHub(UserGitHub())
     }
 
     @Transactional
     fun verifyGitHub(user: User) {
-        val foundUser = userRepository.findWithMetaById(user.id!!)
+        val foundUser = userRepository.findWithMetaById(user.persistedId)
             ?: throw EntityNotFoundException(ResponseMessage.User.NOT_FOUND)
         val github = foundUser.meta.github
         val githubUsername = github.username

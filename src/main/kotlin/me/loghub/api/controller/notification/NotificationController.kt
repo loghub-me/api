@@ -48,7 +48,7 @@ class NotificationController(
         val lastEventId = lastEventIdHeader?.let { LastEventId.Header.from(it) }
 
         response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store")
-        return notificationStreamService.subscribe(user.id!!, lastEventId)
+        return notificationStreamService.subscribe(user.persistedId, lastEventId)
     }
 
     @PatchMapping("/{id}/read")

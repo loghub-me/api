@@ -46,7 +46,7 @@ class QuestionAnswerController(
     ): ResponseEntity<ResponseBody> {
         val postedAnswer = questionAnswerService.postAnswer(questionId, requestBody, writer)
         return MethodResponseBody(
-            id = postedAnswer.id!!,
+            id = postedAnswer.persistedId,
             message = ResponseMessage.Question.Answer.POST_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()
@@ -90,7 +90,7 @@ class QuestionAnswerController(
     ): ResponseEntity<ResponseBody> {
         val acceptedAnswer = questionAnswerService.acceptAnswer(questionId, answerId, writer)
         return MethodResponseBody(
-            id = acceptedAnswer.id!!,
+            id = acceptedAnswer.persistedId,
             message = ResponseMessage.Question.Answer.ACCEPT_SUCCESS,
             status = HttpStatus.OK,
         ).toResponseEntity()

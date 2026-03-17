@@ -5,12 +5,12 @@ import me.loghub.api.entity.user.*
 
 object UserMapper {
     fun map(user: User) = UserDTO(
-        id = user.id!!,
+        id = user.persistedId,
         username = user.username,
     )
 
     fun mapDetail(user: User) = UserDetailDTO(
-        id = user.id!!,
+        id = user.persistedId,
         email = if (user.privacy.emailPublic) user.email else null,
         username = user.username,
         nickname = user.nickname,

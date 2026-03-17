@@ -63,7 +63,7 @@ class UserService(
 
     @Transactional
     fun updateAvatar(file: MultipartFile, user: User) =
-        taskAPIProxy.uploadAvatar(file, user.id!!)
+        taskAPIProxy.uploadAvatar(file, user.persistedId)
 
     @Transactional
     fun withdraw(user: User, refreshToken: String?) {

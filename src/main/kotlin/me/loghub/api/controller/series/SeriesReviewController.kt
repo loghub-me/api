@@ -34,7 +34,7 @@ class SeriesReviewController(private val seriesReviewService: SeriesReviewServic
     ): ResponseEntity<ResponseBody> {
         val postedReview = seriesReviewService.postReview(seriesId, requestBody, writer)
         return MethodResponseBody(
-            id = postedReview.id!!,
+            id = postedReview.persistedId,
             message = ResponseMessage.Series.Review.POST_SUCCESS,
             status = HttpStatus.CREATED
         ).toResponseEntity()
@@ -49,7 +49,7 @@ class SeriesReviewController(private val seriesReviewService: SeriesReviewServic
     ): ResponseEntity<ResponseBody> {
         val editedReview = seriesReviewService.editReview(seriesId, reviewId, requestBody, writer)
         return MethodResponseBody(
-            id = editedReview.id!!,
+            id = editedReview.persistedId,
             message = ResponseMessage.Series.Review.EDIT_SUCCESS,
             status = HttpStatus.OK
         ).toResponseEntity()

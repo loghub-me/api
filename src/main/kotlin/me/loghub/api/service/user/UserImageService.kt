@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile
 @Service
 class UserImageService(private val taskAPIProxy: TaskAPIProxy) {
     fun uploadImage(file: MultipartFile, user: User): String {
-        val response = taskAPIProxy.uploadImage(file, user.id!!)
+        val response = taskAPIProxy.uploadImage(file, user.persistedId)
         return response.path
     }
 }

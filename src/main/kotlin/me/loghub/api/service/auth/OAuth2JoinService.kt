@@ -47,7 +47,7 @@ class OAuth2JoinService(
         }
 
         val joinedUser = userRepository.save(requestBody.toUserEntity(info.provider))
-        taskAPIProxy.generateAvatar(AvatarGenerateRequest(joinedUser.id!!))
+        taskAPIProxy.generateAvatar(AvatarGenerateRequest(joinedUser.persistedId))
         return Pair(tokenService.generateToken(joinedUser), SessionDTO(joinedUser))
     }
 }

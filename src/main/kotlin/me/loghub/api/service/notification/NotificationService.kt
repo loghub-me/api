@@ -37,7 +37,7 @@ class NotificationService(
     fun createNotification(requestBody: CreateNotificationDTO): NotificationDTO {
         val notification = notificationRepository.save(requestBody.toEntity())
         val notificationDTO = NotificationMapper.map(notification)
-        val recipientId = notification.recipient.id!!
+        val recipientId = notification.recipient.persistedId
 
         eventPublisher.publishEvent(NotificationCreatedEvent(notificationDTO, recipientId))
         return notificationDTO
@@ -53,16 +53,16 @@ class NotificationService(
 
         notification.markAsRead()
 
-        val recipientId = notification.recipient.id!!
+        val recipientId = notification.recipient.persistedId
         eventPublisher.publishEvent(NotificationReadEvent(notificationId, recipientId))
     }
 
     @Transactional
     fun readAllNotifications(user: User) {
-        val readCount = notificationRepository.markAllAsRead(user.id!!, LocalDateTime.now())
+        val readCount = notificationRepository.markAllAsRead(user.persistedId, LocalDateTime.now())
         if (readCount == 0) return
 
-        val recipientId = user.id!!
+        val recipientId = user.persistedId
         eventPublisher.publishEvent(NotificationReadAllEvent(readCount, recipientId))
     }
 
@@ -75,7 +75,7 @@ class NotificationService(
 
         notificationRepository.delete(notification)
 
-        val recipientId = notification.recipient.id!!
+        val recipientId = notification.recipient.persistedId
         eventPublisher.publishEvent(NotificationDeletedEvent(notificationId, recipientId))
     }
 }

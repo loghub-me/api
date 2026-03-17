@@ -140,7 +140,7 @@ class JoinServiceTest {
             assertEquals(tokenDTO, result.first)
             assertEquals(joinedUser.id, result.second.id)
             verify(redisTemplate).delete(JoinOTPRedisKey(requestBody.email))
-            verify(taskAPIProxy).generateAvatar(AvatarGenerateRequest(joinedUser.id!!))
+            verify(taskAPIProxy).generateAvatar(AvatarGenerateRequest(joinedUser.persistedId))
         }
 
         @Test

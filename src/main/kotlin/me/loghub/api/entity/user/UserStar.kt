@@ -1,6 +1,7 @@
 package me.loghub.api.entity.user
 
 import jakarta.persistence.*
+import me.loghub.api.constant.message.ServerMessage
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.series.Series
@@ -40,5 +41,8 @@ class UserStar(
     @JoinColumn(name = "stargazer_id", nullable = false)
     val stargazer: User,
 ) {
+    val persistedId: Long
+        get() = id ?: error(ServerMessage.ENTITY_NOT_PERSISTED)
+
     enum class Target { ARTICLE, SERIES, QUESTION }
 }

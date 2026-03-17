@@ -53,7 +53,7 @@ class SeriesChapterService(
 
         checkPermission(chapter.writer == writer) { ResponseMessage.Series.PERMISSION_DENIED }
 
-        val draftRedisKey = SeriesChapterDraftRedisKey(seriesId, chapter.id!!)
+        val draftRedisKey = SeriesChapterDraftRedisKey(seriesId, chapter.persistedId)
         val draft = redisTemplate.opsForValue().get(draftRedisKey)
         return SeriesChapterMapper.mapForEdit(chapter, draft)
     }

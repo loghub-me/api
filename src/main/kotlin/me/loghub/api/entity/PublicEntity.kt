@@ -1,6 +1,7 @@
 package me.loghub.api.entity
 
 import jakarta.persistence.*
+import me.loghub.api.constant.message.ServerMessage
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -20,6 +21,9 @@ abstract class PublicEntity(
     @Column(nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
+    val persistedId: Long
+        get() = id ?: error(ServerMessage.ENTITY_NOT_PERSISTED)
+
     override fun equals(other: Any?) = when {
         this === other -> true
         other !is PublicEntity -> false

@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 
 object QuestionMapper {
     fun map(question: Question) = QuestionDTO(
-        id = question.id!!,
+        id = question.persistedId,
         slug = question.slug,
         title = question.title,
         status = question.status,
@@ -26,7 +26,7 @@ object QuestionMapper {
 
     fun mapDetail(question: Question, renderedMarkdown: RenderedMarkdownDTO) =
         QuestionDetailDTO(
-            id = question.id!!,
+            id = question.persistedId,
             slug = question.slug,
             title = question.title,
             content = ContentDTO(
@@ -43,7 +43,7 @@ object QuestionMapper {
         )
 
     fun mapForEdit(question: Question, draft: String?) = QuestionForEditDTO(
-        id = question.id!!,
+        id = question.persistedId,
         title = question.title,
         content = question.content,
         draft = draft,

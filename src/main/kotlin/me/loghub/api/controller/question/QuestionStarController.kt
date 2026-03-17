@@ -34,7 +34,7 @@ class QuestionStarController(private val questionStarService: QuestionStarServic
     ): ResponseEntity<ResponseBody> {
         val star = questionStarService.addStar(questionId, stargazer)
         return MethodResponseBody(
-            id = star.id!!,
+            id = star.persistedId,
             message = ResponseMessage.Star.ADD_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()

@@ -142,7 +142,7 @@ class ArticleServiceTest {
             assertEquals(article.id, result.id)
             assertEquals(draft, result.draft)
             verify(articleRepository).findWithWriterById(1L)
-            verify(redisTemplate.opsForValue()).get(ArticleDraftRedisKey(article.id!!))
+            verify(redisTemplate.opsForValue()).get(ArticleDraftRedisKey(article.persistedId))
         }
 
         @Test

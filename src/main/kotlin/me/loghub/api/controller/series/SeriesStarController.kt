@@ -34,7 +34,7 @@ class SeriesStarController(private val seriesStarService: SeriesStarService) {
     ): ResponseEntity<ResponseBody> {
         val star = seriesStarService.addStar(seriesId, stargazer)
         return MethodResponseBody(
-            id = star.id!!,
+            id = star.persistedId,
             message = ResponseMessage.Star.ADD_SUCCESS,
             status = HttpStatus.CREATED,
         ).toResponseEntity()

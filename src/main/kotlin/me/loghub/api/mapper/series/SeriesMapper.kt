@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 object SeriesMapper {
     fun map(series: Series) = SeriesDTO(
-        id = series.id!!,
+        id = series.persistedId,
         slug = series.slug,
         title = series.title,
         thumbnail = series.thumbnail,
@@ -23,7 +23,7 @@ object SeriesMapper {
     )
 
     fun mapDetail(series: Series, chapters: List<SeriesChapter>) = SeriesDetailDTO(
-        id = series.id!!,
+        id = series.persistedId,
         slug = series.slug,
         title = series.title,
         description = series.description,
@@ -37,7 +37,7 @@ object SeriesMapper {
     )
 
     fun mapForEdit(series: Series) = SeriesForEditDTO(
-        id = series.id!!,
+        id = series.persistedId,
         slug = series.slug,
         title = series.title,
         description = series.description,

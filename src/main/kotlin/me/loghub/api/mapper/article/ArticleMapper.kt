@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 
 object ArticleMapper {
     fun map(article: Article) = ArticleDTO(
-        id = article.id!!,
+        id = article.persistedId,
         slug = article.slug,
         title = article.title,
         thumbnail = article.thumbnail,
@@ -21,7 +21,7 @@ object ArticleMapper {
     )
 
     fun mapDetail(article: Article, renderedMarkdown: RenderedMarkdownDTO) = ArticleDetailDTO(
-        id = article.id!!,
+        id = article.persistedId,
         slug = article.slug,
         title = article.title,
         content = ContentDTO(
@@ -38,14 +38,14 @@ object ArticleMapper {
     )
 
     fun mapUnpublished(article: Article) = ArticleUnpublishedDTO(
-        id = article.id!!,
+        id = article.persistedId,
         title = article.title,
         topics = article.topicsFlat,
         createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
     )
 
     fun mapForEdit(article: Article, draft: String?) = ArticleForEditDTO(
-        id = article.id!!,
+        id = article.persistedId,
         title = article.title,
         content = article.content,
         draft = draft,
@@ -55,7 +55,7 @@ object ArticleMapper {
     )
 
     fun mapForImport(article: Article) = ArticleForImportDTO(
-        id = article.id!!,
+        id = article.persistedId,
         slug = article.slug,
         title = article.title,
         topics = article.topicsFlat,

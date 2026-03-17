@@ -17,7 +17,7 @@ data class SessionDTO(
     val role: User.Role,
 ) {
     constructor(user: User) : this(
-        id = user.id!!,
+        id = user.persistedId,
         email = user.email,
         username = user.username,
         nickname = user.nickname,
