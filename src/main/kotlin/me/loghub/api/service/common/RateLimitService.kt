@@ -2,13 +2,41 @@ package me.loghub.api.service.common
 
 import me.loghub.api.lib.redis.key.common.RateLimitRedisKey
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.stereotype.Service
-import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 @Service
 class RateLimitService(private val redisTemplate: RedisTemplate<String, String>) {
+    private companion object {
+        val TRY_CONSUME_SCRIPT = DefaultRedisScript<Long>().apply {
+            setScriptText(
+                """
+                local key = KEYS[1]
+                local now = tonumber(ARGV[1])
+                local window = tonumber(ARGV[2])
+                local limit = tonumber(ARGV[3])
+                local member = ARGV[4]
+
+                redis.call('ZREMRANGEBYSCORE', key, '-inf', now - window)
+                local count = redis.call('ZCARD', key)
+
+                if count >= limit then
+                    redis.call('PEXPIRE', key, window)
+                    return 0
+                end
+
+                redis.call('ZADD', key, now, member)
+                redis.call('PEXPIRE', key, window)
+                return 1
+                """.trimIndent()
+            )
+            resultType = Long::class.java
+        }
+    }
+
     fun tryConsume(
         userId: Long,
         className: String,
@@ -17,31 +45,18 @@ class RateLimitService(private val redisTemplate: RedisTemplate<String, String>)
         window: Long,
         unit: ChronoUnit
     ): Boolean {
-        val now = Instant.now()
-        val duration = unit.duration.multipliedBy(window)
-        val windowStartMillis = now.minus(duration).toEpochMilli()
-
+        val nowMillis = Instant.now().toEpochMilli()
+        val windowMillis = unit.duration.multipliedBy(window).toMillis()
         val redisKey = RateLimitRedisKey(userId, className, methodName)
+        val member = "$nowMillis:${UUID.randomUUID()}"
 
-        val zSetOps = redisTemplate.opsForZSet()
-        zSetOps.removeRangeByScore(redisKey, 0.0, windowStartMillis.toDouble())
-
-        val currentCount = zSetOps.zCard(redisKey) ?: 0L
-        if (currentCount >= limit) {
-            return false
-        }
-
-        val nowMillis = now.toEpochMilli()
-        zSetOps.add(redisKey, nowMillis.toString(), nowMillis.toDouble())
-
-        val expireSeconds = duration.seconds
-        if (expireSeconds > 0) {
-            val currentTTL = redisTemplate.getExpire(redisKey)
-            if (currentTTL == -1L || currentTTL == -2L) {  // No TTL set or key does not exist
-                redisTemplate.expire(redisKey, Duration.ofSeconds(expireSeconds))
-            }
-        }
-
-        return true
+        return redisTemplate.execute(
+            TRY_CONSUME_SCRIPT,
+            listOf(redisKey),
+            nowMillis.toString(),
+            windowMillis.toString(),
+            limit.toString(),
+            member,
+        ) == 1L
     }
 }
