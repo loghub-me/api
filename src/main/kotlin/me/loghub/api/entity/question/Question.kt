@@ -67,7 +67,6 @@ class Question(
     @Column(nullable = false)
     @Convert(converter = TopicsFlatConverter::class)
     var topicsFlat: List<TopicDTO>,  // for search(denormalization)
-    val ctid: String? = null,
 ) : PublicEntity() {
     enum class Status { OPEN, CLOSED, SOLVED }
 
