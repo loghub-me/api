@@ -76,8 +76,8 @@ class UserGitHubService(
         val githubUser = githubAPIProxy.getUser(githubUsername)
         val socialAccounts = githubAPIProxy.getUserSocialAccounts(githubUsername)
 
-        val matchedByBlog = githubUser.blog.contains(userPageURL, ignoreCase = true)
-        val matchedBySocial = socialAccounts.any { it.url.contains(userPageURL, ignoreCase = true) }
+        val matchedByBlog = githubUser.blog.equals(userPageURL, ignoreCase = true)
+        val matchedBySocial = socialAccounts.any { it.url.equals(userPageURL, ignoreCase = true) }
 
         return matchedByBlog || matchedBySocial
     }
