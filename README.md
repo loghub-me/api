@@ -66,7 +66,7 @@
 ### 의존성 프로젝트 세팅
 
 > [!IMPORTANT]
-> 이 프로젝트는 [loghub-me/postgres](https://github.com/loghub-me/postgres), [loghub-me/task-api](https://github.com/loghub-me/task-api), [redis](https://hub.docker.com/_/redis) 프로젝트에 의존합니다. 해당 프로젝트를 로컬 환경에서 먼저 실행해주세요. 각 프로젝트의 Dockerfile을 활용하여 로컬에서 컨테이너로 실행할 수 있습니다.
+> 이 프로젝트는 [paradedb/paradedb](https://github.com/paradedb/paradedb), [loghub-me/task-api](https://github.com/loghub-me/task-api), [redis](https://hub.docker.com/_/redis) 프로젝트에 의존합니다. 해당 프로젝트를 로컬 환경에서 먼저 실행해주세요. 각 프로젝트의 Dockerfile을 활용하여 로컬에서 컨테이너로 실행할 수 있습니다.
 
 ```sh
 $ git clone git@github.com:loghub-me/postgres.git
@@ -133,7 +133,7 @@ $ docker build -t loghub-me/api:<version> .
 services:
   loghub-me-postgres:
     container_name: loghub-me-postgres
-    image: ghcr.io/loghub-me/postgres:0.2.0 # change version if needed
+    image: ghcr.io/paradedb/paradedb:latest # change version if needed
     shm_size: 128mb
     ports:
       - "5432:5432/tcp"
