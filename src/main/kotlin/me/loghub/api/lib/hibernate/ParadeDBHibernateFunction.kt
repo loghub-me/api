@@ -11,25 +11,25 @@ enum class ParadeDBHibernateFunction(
 ) {
     ARTICLES_FTS(
         "articles_fts",
-        "(title ||| ?1::pdb.boost(${WEIGHTS.TITLE}) " +
-                "OR normalized_content ||| ?1::pdb.boost(${WEIGHTS.NORMALIZED_CONTENT}) " +
-                "OR topics_flat ||| ?1::pdb.boost(${WEIGHTS.TOPIC_FLATS}))",
+        "(title &&& ?1::pdb.boost(${WEIGHTS.TITLE}) " +
+                "OR normalized_content &&& ?1::pdb.boost(${WEIGHTS.NORMALIZED_CONTENT}) " +
+                "OR topics_flat &&& ?1::pdb.boost(${WEIGHTS.TOPIC_FLATS}))",
         1,
         StandardBasicTypes.BOOLEAN,
     ),
     SERIES_FTS(
         "series_fts",
-        "(title ||| ?1::pdb.boost(${WEIGHTS.TITLE}) " +
-                "OR description ||| ?1::pdb.boost(${WEIGHTS.DESCRIPTION}) " +
-                "OR topics_flat ||| ?1::pdb.boost(${WEIGHTS.TOPIC_FLATS}))",
+        "(title &&& ?1::pdb.boost(${WEIGHTS.TITLE}) " +
+                "OR description &&& ?1::pdb.boost(${WEIGHTS.DESCRIPTION}) " +
+                "OR topics_flat &&& ?1::pdb.boost(${WEIGHTS.TOPIC_FLATS}))",
         1,
         StandardBasicTypes.BOOLEAN,
     ),
     QUESTIONS_FTS(
         "questions_fts",
-        "(title ||| ?1::pdb.boost(${WEIGHTS.TITLE}) " +
-                "OR normalized_content ||| ?1::pdb.boost(${WEIGHTS.NORMALIZED_CONTENT}) " +
-                "OR topics_flat ||| ?1::pdb.boost(${WEIGHTS.TOPIC_FLATS}))",
+        "(title &&& ?1::pdb.boost(${WEIGHTS.TITLE}) " +
+                "OR normalized_content &&& ?1::pdb.boost(${WEIGHTS.NORMALIZED_CONTENT}) " +
+                "OR topics_flat &&& ?1::pdb.boost(${WEIGHTS.TOPIC_FLATS}))",
         1,
         StandardBasicTypes.BOOLEAN,
     ),
