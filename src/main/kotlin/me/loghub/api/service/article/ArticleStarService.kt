@@ -10,6 +10,8 @@ import me.loghub.api.repository.user.UserStarRepository
 import me.loghub.api.service.common.StarService
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkExists
+import me.loghub.api.util.checkPublished
+import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,16 +30,17 @@ class ArticleStarService(
 
     @Transactional
     override fun addStar(id: Long, stargazer: User): UserStar {
-        val articleRef = articleRepository.getReferenceById(id)
+        val article = articleRepository.findById(id)
+            .orElseThrowNotFound { ResponseMessage.Article.NOT_FOUND }
 
         checkConflict(
-            userStarRepository.existsByArticleAndStargazer(articleRef, stargazer)
+            userStarRepository.existsByArticleAndStargazer(article, stargazer)
         ) { ResponseMessage.Star.ALREADY_EXISTS }
-        checkExists(
-            articleRepository.existsById(id)
+        checkPublished(
+            article.published
         ) { ResponseMessage.Article.NOT_FOUND }
 
-        val newStar = UserStar(stargazer = stargazer, article = articleRef, target = UserStar.Target.ARTICLE)
+        val newStar = UserStar(stargazer = stargazer, article = article, target = UserStar.Target.ARTICLE)
         val savedStar = userStarRepository.save(newStar)
         articleStatsRepository.incrementStarCount(id);
         articleTrendingScoreService.updateTrendingScore(id, ArticleTrendingScoreDelta.STAR)
