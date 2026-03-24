@@ -8,6 +8,7 @@ import me.loghub.api.entity.topic.Topic
 import me.loghub.api.entity.user.User
 import me.loghub.api.lib.jpa.TopicsFlatConverter
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.Formula
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
@@ -58,6 +59,12 @@ class Article(
     @Column(nullable = false)
     @Convert(converter = TopicsFlatConverter::class)
     var topicsFlat: List<TopicDTO>,  // for search(denormalization)
+
+    @Formula("tableoid")
+    val tableoid: String? = null,
+
+    @Formula("ctid")
+    val ctid: String? = null,
 ) : PublicEntity() {
     fun update(requestBody: PostArticleDTO, slug: String, normalizedContent: String) {
         this.title = requestBody.title
