@@ -11,6 +11,8 @@ interface UserMetaRepository : JpaRepository<UserMeta, Long> {
     @NativeQuery(
         """
         SELECT
+            (SELECT COUNT(*) FROM user_follows WHERE followee_id = :writer_id) as follower_count,
+            (SELECT COUNT(*) FROM user_follows WHERE follower_id = :writer_id) as following_count,
             (
                 (SELECT COUNT(*) FROM articles WHERE writer_id = :writerId AND published = true) +
                 (SELECT COUNT(*) FROM series WHERE writer_id = :writerId) +

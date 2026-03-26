@@ -32,6 +32,8 @@ object UserMapper {
     )
 
     fun mapStats(stats: UserStats) = UserStatsDTO(
+        followerCount = stats.followerCount,
+        followingCount = stats.followingCount,
         totalPostedCount = stats.totalPostedCount,
         totalAddedStarCount = stats.totalAddedStarCount,
         totalGazedStarCount = stats.totalGazedStarCount,
