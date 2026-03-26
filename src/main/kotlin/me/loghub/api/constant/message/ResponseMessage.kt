@@ -78,6 +78,14 @@ object ResponseMessage {
             const val VERIFICATION_SUCCESS = "GitHub 인증이 성공적으로 완료되었습니다!"
             const val VERIFICATION_FAILED = "GitHub 프로필 인증에 실패했습니다. LogHub 프로필 링크가 포함되어 있는지 확인해주세요."
         }
+
+        object Follow {
+            const val EXISTS = "팔로우 중입니다."
+            const val NOT_FOUND = "팔로우 정보를 찾을 수 없습니다."
+            const val ALREADY_EXISTS = "이미 팔로우 중입니다."
+            const val FOLLOW_SUCCESS = "사용자를 성공적으로 팔로우했습니다!"
+            const val UNFOLLOW_SUCCESS = "사용자 팔로우를 취소했습니다!"
+        }
     }
 
     object Article {

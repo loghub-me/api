@@ -39,7 +39,7 @@ class UserMetaJobConfig(
         .reader(reader())
         .processor(processor())
         .writer(writer())
-        .build()!!
+        .build()
 
     @Bean
     fun reader() = RepositoryItemReaderBuilder<UserMeta>()
@@ -48,7 +48,7 @@ class UserMetaJobConfig(
         .methodName("findAll")
         .sorts(mapOf("user_id" to Sort.Direction.ASC))
         .pageSize(CHUNK_SIZE)
-        .build()!!
+        .build()
 
     @Bean
     fun processor() = ItemProcessor<UserMeta, UserMeta> { meta ->
