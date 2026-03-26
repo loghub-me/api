@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
+import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -62,10 +63,9 @@ class ArticleStarServiceTest {
         fun `should add star when article exists and user has not starred yet`() {
             val articleId = 1L
             val stargazer = ArticleFixtures.writer(id = 10L, username = "stargazer")
-            val articleRef = ArticleFixtures.article(id = articleId)
-            whenever(articleRepository.getReferenceById(articleId)).thenReturn(articleRef)
-            whenever(userStarRepository.existsByArticleAndStargazer(articleRef, stargazer)).thenReturn(false)
-            whenever(articleRepository.existsById(articleId)).thenReturn(true)
+            val article = ArticleFixtures.article(id = articleId)
+            whenever(articleRepository.findById(articleId)).thenReturn(Optional.of(article))
+            whenever(userStarRepository.existsByArticleAndStargazer(article, stargazer)).thenReturn(false)
             whenever(userStarRepository.save(any<UserStar>())).thenAnswer { invocation ->
                 invocation.arguments.first() as UserStar
             }
@@ -73,15 +73,17 @@ class ArticleStarServiceTest {
             val result = articleStarService.addStar(articleId, stargazer)
 
             assertEquals(UserStar.Target.ARTICLE, result.target)
-            assertEquals(articleRef, result.article)
+            assertEquals(article, result.article)
             assertEquals(stargazer, result.stargazer)
+            verify(articleRepository).findById(articleId)
+            verify(userStarRepository).existsByArticleAndStargazer(article, stargazer)
             verify(articleStatsRepository).incrementStarCount(articleId)
             verify(articleTrendingScoreService).updateTrendingScore(articleId, ArticleTrendingScoreDelta.STAR)
 
             val savedStarCaptor = argumentCaptor<UserStar>()
             verify(userStarRepository).save(savedStarCaptor.capture())
             assertEquals(UserStar.Target.ARTICLE, savedStarCaptor.firstValue.target)
-            assertEquals(articleRef, savedStarCaptor.firstValue.article)
+            assertEquals(article, savedStarCaptor.firstValue.article)
             assertEquals(stargazer, savedStarCaptor.firstValue.stargazer)
         }
 
@@ -89,17 +91,16 @@ class ArticleStarServiceTest {
         fun `should throw EntityConflictException when star already exists`() {
             val articleId = 1L
             val stargazer = ArticleFixtures.writer(id = 10L, username = "stargazer")
-            val articleRef = ArticleFixtures.article(id = articleId)
-            whenever(articleRepository.getReferenceById(articleId)).thenReturn(articleRef)
-            whenever(userStarRepository.existsByArticleAndStargazer(articleRef, stargazer)).thenReturn(true)
+            val article = ArticleFixtures.article(id = articleId)
+            whenever(articleRepository.findById(articleId)).thenReturn(Optional.of(article))
+            whenever(userStarRepository.existsByArticleAndStargazer(article, stargazer)).thenReturn(true)
 
             assertThrows<EntityConflictException> {
                 articleStarService.addStar(articleId, stargazer)
             }
 
-            verify(articleRepository).getReferenceById(articleId)
-            verify(userStarRepository).existsByArticleAndStargazer(articleRef, stargazer)
-            verify(articleRepository, never()).existsById(any())
+            verify(articleRepository).findById(articleId)
+            verify(userStarRepository).existsByArticleAndStargazer(article, stargazer)
             verify(articleStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
             verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
@@ -109,16 +110,14 @@ class ArticleStarServiceTest {
         fun `should throw EntityNotFoundException when article does not exist`() {
             val articleId = 1L
             val stargazer = ArticleFixtures.writer(id = 10L, username = "stargazer")
-            val articleRef = ArticleFixtures.article(id = articleId)
-            whenever(articleRepository.getReferenceById(articleId)).thenReturn(articleRef)
-            whenever(userStarRepository.existsByArticleAndStargazer(articleRef, stargazer)).thenReturn(false)
-            whenever(articleRepository.existsById(articleId)).thenReturn(false)
+            whenever(articleRepository.findById(articleId)).thenReturn(Optional.empty())
 
             assertThrows<EntityNotFoundException> {
                 articleStarService.addStar(articleId, stargazer)
             }
 
-            verify(articleRepository).existsById(articleId)
+            verify(articleRepository).findById(articleId)
+            verify(userStarRepository, never()).existsByArticleAndStargazer(any(), any())
             verify(articleStatsRepository, never()).incrementStarCount(any())
             verify(userStarRepository, never()).save(any<UserStar>())
             verify(articleTrendingScoreService, never()).updateTrendingScore(any(), any())
