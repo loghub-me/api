@@ -56,6 +56,7 @@ class UserFollowService(
     fun followUser(followeeId: Long, follower: User): UserFollow {
         val followee = userRepository.getReferenceById(followeeId)
 
+        checkConflict(followee.id == follower.id) { ResponseMessage.User.Follow.CANNOT_FOLLOW_SELF }
         checkConflict(userFollowRepository.existsByFollowerAndFollowee(follower, followee)) {
             ResponseMessage.User.Follow.ALREADY_EXISTS
         }
@@ -70,7 +71,6 @@ class UserFollowService(
     @Transactional
     fun unfollowUser(followeeId: Long, follower: User) {
         val followee = userRepository.getReferenceById(followeeId)
-
         val follow = userFollowRepository.findByFollowerAndFollowee(follower, followee)
             ?: throw EntityNotFoundException(ResponseMessage.User.Follow.NOT_FOUND)
 

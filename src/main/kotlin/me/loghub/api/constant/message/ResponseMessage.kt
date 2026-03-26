@@ -83,6 +83,7 @@ object ResponseMessage {
             const val EXISTS = "팔로우 중입니다."
             const val NOT_FOUND = "팔로우 정보를 찾을 수 없습니다."
             const val ALREADY_EXISTS = "이미 팔로우 중입니다."
+            const val CANNOT_FOLLOW_SELF = "자신을 팔로우할 수 없습니다."
             const val FOLLOW_SUCCESS = "사용자를 성공적으로 팔로우했습니다!"
             const val UNFOLLOW_SUCCESS = "사용자 팔로우를 취소했습니다!"
         }

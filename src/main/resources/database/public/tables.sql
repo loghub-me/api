@@ -203,6 +203,7 @@ CREATE TABLE IF NOT EXISTS public.user_follows
         CONSTRAINT user_follows_follower_id_fk REFERENCES public.users ON DELETE CASCADE,
     followee_id  bigint       NOT NULL
         CONSTRAINT user_follows_followee_id_fk REFERENCES public.users ON DELETE CASCADE,
+    CONSTRAINT user_follows_not_self_follow CHECK (follower_id <> followee_id),
     UNIQUE (follower_id, followee_id)
 );
 
