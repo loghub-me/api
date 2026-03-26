@@ -10,6 +10,7 @@ import me.loghub.api.repository.user.UserFollowRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkField
+import me.loghub.api.util.orElseThrowNotFound
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -54,7 +55,8 @@ class UserFollowService(
 
     @Transactional
     fun followUser(followeeId: Long, follower: User): UserFollow {
-        val followee = userRepository.getReferenceById(followeeId)
+        val followee = userRepository.findById(followeeId)
+            .orElseThrowNotFound { ResponseMessage.User.NOT_FOUND }
 
         checkConflict(followee.id == follower.id) { ResponseMessage.User.Follow.CANNOT_FOLLOW_SELF }
         checkConflict(userFollowRepository.existsByFollowerAndFollowee(follower, followee)) {
