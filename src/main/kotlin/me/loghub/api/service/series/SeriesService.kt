@@ -2,6 +2,7 @@ package me.loghub.api.service.series
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.series.*
+import me.loghub.api.dto.series.event.SeriesCreatedEvent
 import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -13,6 +14,7 @@ import me.loghub.api.util.SlugBuilder
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -24,6 +26,7 @@ class SeriesService(
     private val seriesCustomRepository: SeriesCustomRepository,
     private val topicRepository: TopicRepository,
     private val seriesTrendingScoreService: SeriesTrendingScoreService,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     private companion object {
         private const val PAGE_SIZE = 20
@@ -67,7 +70,10 @@ class SeriesService(
         val topics = topicRepository.findBySlugIn(requestBody.topicSlugs)
 
         val series = requestBody.toEntity(slug, writer, topics)
-        return seriesRepository.save(series)
+        val savedSeries = seriesRepository.save(series)
+        eventPublisher.publishEvent(SeriesCreatedEvent(savedSeries.persistedId, writer.persistedId))
+
+        return savedSeries
     }
 
     @Transactional

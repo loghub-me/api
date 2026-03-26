@@ -2,6 +2,7 @@ package me.loghub.api.service.question
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.question.*
+import me.loghub.api.dto.question.event.QuestionCreatedEvent
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -15,6 +16,7 @@ import me.loghub.api.util.SlugBuilder
 import me.loghub.api.util.checkField
 import me.loghub.api.util.checkPermission
 import me.loghub.api.util.toSlug
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.redis.core.RedisTemplate
@@ -29,6 +31,7 @@ class QuestionService(
     private val markdownService: MarkdownService,
     private val questionTrendingScoreService: QuestionTrendingScoreService,
     private val redisTemplate: RedisTemplate<String, String>,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     private companion object {
         private const val PAGE_SIZE = 20
@@ -77,7 +80,10 @@ class QuestionService(
         val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
 
         val question = requestBody.toEntity(slug, normalizedContent, writer, topics)
-        return questionRepository.save(question)
+        val savedQuestion = questionRepository.save(question)
+        eventPublisher.publishEvent(QuestionCreatedEvent(savedQuestion.persistedId, writer.persistedId))
+
+        return savedQuestion
     }
 
     @Transactional

@@ -24,6 +24,14 @@ class AsyncConfig {
         const val THREAD_NAME_PREFIX = "AnswerGenerateExecutor-"
     }
 
+    object NotificationExecutor {
+        const val NAME = "notificationExecutor"
+        const val CORE_POLL_SIZE = 2
+        const val MAX_POOL_SIZE = 4
+        const val QUEUE_CAPACITY = 100
+        const val THREAD_NAME_PREFIX = "NotificationExecutor-"
+    }
+
     @Bean(MailExecutor.NAME)
     fun mailExecutor() = ThreadPoolTaskExecutor().apply {
         corePoolSize = MailExecutor.CORE_POLL_SIZE
@@ -39,6 +47,15 @@ class AsyncConfig {
         maxPoolSize = AnswerGenerateExecutor.MAX_POOL_SIZE
         queueCapacity = AnswerGenerateExecutor.QUEUE_CAPACITY
         setThreadNamePrefix(AnswerGenerateExecutor.THREAD_NAME_PREFIX)
+        initialize()
+    }
+
+    @Bean(NotificationExecutor.NAME)
+    fun notificationExecutor() = ThreadPoolTaskExecutor().apply {
+        corePoolSize = NotificationExecutor.CORE_POLL_SIZE
+        maxPoolSize = NotificationExecutor.MAX_POOL_SIZE
+        queueCapacity = NotificationExecutor.QUEUE_CAPACITY
+        setThreadNamePrefix(NotificationExecutor.THREAD_NAME_PREFIX)
         initialize()
     }
 }

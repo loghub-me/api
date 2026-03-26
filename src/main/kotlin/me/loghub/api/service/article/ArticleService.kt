@@ -2,6 +2,7 @@ package me.loghub.api.service.article
 
 import me.loghub.api.constant.message.ResponseMessage
 import me.loghub.api.dto.article.*
+import me.loghub.api.dto.article.event.ArticleCreatedEvent
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.User
 import me.loghub.api.exception.entity.EntityNotFoundException
@@ -12,6 +13,7 @@ import me.loghub.api.repository.article.ArticleRepository
 import me.loghub.api.repository.topic.TopicRepository
 import me.loghub.api.service.common.MarkdownService
 import me.loghub.api.util.*
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.redis.core.RedisTemplate
@@ -26,6 +28,7 @@ class ArticleService(
     private val markdownService: MarkdownService,
     private val articleTrendingScoreService: ArticleTrendingScoreService,
     private val redisTemplate: RedisTemplate<String, String>,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     private companion object {
         private const val PAGE_SIZE = 20
@@ -75,7 +78,12 @@ class ArticleService(
         val normalizedContent = markdownService.normalizeMarkdown(requestBody.content)
 
         val article = requestBody.toEntity(slug, normalizedContent, writer, topics)
-        return articleRepository.save(article)
+        val savedArticle = articleRepository.save(article)
+        if (article.published) {
+            eventPublisher.publishEvent(ArticleCreatedEvent(savedArticle.persistedId, writer.persistedId))
+        }
+
+        return savedArticle
     }
 
     @Transactional
