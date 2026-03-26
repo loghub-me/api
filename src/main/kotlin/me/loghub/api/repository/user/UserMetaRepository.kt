@@ -2,17 +2,18 @@ package me.loghub.api.repository.user
 
 import me.loghub.api.dto.topic.TopicUsageProjection
 import me.loghub.api.dto.user.UserStatsProjection
+import me.loghub.api.entity.user.User
 import me.loghub.api.entity.user.UserMeta
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.NativeQuery
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface UserMetaRepository : JpaRepository<UserMeta, Long> {
     @NativeQuery(
         """
         SELECT
-            (SELECT COUNT(*) FROM user_follows WHERE followee_id = :writerId) as follower_count,
-            (SELECT COUNT(*) FROM user_follows WHERE follower_id = :writerId) as following_count,
             (
                 (SELECT COUNT(*) FROM articles WHERE writer_id = :writerId AND published = true) +
                 (SELECT COUNT(*) FROM series WHERE writer_id = :writerId) +
@@ -53,4 +54,20 @@ interface UserMetaRepository : JpaRepository<UserMeta, Long> {
         """
     )
     fun findTopicUsageTop5ByWriter(@Param("writerId") writerId: Long): List<TopicUsageProjection>
+
+    @Modifying
+    @Query("UPDATE UserMeta um SET um.stats.followersCount = um.stats.followersCount + 1 WHERE um.user = :user")
+    fun incrementFollowersCountById(@Param("user") user: User): Int
+
+    @Modifying
+    @Query("UPDATE UserMeta um SET um.stats.followersCount = um.stats.followersCount - 1 WHERE um.user = :user")
+    fun decrementFollowersCountById(@Param("user") user: User): Int
+
+    @Modifying
+    @Query("UPDATE UserMeta um SET um.stats.followingCount = um.stats.followingCount + 1 WHERE um.user = :user")
+    fun incrementFollowingCountById(@Param("user") user: User): Int
+
+    @Modifying
+    @Query("UPDATE UserMeta um SET um.stats.followingCount = um.stats.followingCount - 1 WHERE um.user = :user")
+    fun decrementFollowingCountById(@Param("user") user: User): Int
 }

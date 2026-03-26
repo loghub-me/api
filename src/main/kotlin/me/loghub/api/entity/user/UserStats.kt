@@ -11,7 +11,7 @@ import me.loghub.api.lib.jpa.TopicsUsageConverter
 @Embeddable
 data class UserStats(
     @Column(nullable = false)
-    val followerCount: Int = 0,
+    val followersCount: Int = 0,
 
     @Column(nullable = false)
     val followingCount: Int = 0,
@@ -30,8 +30,6 @@ data class UserStats(
     val topicUsages: List<TopicUsageDTO> = emptyList(),
 ) {
     constructor(stats: UserStatsProjection, topicUsages: List<TopicUsageProjection>) : this(
-        followerCount = stats.followerCount,
-        followingCount = stats.followingCount,
         totalPostedCount = stats.totalPostedCount,
         totalAddedStarCount = stats.totalAddedStarCount,
         totalGazedStarCount = stats.totalGazedStarCount,

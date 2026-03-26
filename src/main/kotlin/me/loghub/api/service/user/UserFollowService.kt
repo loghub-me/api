@@ -7,6 +7,7 @@ import me.loghub.api.entity.user.UserFollow
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.mapper.user.UserMapper
 import me.loghub.api.repository.user.UserFollowRepository
+import me.loghub.api.repository.user.UserMetaRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.util.checkConflict
 import me.loghub.api.util.checkField
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserFollowService(
     private val userRepository: UserRepository,
+    private val userMetaRepository: UserMetaRepository,
     private val userFollowRepository: UserFollowRepository,
 ) {
     private companion object {
@@ -63,11 +65,12 @@ class UserFollowService(
             ResponseMessage.User.Follow.ALREADY_EXISTS
         }
 
-        val newFollow = UserFollow(
-            follower = follower,
-            followee = followee,
-        )
-        return userFollowRepository.save(newFollow)
+        val follow = UserFollow(follower = follower, followee = followee)
+        val savedFollow = userFollowRepository.save(follow)
+        userMetaRepository.incrementFollowersCountById(followee)
+        userMetaRepository.incrementFollowingCountById(follower)
+
+        return savedFollow
     }
 
     @Transactional
@@ -77,5 +80,8 @@ class UserFollowService(
             ?: throw EntityNotFoundException(ResponseMessage.User.Follow.NOT_FOUND)
 
         userFollowRepository.delete(follow)
+
+        userMetaRepository.decrementFollowersCountById(followee)
+        userMetaRepository.decrementFollowingCountById(follower)
     }
 }

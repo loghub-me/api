@@ -20,5 +20,6 @@ interface UserRepository : JpaRepository<User, Long> {
 
     @Query("SELECT COUNT(*) > 0 FROM User u WHERE LOWER(u._username) = LOWER(:username)")
     fun existsByUsernameIgnoreCase(username: String): Boolean
+
     fun existsByEmail(email: String): Boolean
 }

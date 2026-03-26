@@ -3,7 +3,7 @@ package me.loghub.api.dto.user
 import me.loghub.api.dto.topic.TopicUsageDTO
 
 data class UserStatsDTO(
-    val followerCount: Int,
+    val followersCount: Int,
     val followingCount: Int,
     val totalPostedCount: Int,
     val totalAddedStarCount: Int,
