@@ -1,6 +1,7 @@
 package me.loghub.api.service.article
 
 import me.loghub.api.dto.article.ArticleSort
+import me.loghub.api.dto.article.event.ArticleCreatedEvent
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.exception.auth.PermissionDeniedException
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.*
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.RedisTemplate
@@ -31,6 +33,7 @@ class ArticleServiceTest {
     private lateinit var articleTrendingScoreService: ArticleTrendingScoreService
     private lateinit var redisTemplate: RedisTemplate<String, String>
     private lateinit var valueOperations: ValueOperations<String, String>
+    private lateinit var eventPublisher: ApplicationEventPublisher
 
     private lateinit var articleService: ArticleService
 
@@ -43,6 +46,7 @@ class ArticleServiceTest {
         articleTrendingScoreService = mock()
         redisTemplate = mock()
         valueOperations = mock()
+        eventPublisher = mock()
 
         whenever(redisTemplate.opsForValue()).thenReturn(valueOperations)
 
@@ -52,7 +56,8 @@ class ArticleServiceTest {
             topicRepository,
             markdownService,
             articleTrendingScoreService,
-            redisTemplate
+            redisTemplate,
+            eventPublisher,
         )
     }
 
@@ -186,6 +191,7 @@ class ArticleServiceTest {
             verify(topicRepository).findBySlugIn(requestBody.topicSlugs)
             verify(markdownService).normalizeMarkdown(requestBody.content)
             verify(articleRepository).save(any<Article>())
+            verify(eventPublisher).publishEvent(ArticleCreatedEvent(article.persistedId, writer.persistedId))
         }
 
         @Test
@@ -208,6 +214,7 @@ class ArticleServiceTest {
             verify(topicRepository).findBySlugIn(requestBody.topicSlugs)
             verify(markdownService).normalizeMarkdown(requestBody.content)
             verify(articleRepository).save(any<Article>())
+            verify(eventPublisher).publishEvent(ArticleCreatedEvent(article.persistedId, writer.persistedId))
         }
     }
 

@@ -1,6 +1,7 @@
 package me.loghub.api.service.series
 
 import me.loghub.api.dto.series.SeriesSort
+import me.loghub.api.dto.series.event.SeriesCreatedEvent
 import me.loghub.api.exception.auth.PermissionDeniedException
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.exception.validation.IllegalFieldException
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import kotlin.test.assertEquals
@@ -21,6 +23,7 @@ class SeriesServiceTest {
     private lateinit var seriesCustomRepository: SeriesCustomRepository
     private lateinit var topicRepository: TopicRepository
     private lateinit var seriesTrendingScoreService: SeriesTrendingScoreService
+    private lateinit var eventPublisher: ApplicationEventPublisher
 
     private lateinit var seriesService: SeriesService
 
@@ -30,12 +33,14 @@ class SeriesServiceTest {
         seriesCustomRepository = mock()
         topicRepository = mock()
         seriesTrendingScoreService = mock()
+        eventPublisher = mock()
 
         seriesService = SeriesService(
             seriesRepository,
             seriesCustomRepository,
             topicRepository,
             seriesTrendingScoreService,
+            eventPublisher,
         )
     }
 
@@ -139,11 +144,17 @@ class SeriesServiceTest {
         fun `should create and return series when request is valid`() {
             val writer = SeriesFixtures.writer()
             val requestBody = SeriesFixtures.postSeriesDTO(title = "New Series")
+            val savedSeries = SeriesFixtures.series(
+                id = 1L,
+                writer = writer,
+                slug = "new-series",
+                title = requestBody.title,
+                description = requestBody.description,
+                thumbnail = requestBody.thumbnail,
+            )
             whenever(seriesRepository.existsByCompositeKey(writer.username, "new-series")).thenReturn(false)
             whenever(topicRepository.findBySlugIn(requestBody.topicSlugs)).thenReturn(emptySet())
-            whenever(seriesRepository.save(any<me.loghub.api.entity.series.Series>())).thenAnswer { invocation ->
-                invocation.arguments.first() as me.loghub.api.entity.series.Series
-            }
+            whenever(seriesRepository.save(any<me.loghub.api.entity.series.Series>())).thenReturn(savedSeries)
 
             val result = seriesService.postSeries(requestBody, writer)
 
@@ -152,6 +163,7 @@ class SeriesServiceTest {
             verify(seriesRepository).existsByCompositeKey(writer.username, "new-series")
             verify(topicRepository).findBySlugIn(requestBody.topicSlugs)
             verify(seriesRepository).save(any())
+            verify(eventPublisher).publishEvent(SeriesCreatedEvent(savedSeries.persistedId, writer.persistedId))
         }
     }
 

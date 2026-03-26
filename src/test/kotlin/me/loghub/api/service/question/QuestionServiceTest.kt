@@ -3,6 +3,7 @@ package me.loghub.api.service.question
 import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.dto.question.QuestionFilter
 import me.loghub.api.dto.question.QuestionSort
+import me.loghub.api.dto.question.event.QuestionCreatedEvent
 import me.loghub.api.exception.auth.PermissionDeniedException
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.exception.validation.IllegalFieldException
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.RedisTemplate
@@ -30,6 +32,7 @@ class QuestionServiceTest {
     private lateinit var questionTrendingScoreService: QuestionTrendingScoreService
     private lateinit var redisTemplate: RedisTemplate<String, String>
     private lateinit var valueOperations: ValueOperations<String, String>
+    private lateinit var eventPublisher: ApplicationEventPublisher
 
     private lateinit var questionService: QuestionService
 
@@ -42,6 +45,7 @@ class QuestionServiceTest {
         questionTrendingScoreService = mock()
         redisTemplate = mock()
         valueOperations = mock()
+        eventPublisher = mock()
 
         whenever(redisTemplate.opsForValue()).thenReturn(valueOperations)
 
@@ -52,6 +56,7 @@ class QuestionServiceTest {
             markdownService,
             questionTrendingScoreService,
             redisTemplate,
+            eventPublisher,
         )
     }
 
@@ -154,20 +159,28 @@ class QuestionServiceTest {
         fun `should create and return question when request is valid`() {
             val writer = QuestionFixtures.writer()
             val requestBody = QuestionFixtures.postQuestionDTO(title = "New Question")
+            val savedQuestion = QuestionFixtures.question(
+                id = 1L,
+                writer = writer,
+                slug = "new-question",
+                title = requestBody.title,
+                content = requestBody.content,
+                normalizedContent = "normalized content",
+            )
             whenever(questionRepository.existsByCompositeKey(writer.username, "new-question")).thenReturn(false)
             whenever(topicRepository.findBySlugIn(requestBody.topicSlugs)).thenReturn(emptySet())
             whenever(markdownService.normalizeMarkdown(requestBody.content)).thenReturn("normalized content")
-            whenever(questionRepository.save(any<me.loghub.api.entity.question.Question>())).thenAnswer { invocation ->
-                invocation.arguments.first() as me.loghub.api.entity.question.Question
-            }
+            whenever(questionRepository.save(any<me.loghub.api.entity.question.Question>())).thenReturn(savedQuestion)
 
             val result = questionService.postQuestion(requestBody, writer)
 
             assertEquals("new-question", result.slug)
             assertEquals("normalized content", result.normalizedContent)
             verify(questionRepository).existsByCompositeKey(writer.username, "new-question")
+            verify(topicRepository).findBySlugIn(requestBody.topicSlugs)
             verify(markdownService).normalizeMarkdown(requestBody.content)
             verify(questionRepository).save(any())
+            verify(eventPublisher).publishEvent(QuestionCreatedEvent(savedQuestion.persistedId, writer.persistedId))
         }
     }
 
