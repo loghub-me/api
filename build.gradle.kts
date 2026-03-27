@@ -3,13 +3,13 @@ plugins {
     kotlin("plugin.spring") version "2.2.21"
     kotlin("plugin.jpa") version "2.2.21"
 
-    id("org.springframework.boot") version "4.0.3"
+    id("org.springframework.boot") version "4.0.5"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.devtools.ksp") version "2.2.21-2.0.4"
 }
 
 group = "me.loghub"
-version = "0.10.1-SNAPSHOT"
+version = "0.11.0-SNAPSHOT"
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(24) } }
 
@@ -28,12 +28,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.01")
     implementation("io.github.openfeign.querydsl:querydsl-jpa:7.1")
     implementation("io.hypersistence:hypersistence-utils-hibernate-70:3.14.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.auth0:java-jwt:4.5.0")
-    implementation("com.resend:resend-java:4.11.0")
+    implementation("com.auth0:java-jwt:4.5.1")
+    implementation("com.resend:resend-java:4.13.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
