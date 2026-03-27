@@ -5,26 +5,23 @@ import me.loghub.api.exception.entity.EntityConflictException
 import me.loghub.api.exception.entity.EntityNotFoundException
 import me.loghub.api.exception.validation.IllegalFieldException
 import me.loghub.api.repository.user.UserFollowRepository
+import me.loghub.api.repository.user.UserMetaRepository
 import me.loghub.api.repository.user.UserRepository
 import me.loghub.api.service.auth.AuthFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class UserFollowServiceTest {
     private lateinit var userRepository: UserRepository
+    private lateinit var userMetaRepository: UserMetaRepository
     private lateinit var userFollowRepository: UserFollowRepository
 
     private lateinit var userFollowService: UserFollowService
@@ -32,9 +29,10 @@ class UserFollowServiceTest {
     @BeforeEach
     fun setUp() {
         userRepository = mock()
+        userMetaRepository = mock()
         userFollowRepository = mock()
 
-        userFollowService = UserFollowService(userRepository, userFollowRepository)
+        userFollowService = UserFollowService(userRepository, userMetaRepository, userFollowRepository)
     }
 
     @Nested
@@ -130,7 +128,7 @@ class UserFollowServiceTest {
             val followeeId = 1L
             val followee = AuthFixtures.user(id = followeeId, username = "followee")
             val follower = AuthFixtures.user(id = 2L, username = "follower")
-            whenever(userRepository.getReferenceById(followeeId)).thenReturn(followee)
+            whenever(userRepository.findById(followeeId)).thenReturn(Optional.of(followee))
             whenever(userFollowRepository.existsByFollowerAndFollowee(follower, followee)).thenReturn(false)
             whenever(userFollowRepository.save(any<UserFollow>())).thenAnswer { invocation ->
                 invocation.arguments.first() as UserFollow
@@ -143,6 +141,8 @@ class UserFollowServiceTest {
 
             val savedFollowCaptor = argumentCaptor<UserFollow>()
             verify(userFollowRepository).save(savedFollowCaptor.capture())
+            verify(userMetaRepository).incrementFollowersCountById(followee)
+            verify(userMetaRepository).incrementFollowingCountById(follower)
             assertEquals(follower, savedFollowCaptor.firstValue.follower)
             assertEquals(followee, savedFollowCaptor.firstValue.followee)
         }
@@ -150,15 +150,17 @@ class UserFollowServiceTest {
         @Test
         fun `should throw EntityConflictException when follower tries to follow self`() {
             val follower = AuthFixtures.user(id = 1L, username = "follower")
-            whenever(userRepository.getReferenceById(1L)).thenReturn(follower)
+            whenever(userRepository.findById(1L)).thenReturn(Optional.of(follower))
 
             assertThrows<EntityConflictException> {
                 userFollowService.followUser(1L, follower)
             }
 
-            verify(userRepository).getReferenceById(1L)
+            verify(userRepository).findById(1L)
             verify(userFollowRepository, never()).existsByFollowerAndFollowee(any(), any())
             verify(userFollowRepository, never()).save(any<UserFollow>())
+            verify(userMetaRepository, never()).incrementFollowersCountById(any())
+            verify(userMetaRepository, never()).incrementFollowingCountById(any())
         }
 
         @Test
@@ -166,16 +168,18 @@ class UserFollowServiceTest {
             val followeeId = 1L
             val followee = AuthFixtures.user(id = followeeId, username = "followee")
             val follower = AuthFixtures.user(id = 2L, username = "follower")
-            whenever(userRepository.getReferenceById(followeeId)).thenReturn(followee)
+            whenever(userRepository.findById(followeeId)).thenReturn(Optional.of(followee))
             whenever(userFollowRepository.existsByFollowerAndFollowee(follower, followee)).thenReturn(true)
 
             assertThrows<EntityConflictException> {
                 userFollowService.followUser(followeeId, follower)
             }
 
-            verify(userRepository).getReferenceById(followeeId)
+            verify(userRepository).findById(followeeId)
             verify(userFollowRepository).existsByFollowerAndFollowee(follower, followee)
             verify(userFollowRepository, never()).save(any<UserFollow>())
+            verify(userMetaRepository, never()).incrementFollowersCountById(any())
+            verify(userMetaRepository, never()).incrementFollowingCountById(any())
         }
     }
 
@@ -195,6 +199,8 @@ class UserFollowServiceTest {
             verify(userRepository).getReferenceById(followeeId)
             verify(userFollowRepository).findByFollowerAndFollowee(follower, followee)
             verify(userFollowRepository).delete(follow)
+            verify(userMetaRepository).decrementFollowersCountById(followee)
+            verify(userMetaRepository).decrementFollowingCountById(follower)
         }
 
         @Test
@@ -212,6 +218,8 @@ class UserFollowServiceTest {
             verify(userRepository).getReferenceById(followeeId)
             verify(userFollowRepository).findByFollowerAndFollowee(follower, followee)
             verify(userFollowRepository, never()).delete(any())
+            verify(userMetaRepository, never()).decrementFollowersCountById(any())
+            verify(userMetaRepository, never()).decrementFollowingCountById(any())
         }
     }
 }
