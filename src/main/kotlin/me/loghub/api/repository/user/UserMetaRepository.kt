@@ -57,17 +57,17 @@ interface UserMetaRepository : JpaRepository<UserMeta, Long> {
 
     @Modifying
     @Query("UPDATE UserMeta um SET um.stats.followersCount = um.stats.followersCount + 1 WHERE um.user = :user")
-    fun incrementFollowersCountById(@Param("user") user: User): Int
+    fun incrementFollowersCountByUser(@Param("user") user: User): Int
 
     @Modifying
     @Query("UPDATE UserMeta um SET um.stats.followersCount = um.stats.followersCount - 1 WHERE um.user = :user")
-    fun decrementFollowersCountById(@Param("user") user: User): Int
+    fun decrementFollowersCountByUser(@Param("user") user: User): Int
 
     @Modifying
     @Query("UPDATE UserMeta um SET um.stats.followingCount = um.stats.followingCount + 1 WHERE um.user = :user")
-    fun incrementFollowingCountById(@Param("user") user: User): Int
+    fun incrementFollowingCountByUser(@Param("user") user: User): Int
 
     @Modifying
     @Query("UPDATE UserMeta um SET um.stats.followingCount = um.stats.followingCount - 1 WHERE um.user = :user")
-    fun decrementFollowingCountById(@Param("user") user: User): Int
+    fun decrementFollowingCountByUser(@Param("user") user: User): Int
 }

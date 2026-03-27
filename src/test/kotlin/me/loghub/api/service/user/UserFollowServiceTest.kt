@@ -141,8 +141,8 @@ class UserFollowServiceTest {
 
             val savedFollowCaptor = argumentCaptor<UserFollow>()
             verify(userFollowRepository).save(savedFollowCaptor.capture())
-            verify(userMetaRepository).incrementFollowersCountById(followee)
-            verify(userMetaRepository).incrementFollowingCountById(follower)
+            verify(userMetaRepository).incrementFollowersCountByUser(followee)
+            verify(userMetaRepository).incrementFollowingCountByUser(follower)
             assertEquals(follower, savedFollowCaptor.firstValue.follower)
             assertEquals(followee, savedFollowCaptor.firstValue.followee)
         }
@@ -159,8 +159,8 @@ class UserFollowServiceTest {
             verify(userRepository).findById(1L)
             verify(userFollowRepository, never()).existsByFollowerAndFollowee(any(), any())
             verify(userFollowRepository, never()).save(any<UserFollow>())
-            verify(userMetaRepository, never()).incrementFollowersCountById(any())
-            verify(userMetaRepository, never()).incrementFollowingCountById(any())
+            verify(userMetaRepository, never()).incrementFollowersCountByUser(any())
+            verify(userMetaRepository, never()).incrementFollowingCountByUser(any())
         }
 
         @Test
@@ -178,8 +178,8 @@ class UserFollowServiceTest {
             verify(userRepository).findById(followeeId)
             verify(userFollowRepository).existsByFollowerAndFollowee(follower, followee)
             verify(userFollowRepository, never()).save(any<UserFollow>())
-            verify(userMetaRepository, never()).incrementFollowersCountById(any())
-            verify(userMetaRepository, never()).incrementFollowingCountById(any())
+            verify(userMetaRepository, never()).incrementFollowersCountByUser(any())
+            verify(userMetaRepository, never()).incrementFollowingCountByUser(any())
         }
     }
 
@@ -199,8 +199,8 @@ class UserFollowServiceTest {
             verify(userRepository).getReferenceById(followeeId)
             verify(userFollowRepository).findByFollowerAndFollowee(follower, followee)
             verify(userFollowRepository).delete(follow)
-            verify(userMetaRepository).decrementFollowersCountById(followee)
-            verify(userMetaRepository).decrementFollowingCountById(follower)
+            verify(userMetaRepository).decrementFollowersCountByUser(followee)
+            verify(userMetaRepository).decrementFollowingCountByUser(follower)
         }
 
         @Test
@@ -218,8 +218,8 @@ class UserFollowServiceTest {
             verify(userRepository).getReferenceById(followeeId)
             verify(userFollowRepository).findByFollowerAndFollowee(follower, followee)
             verify(userFollowRepository, never()).delete(any())
-            verify(userMetaRepository, never()).decrementFollowersCountById(any())
-            verify(userMetaRepository, never()).decrementFollowingCountById(any())
+            verify(userMetaRepository, never()).decrementFollowersCountByUser(any())
+            verify(userMetaRepository, never()).decrementFollowingCountByUser(any())
         }
     }
 }

@@ -67,8 +67,8 @@ class UserFollowService(
 
         val follow = UserFollow(follower = follower, followee = followee)
         val savedFollow = userFollowRepository.save(follow)
-        userMetaRepository.incrementFollowersCountById(followee)
-        userMetaRepository.incrementFollowingCountById(follower)
+        userMetaRepository.incrementFollowersCountByUser(followee)
+        userMetaRepository.incrementFollowingCountByUser(follower)
 
         return savedFollow
     }
@@ -81,7 +81,7 @@ class UserFollowService(
 
         userFollowRepository.delete(follow)
 
-        userMetaRepository.decrementFollowersCountById(followee)
-        userMetaRepository.decrementFollowingCountById(follower)
+        userMetaRepository.decrementFollowersCountByUser(followee)
+        userMetaRepository.decrementFollowingCountByUser(follower)
     }
 }
