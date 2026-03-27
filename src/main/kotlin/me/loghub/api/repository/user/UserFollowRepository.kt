@@ -17,9 +17,6 @@ interface UserFollowRepository : JpaRepository<UserFollow, Long> {
     @Query("SELECT uf.followee FROM UserFollow uf WHERE uf.follower = :follower ORDER BY uf.id DESC")
     fun findFolloweesByFollowerOrderByIdDesc(follower: User, pageable: Pageable): Page<User>
 
-    @Query("SELECT uf.follower FROM UserFollow uf WHERE uf.followee = :followee")
-    fun findFollowersByFollowee(followee: User): List<User>
-
     fun findByFollowerAndFollowee(follower: User, followee: User): UserFollow?
 
     fun existsByFollowerAndFollowee(follower: User, followee: User): Boolean

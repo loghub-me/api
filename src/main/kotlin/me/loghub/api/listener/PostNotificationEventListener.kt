@@ -14,6 +14,7 @@ import me.loghub.api.repository.series.SeriesRepository
 import me.loghub.api.repository.user.UserFollowRepository
 import me.loghub.api.service.notification.NotificationService
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.PageRequest
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -30,6 +31,7 @@ class PostNotificationEventListener(
 ) {
     private companion object {
         private val logger = KotlinLogging.logger { }
+        private const val FOLLOWER_BATCH_SIZE = 100
     }
 
     @Async(AsyncConfig.NotificationExecutor.NAME)
@@ -81,18 +83,24 @@ class PostNotificationEventListener(
     }
 
     private fun notifyFollowers(writer: User, createRequest: (User) -> CreateNotificationDTO) {
-        val followers = userFollowRepository.findFollowersByFollowee(writer)
+        var pageNumber = 0
+        do {
+            val pageable = PageRequest.of(pageNumber, FOLLOWER_BATCH_SIZE)
+            val page = userFollowRepository.findFollowersByFolloweeOrderByIdDesc(writer, pageable)
 
-        followers.forEach { follower ->
-            val request = createRequest(follower)
+            if (page.content.isNotEmpty()) {
+                val requests = page.content.map { follower -> createRequest(follower) }
 
-            try {
-                notificationService.createNotification(request)
-            } catch (e: DataIntegrityViolationException) {
-                logger.warn(e) { "Skip notification fan-out due to data integrity violation." }
-            } catch (e: JpaObjectRetrievalFailureException) {
-                logger.warn(e) { "Skip notification fan-out due to missing referenced entity." }
+                try {
+                    notificationService.createNotifications(requests)
+                } catch (e: DataIntegrityViolationException) {
+                    logger.warn(e) { "Skip notification fan-out due to data integrity violation." }
+                } catch (e: JpaObjectRetrievalFailureException) {
+                    logger.warn(e) { "Skip notification fan-out due to missing referenced entity." }
+                }
             }
-        }
+
+            pageNumber++
+        } while (page.hasNext())
     }
 }
