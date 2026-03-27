@@ -33,16 +33,16 @@ class ArticleStarService(
         val article = articleRepository.findById(id)
             .orElseThrowNotFound { ResponseMessage.Article.NOT_FOUND }
 
-        checkConflict(
-            userStarRepository.existsByArticleAndStargazer(article, stargazer)
-        ) { ResponseMessage.Star.ALREADY_EXISTS }
         checkPublished(
             article.published
         ) { ResponseMessage.Article.NOT_FOUND }
+        checkConflict(
+            userStarRepository.existsByArticleAndStargazer(article, stargazer)
+        ) { ResponseMessage.Star.ALREADY_EXISTS }
 
         val newStar = UserStar(stargazer = stargazer, article = article, target = UserStar.Target.ARTICLE)
         val savedStar = userStarRepository.save(newStar)
-        articleStatsRepository.incrementStarCount(id);
+        articleStatsRepository.incrementStarCount(id)
         articleTrendingScoreService.updateTrendingScore(id, ArticleTrendingScoreDelta.STAR)
         return savedStar
     }
