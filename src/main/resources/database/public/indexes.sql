@@ -48,5 +48,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS user_activities_user_id_question_answer_id_uq_
 ON public.user_activities (user_id, question_answer_id)
 WHERE action = 'POST_QUESTION_ANSWER';
 
+CREATE INDEX IF NOT EXISTS user_follows_follower_id_id_idx ON public.user_follows (follower_id, id DESC);
+CREATE INDEX IF NOT EXISTS user_follows_followee_id_id_idx ON public.user_follows (followee_id, id DESC);
+
 CREATE INDEX IF NOT EXISTS notifications_recipient_id_id_idx ON public.notifications (recipient_id, id DESC);
 CREATE INDEX IF NOT EXISTS notifications_recipient_id_read_at_id_idx ON public.notifications (recipient_id, read_at, id DESC);
