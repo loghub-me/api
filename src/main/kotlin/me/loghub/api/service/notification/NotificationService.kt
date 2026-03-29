@@ -44,6 +44,16 @@ class NotificationService(
     }
 
     @Transactional
+    fun createNotifications(requests: List<CreateNotificationDTO>) {
+        val notifications = notificationRepository.saveAll(requests.map { it.toEntity() })
+        notifications.forEach { notification ->
+            val notificationDTO = NotificationMapper.map(notification)
+            val recipientId = notification.recipient.persistedId
+            eventPublisher.publishEvent(NotificationCreatedEvent(notificationDTO, recipientId))
+        }
+    }
+
+    @Transactional
     fun readNotification(user: User, notificationId: Long) {
         val notification = notificationRepository.findWithRecipientById(notificationId)
             ?: throw EntityNotFoundException(ResponseMessage.Notification.NOT_FOUND)

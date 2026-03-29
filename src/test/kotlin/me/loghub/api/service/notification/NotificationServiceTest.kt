@@ -104,6 +104,49 @@ class NotificationServiceTest {
     }
 
     @Nested
+    inner class CreateNotificationsTest {
+        @Test
+        fun `should bulk save notifications and publish created events for each`() {
+            val recipient1 = AuthFixtures.user(id = 1L, username = "recipient1")
+            val recipient2 = AuthFixtures.user(id = 2L, username = "recipient2")
+            val actor = AuthFixtures.user(id = 3L, username = "actor")
+            val article = ArticleFixtures.article(id = 4L, writer = actor)
+            val requests = listOf(
+                CreateNotificationDTO(
+                    targetType = Notification.TargetType.ARTICLE,
+                    article = article,
+                    actor = actor,
+                    recipient = recipient1,
+                ),
+                CreateNotificationDTO(
+                    targetType = Notification.TargetType.ARTICLE,
+                    article = article,
+                    actor = actor,
+                    recipient = recipient2,
+                ),
+            )
+            var idCounter = 10L
+            whenever(notificationRepository.saveAll(any<List<Notification>>())).thenAnswer { invocation ->
+                @Suppress("UNCHECKED_CAST")
+                (invocation.arguments.first() as List<Notification>).map { it.apply { id = idCounter++ } }
+            }
+
+            notificationService.createNotifications(requests)
+
+            verify(notificationRepository).saveAll(any<List<Notification>>())
+            verify(eventPublisher, times(2)).publishEvent(any<NotificationCreatedEvent>())
+        }
+
+        @Test
+        fun `should do nothing when request list is empty`() {
+            notificationService.createNotifications(emptyList())
+
+            verify(notificationRepository).saveAll(emptyList<Notification>())
+            verifyNoInteractions(eventPublisher)
+        }
+    }
+
+    @Nested
     inner class ReadNotificationTest {
         @Test
         fun `should mark notification as read and publish read event`() {
