@@ -87,17 +87,15 @@ class PostNotificationEventListener(
         do {
             val pageable = PageRequest.of(pageNumber, FOLLOWER_BATCH_SIZE)
             val page = userFollowRepository.findFollowersByFolloweeOrderByIdDesc(writer, pageable)
+            if (page.isEmpty) break
 
-            if (page.content.isNotEmpty()) {
+            try {
                 val requests = page.content.map { follower -> createRequest(follower) }
-
-                try {
-                    notificationService.createNotifications(requests)
-                } catch (e: DataIntegrityViolationException) {
-                    logger.warn(e) { "Skip notification fan-out due to data integrity violation." }
-                } catch (e: JpaObjectRetrievalFailureException) {
-                    logger.warn(e) { "Skip notification fan-out due to missing referenced entity." }
-                }
+                notificationService.createNotifications(requests)
+            } catch (e: DataIntegrityViolationException) {
+                logger.warn(e) { "Skip notification fan-out due to data integrity violation." }
+            } catch (e: JpaObjectRetrievalFailureException) {
+                logger.warn(e) { "Skip notification fan-out due to missing referenced entity." }
             }
 
             pageNumber++
