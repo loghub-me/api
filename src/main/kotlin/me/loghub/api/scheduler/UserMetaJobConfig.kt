@@ -1,7 +1,7 @@
 package me.loghub.api.scheduler
 
+import me.loghub.api.dto.topic.TopicUsageDTO
 import me.loghub.api.entity.user.UserMeta
-import me.loghub.api.entity.user.UserStats
 import me.loghub.api.repository.user.UserMetaRepository
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.repository.JobRepository
@@ -53,9 +53,16 @@ class UserMetaJobConfig(
     @Bean
     fun processor() = ItemProcessor<UserMeta, UserMeta> { meta ->
         val userId = meta.userId ?: return@ItemProcessor meta
-        val newStats = UserStats(
-            userMetaRepository.countStatsByWriterId(userId),
-            userMetaRepository.findTopicUsageTop5ByWriter(userId),
+        val userStats = meta.stats
+
+        val newCount = userMetaRepository.countStatsByWriterId(userId)
+        val topicUsages = userMetaRepository.findTopicUsageTop5ByWriter(userId)
+
+        val newStats = userStats.copy(
+            totalPostedCount = newCount.totalPostedCount,
+            totalAddedStarCount = newCount.totalAddedStarCount,
+            totalGazedStarCount = newCount.totalGazedStarCount,
+            topicUsages = topicUsages.map { TopicUsageDTO(it) }
         )
 
         if (meta.stats == newStats) {

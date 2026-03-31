@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.loghub"
-version = "0.11.0-SNAPSHOT"
+version = "0.11.1-SNAPSHOT"
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(24) } }
 
