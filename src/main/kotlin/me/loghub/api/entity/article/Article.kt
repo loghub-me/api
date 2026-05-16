@@ -10,7 +10,7 @@ import me.loghub.api.lib.jpa.TopicsFlatConverter
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.Formula
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "articles")
@@ -36,7 +36,7 @@ class Article(
     var published: Boolean,
 
     @Column(name = "published_at")
-    var publishedAt: LocalDateTime? = null,
+    var publishedAt: OffsetDateTime? = null,
 
     @Embedded
     var stats: ArticleStats = ArticleStats(),
@@ -82,7 +82,7 @@ class Article(
 
     fun publish() {
         this.published = true
-        this.publishedAt = this.publishedAt ?: LocalDateTime.now()
+        this.publishedAt = this.publishedAt ?: OffsetDateTime.now()
     }
 
     fun unpublish() {

@@ -3,6 +3,7 @@ package me.loghub.api.dto.series
 import me.loghub.api.dto.series.chapter.SeriesChapterDTO
 import me.loghub.api.dto.topic.TopicDTO
 import me.loghub.api.dto.user.UserDTO
+import java.time.OffsetDateTime
 
 data class SeriesDetailDTO(
     val id: Long,
@@ -14,6 +15,6 @@ data class SeriesDetailDTO(
     val stats: SeriesStatsDTO,
     val topics: List<TopicDTO>,
     val chapters: List<SeriesChapterDTO>,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: OffsetDateTime,
+    val updatedAt: OffsetDateTime,
 )

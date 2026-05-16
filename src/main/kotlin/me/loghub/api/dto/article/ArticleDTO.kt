@@ -2,6 +2,7 @@ package me.loghub.api.dto.article
 
 import me.loghub.api.dto.topic.TopicDTO
 import me.loghub.api.dto.user.UserDTO
+import java.time.OffsetDateTime
 
 data class ArticleDTO(
     val id: Long,
@@ -11,5 +12,5 @@ data class ArticleDTO(
     val stats: ArticleStatsDTO,
     val writer: UserDTO,
     val topics: List<TopicDTO>,
-    val publishedAt: String,
+    val publishedAt: OffsetDateTime,
 )

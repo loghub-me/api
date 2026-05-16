@@ -6,7 +6,7 @@ import me.loghub.api.entity.PublicEntity
 import me.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "question_answers")
@@ -23,7 +23,7 @@ class QuestionAnswer(
     var accepted: Boolean = false,
 
     @Column(name = "accepted_at", nullable = false)
-    var acceptedAt: LocalDateTime? = null,
+    var acceptedAt: OffsetDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "question_id", nullable = false)
@@ -40,6 +40,6 @@ class QuestionAnswer(
 
     fun accept() {
         this.accepted = true
-        this.acceptedAt = LocalDateTime.now()
+        this.acceptedAt = OffsetDateTime.now()
     }
 }

@@ -14,7 +14,7 @@ import org.hibernate.annotations.Formula
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "questions")
@@ -38,10 +38,10 @@ class Question(
     var status: Status = Status.OPEN,
 
     @Column(name = "solved_at", nullable = true)
-    var solvedAt: LocalDateTime? = null,
+    var solvedAt: OffsetDateTime? = null,
 
     @Column(name = "closed_at", nullable = true)
-    var closedAt: LocalDateTime? = null,
+    var closedAt: OffsetDateTime? = null,
 
     @Embedded
     var stats: QuestionStats = QuestionStats(),
@@ -95,7 +95,7 @@ class Question(
             ResponseMessage.Question.STATUS_MUST_BE_OPEN
         }
         this.status = Status.SOLVED
-        this.solvedAt = LocalDateTime.now()
+        this.solvedAt = OffsetDateTime.now()
     }
 
     fun close() {
@@ -103,6 +103,6 @@ class Question(
             ResponseMessage.Question.STATUS_MUST_BE_OPEN
         }
         this.status = Status.CLOSED
-        this.closedAt = LocalDateTime.now()
+        this.closedAt = OffsetDateTime.now()
     }
 }

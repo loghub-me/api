@@ -10,7 +10,7 @@ import me.loghub.api.entity.series.SeriesReview
 import me.loghub.api.entity.series.SeriesStats
 import me.loghub.api.entity.user.User
 import me.loghub.api.service.article.ArticleFixtures
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 object SeriesFixtures {
     fun writer(
@@ -50,7 +50,7 @@ object SeriesFixtures {
         normalizedContent: String = "Normalized chapter content $id",
         sequence: Int = 1,
         published: Boolean = true,
-        publishedAt: LocalDateTime? = if (published) LocalDateTime.now() else null,
+        publishedAt: OffsetDateTime? = if (published) OffsetDateTime.now() else null,
     ) = SeriesChapter(
         title = title,
         content = content,

@@ -8,9 +8,8 @@ import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.series.SeriesChapter
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
-import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "user_activities")
@@ -23,9 +22,8 @@ class UserActivity(
     @JdbcType(PostgreSQLEnumJdbcType::class)
     val action: Action,
 
-    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: OffsetDateTime = OffsetDateTime.now(),
 
     @Column(name = "createdDate", nullable = false, updatable = false)
     val createdDate: LocalDate = createdAt.toLocalDate(),

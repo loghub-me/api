@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
 import org.springframework.context.ApplicationEventPublisher
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -48,7 +48,7 @@ class NotificationServiceTest {
                     actor = actor,
                     recipient = recipient,
                     article = article,
-                    readAt = LocalDateTime.now()
+                    readAt = OffsetDateTime.now()
                 ),
             )
             whenever(notificationRepository.findTop20ByRecipient(eq(recipient), eq(null)))
@@ -222,7 +222,7 @@ class NotificationServiceTest {
         actor: me.loghub.api.entity.user.User,
         recipient: me.loghub.api.entity.user.User,
         article: me.loghub.api.entity.article.Article,
-        readAt: LocalDateTime? = null,
+        readAt: OffsetDateTime? = null,
     ) = Notification(
         readAt = readAt,
         type = Notification.Type.INFO,
@@ -232,7 +232,7 @@ class NotificationServiceTest {
         recipient = recipient,
     ).apply {
         this.id = id
-        this.createdAt = LocalDateTime.now().minusMinutes(id)
+        this.createdAt = OffsetDateTime.now().minusMinutes(id)
         this.updatedAt = this.createdAt
     }
 }

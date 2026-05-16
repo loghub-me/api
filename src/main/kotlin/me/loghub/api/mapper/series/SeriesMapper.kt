@@ -8,7 +8,6 @@ import me.loghub.api.entity.series.Series
 import me.loghub.api.entity.series.SeriesChapter
 import me.loghub.api.entity.series.SeriesStats
 import me.loghub.api.mapper.user.UserMapper
-import java.time.format.DateTimeFormatter
 
 object SeriesMapper {
     fun map(series: Series) = SeriesDTO(
@@ -19,7 +18,7 @@ object SeriesMapper {
         writer = UserMapper.map(series.writer),
         stats = mapStats(series.stats),
         topics = series.topicsFlat,
-        createdAt = series.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = series.createdAt,
     )
 
     fun mapDetail(series: Series, chapters: List<SeriesChapter>) = SeriesDetailDTO(
@@ -32,8 +31,8 @@ object SeriesMapper {
         stats = mapStats(series.stats),
         topics = series.topicsFlat,
         chapters = chapters.map(SeriesChapterMapper::map),
-        createdAt = series.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = series.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = series.createdAt,
+        updatedAt = series.updatedAt,
     )
 
     fun mapForEdit(series: Series) = SeriesForEditDTO(

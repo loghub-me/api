@@ -6,7 +6,7 @@ import org.springframework.batch.core.launch.JobOperator
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Component
 class UserMetaJobScheduler(
@@ -17,7 +17,7 @@ class UserMetaJobScheduler(
     fun runUserMetaJob() {
         try {
             val jobParameters = JobParametersBuilder()
-                .addString("execTime", LocalDateTime.now().toString())
+                .addString("execTime", OffsetDateTime.now().toString())
                 .toJobParameters()
             jobOperator.start(job, jobParameters)
         } catch (e: Exception) {

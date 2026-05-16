@@ -9,14 +9,14 @@ import me.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcType
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "notifications")
 @DynamicUpdate
 class Notification(
     @Column(name = "read_at")
-    var readAt: LocalDateTime? = null,
+    var readAt: OffsetDateTime? = null,
 
     @Column(name = "type", nullable = false)
     @Enumerated
@@ -62,7 +62,7 @@ class Notification(
 
     fun markAsRead() {
         if (!read) {
-            readAt = LocalDateTime.now()
+            readAt = OffsetDateTime.now()
         }
     }
 }

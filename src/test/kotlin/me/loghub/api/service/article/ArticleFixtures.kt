@@ -3,7 +3,7 @@ package me.loghub.api.service.article
 import me.loghub.api.dto.article.PostArticleDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.user.*
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 object ArticleFixtures {
     fun writer(
@@ -33,7 +33,7 @@ object ArticleFixtures {
         normalizedContent = "content",
         thumbnail = "1/thumbnail.webp",
         published = published,
-        publishedAt = if (published) LocalDateTime.now() else null,
+        publishedAt = if (published) OffsetDateTime.now() else null,
         writer = writer,
         writerUsername = writer.username,
         topicsFlat = emptyList()

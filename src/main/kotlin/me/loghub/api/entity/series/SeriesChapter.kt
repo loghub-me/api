@@ -6,7 +6,7 @@ import me.loghub.api.entity.PublicEntity
 import me.loghub.api.entity.user.User
 import org.hibernate.annotations.DynamicUpdate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "series_chapters")
@@ -29,7 +29,7 @@ class SeriesChapter(
     var published: Boolean,
 
     @Column(name = "published_at")
-    var publishedAt: LocalDateTime? = null,
+    var publishedAt: OffsetDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "series_id", nullable = false)
@@ -51,7 +51,7 @@ class SeriesChapter(
 
     fun publish() {
         this.published = true
-        publishedAt = publishedAt ?: LocalDateTime.now()
+        publishedAt = publishedAt ?: OffsetDateTime.now()
     }
 
     fun unpublish() {

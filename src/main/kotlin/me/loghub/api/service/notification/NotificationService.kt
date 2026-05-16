@@ -15,7 +15,7 @@ import me.loghub.api.util.checkPermission
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Service
 class NotificationService(
@@ -69,7 +69,7 @@ class NotificationService(
 
     @Transactional
     fun readAllNotifications(user: User) {
-        val readCount = notificationRepository.markAllAsRead(user.persistedId, LocalDateTime.now())
+        val readCount = notificationRepository.markAllAsRead(user.persistedId, OffsetDateTime.now())
         if (readCount == 0) return
 
         val recipientId = user.persistedId

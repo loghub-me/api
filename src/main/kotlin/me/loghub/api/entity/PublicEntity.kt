@@ -2,10 +2,8 @@ package me.loghub.api.entity
 
 import jakarta.persistence.*
 import me.loghub.api.constant.message.ServerMessage
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
@@ -13,13 +11,11 @@ abstract class PublicEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @CreatedDate
     @Column(nullable = false, updatable = false)
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: OffsetDateTime = OffsetDateTime.now(),
 
-    @LastModifiedDate
     @Column(nullable = false)
-    var updatedAt: LocalDateTime = LocalDateTime.now(),
+    var updatedAt: OffsetDateTime = OffsetDateTime.now(),
 ) {
     val persistedId: Long
         get() = id ?: error(ServerMessage.ENTITY_NOT_PERSISTED)
@@ -33,4 +29,16 @@ abstract class PublicEntity(
     }
 
     override fun hashCode() = 31 * javaClass.hashCode() + (id?.hashCode() ?: 0)
+
+    @PrePersist
+    fun prePersist() {
+        val now = OffsetDateTime.now()
+        this.createdAt = now
+        this.updatedAt = now
+    }
+
+    @PreUpdate
+    fun preUpdate() {
+        this.updatedAt = OffsetDateTime.now()
+    }
 }

@@ -9,7 +9,6 @@ import me.loghub.api.dto.question.QuestionStatsDTO
 import me.loghub.api.entity.question.Question
 import me.loghub.api.entity.question.QuestionStats
 import me.loghub.api.mapper.user.UserMapper
-import java.time.format.DateTimeFormatter
 
 object QuestionMapper {
     fun map(question: Question) = QuestionDTO(
@@ -20,8 +19,8 @@ object QuestionMapper {
         writer = UserMapper.map(question.writer),
         stats = mapStats(question.stats),
         topics = question.topicsFlat,
-        createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = question.createdAt,
+        updatedAt = question.updatedAt,
     )
 
     fun mapDetail(question: Question, renderedMarkdown: RenderedMarkdownDTO) =
@@ -38,8 +37,8 @@ object QuestionMapper {
             writer = UserMapper.map(question.writer),
             stats = mapStats(question.stats),
             topics = question.topicsFlat,
-            createdAt = question.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
-            updatedAt = question.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+            createdAt = question.createdAt,
+            updatedAt = question.updatedAt,
         )
 
     fun mapForEdit(question: Question, draft: String?) = QuestionForEditDTO(

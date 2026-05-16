@@ -6,7 +6,6 @@ import me.loghub.api.dto.common.RenderedMarkdownDTO
 import me.loghub.api.entity.article.Article
 import me.loghub.api.entity.article.ArticleStats
 import me.loghub.api.mapper.user.UserMapper
-import java.time.format.DateTimeFormatter
 
 object ArticleMapper {
     fun map(article: Article) = ArticleDTO(
@@ -17,7 +16,7 @@ object ArticleMapper {
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
-        publishedAt = article.publishedAt!!.format(DateTimeFormatter.ISO_DATE_TIME),
+        publishedAt = article.publishedAt!!,
     )
 
     fun mapDetail(article: Article, renderedMarkdown: RenderedMarkdownDTO) = ArticleDetailDTO(
@@ -33,15 +32,15 @@ object ArticleMapper {
         writer = UserMapper.map(article.writer),
         stats = mapStats(article.stats),
         topics = article.topicsFlat,
-        publishedAt = article.publishedAt!!.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = article.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        publishedAt = article.publishedAt!!,
+        updatedAt = article.updatedAt,
     )
 
     fun mapUnpublished(article: Article) = ArticleUnpublishedDTO(
         id = article.persistedId,
         title = article.title,
         topics = article.topicsFlat,
-        createdAt = article.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = article.createdAt,
     )
 
     fun mapForEdit(article: Article, draft: String?) = ArticleForEditDTO(

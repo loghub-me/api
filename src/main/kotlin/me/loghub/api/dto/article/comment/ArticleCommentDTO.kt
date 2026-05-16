@@ -1,6 +1,7 @@
 package me.loghub.api.dto.article.comment
 
 import me.loghub.api.dto.user.UserDTO
+import java.time.OffsetDateTime
 
 data class ArticleCommentDTO(
     val id: Long,
@@ -9,6 +10,6 @@ data class ArticleCommentDTO(
     val replyCount: Int,
     val mention: UserDTO?,
     val writer: UserDTO,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: OffsetDateTime,
+    val updatedAt: OffsetDateTime,
 )

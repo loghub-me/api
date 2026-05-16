@@ -3,7 +3,6 @@ package me.loghub.api.mapper.notification
 import me.loghub.api.dto.notification.NotificationDTO
 import me.loghub.api.entity.notification.Notification
 import me.loghub.api.mapper.user.UserMapper
-import java.time.format.DateTimeFormatter
 
 object NotificationMapper {
     fun map(notification: Notification) = NotificationDTO(
@@ -21,7 +20,7 @@ object NotificationMapper {
         },
         message = "새로운 ${notification.targetType.targetName}을(를) 등록했습니다.",
         read = notification.read,
-        createdAt = notification.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = notification.createdAt,
         actor = UserMapper.map(notification.actor),
     )
 

@@ -9,7 +9,7 @@ import me.loghub.api.lib.validation.ContentValidation
 import me.loghub.api.lib.validation.ThumbnailValidation
 import me.loghub.api.lib.validation.TitleValidation
 import me.loghub.api.lib.validation.TopicSlugsValidation
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 data class PostArticleDTO(
     @field:TitleValidation
@@ -34,7 +34,7 @@ data class PostArticleDTO(
         normalizedContent = normalizedContent,
         thumbnail = thumbnail,
         published = published,
-        publishedAt = if (published) LocalDateTime.now() else null,
+        publishedAt = if (published) OffsetDateTime.now() else null,
         writer = writer,
         writerUsername = writer.username,
         topics = topics.toMutableSet(),

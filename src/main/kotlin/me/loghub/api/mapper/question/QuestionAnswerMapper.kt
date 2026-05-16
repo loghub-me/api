@@ -5,7 +5,6 @@ import me.loghub.api.dto.question.answer.QuestionAnswerDTO
 import me.loghub.api.dto.question.answer.QuestionAnswerForEditDTO
 import me.loghub.api.entity.question.QuestionAnswer
 import me.loghub.api.mapper.user.UserMapper
-import java.time.format.DateTimeFormatter
 
 object QuestionAnswerMapper {
     fun map(answer: QuestionAnswer, renderedMarkdown: RenderedMarkdownDTO) = QuestionAnswerDTO(
@@ -15,8 +14,8 @@ object QuestionAnswerMapper {
         anchors = renderedMarkdown.anchors,
         accepted = answer.accepted,
         writer = UserMapper.map(answer.writer),
-        createdAt = answer.createdAt.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = answer.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = answer.createdAt,
+        updatedAt = answer.updatedAt,
     )
 
     fun mapForEdit(answer: QuestionAnswer, draft: String?) = QuestionAnswerForEditDTO(

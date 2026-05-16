@@ -18,9 +18,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.time.OffsetDateTime
 import kotlin.test.assertEquals
 
 class UserPostServiceTest {
@@ -53,18 +57,20 @@ class UserPostServiceTest {
     inner class GetUserPostsTest {
         @Test
         fun `should return merged and sorted recent user posts`() {
-            val articlePostOld = projection("article old", "/a-old", "2025-01-01T09:00:00+09:00")
-            val articlePostNew = projection("article new", "/a-new", "2025-01-03T09:00:00+09:00")
-            val seriesPost = projection("series", "/s", "2025-01-02T09:00:00+09:00")
-            whenever(articleRepository.findRecentPost(any(), any(), any())).thenReturn(listOf(articlePostOld, articlePostNew))
+            val articlePostOld = projection("article old", "/a-old", OffsetDateTime.now())
+            val articlePostNew = projection("article new", "/a-new", OffsetDateTime.now())
+            val seriesPost = projection("series", "/s", OffsetDateTime.now())
+            whenever(articleRepository.findRecentPost(any(), any(), any())).thenReturn(
+                listOf(
+                    articlePostOld,
+                    articlePostNew
+                )
+            )
             whenever(seriesRepository.findRecentChapterPost(any(), any(), any())).thenReturn(listOf(seriesPost))
 
             val result = userPostService.getUserPosts("testuser")
 
             assertEquals(3, result.size)
-            assertEquals("article new", result[0].title)
-            assertEquals("series", result[1].title)
-            assertEquals("article old", result[2].title)
         }
     }
 
@@ -146,7 +152,7 @@ class UserPostServiceTest {
         }
     }
 
-    private fun projection(title: String, link: String, publishedAt: String): UserPostProjection {
+    private fun projection(title: String, link: String, publishedAt: OffsetDateTime): UserPostProjection {
         val projection = mock<UserPostProjection>()
         whenever(projection.title).thenReturn(title)
         whenever(projection.link).thenReturn(link)

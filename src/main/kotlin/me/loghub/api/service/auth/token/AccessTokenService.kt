@@ -13,8 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.OffsetDateTime
 
 @Service
 class AccessTokenService(
@@ -40,8 +39,8 @@ class AccessTokenService(
             .withClaim(JwtClaims.NICKNAME, user.nickname)
             .withClaim(JwtClaims.PROVIDER, user.provider.name)
             .withClaim(JwtClaims.ROLE, user.role.name)
-            .withIssuedAt(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
-            .withExpiresAt(LocalDateTime.now().plusSeconds(expiration).atZone(ZoneId.systemDefault()).toInstant())
+            .withIssuedAt(OffsetDateTime.now().toInstant())
+            .withExpiresAt(OffsetDateTime.now().plusSeconds(expiration).toInstant())
             .sign(jwtAlgorithm)
         return AccessToken(value)
     }

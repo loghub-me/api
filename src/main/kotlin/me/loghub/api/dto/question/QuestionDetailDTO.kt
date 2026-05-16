@@ -5,6 +5,7 @@ import me.loghub.api.dto.common.ContentDTO
 import me.loghub.api.dto.topic.TopicDTO
 import me.loghub.api.dto.user.UserDTO
 import me.loghub.api.entity.question.Question
+import java.time.OffsetDateTime
 
 data class QuestionDetailDTO(
     val id: Long,
@@ -16,6 +17,6 @@ data class QuestionDetailDTO(
     val writer: UserDTO,
     val stats: QuestionStatsDTO,
     val topics: List<TopicDTO>,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: OffsetDateTime,
+    val updatedAt: OffsetDateTime,
 )

@@ -6,7 +6,6 @@ import me.loghub.api.dto.series.chapter.SeriesChapterDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterDetailDTO
 import me.loghub.api.dto.series.chapter.SeriesChapterForEditDTO
 import me.loghub.api.entity.series.SeriesChapter
-import java.time.format.DateTimeFormatter
 
 object SeriesChapterMapper {
     fun map(chapter: SeriesChapter) = SeriesChapterDTO(
@@ -25,8 +24,8 @@ object SeriesChapterMapper {
         ),
         anchors = renderedMarkdown.anchors,
         sequence = chapter.sequence,
-        publishedAt = chapter.publishedAt?.format(DateTimeFormatter.ISO_DATE_TIME),
-        updatedAt = chapter.updatedAt.format(DateTimeFormatter.ISO_DATE_TIME),
+        publishedAt = chapter.publishedAt,
+        updatedAt = chapter.updatedAt,
     )
 
     fun mapForEdit(chapter: SeriesChapter, draft: String?) = SeriesChapterForEditDTO(

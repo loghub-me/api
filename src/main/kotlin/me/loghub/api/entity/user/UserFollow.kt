@@ -2,8 +2,7 @@ package me.loghub.api.entity.user
 
 import jakarta.persistence.*
 import me.loghub.api.constant.message.ServerMessage
-import org.springframework.data.annotation.CreatedDate
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "user_follows")
@@ -11,9 +10,8 @@ class UserFollow(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: OffsetDateTime = OffsetDateTime.now(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "follower_id", nullable = false)
