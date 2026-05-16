@@ -3,19 +3,19 @@ plugins {
     kotlin("plugin.spring") version "2.2.21"
     kotlin("plugin.jpa") version "2.2.21"
 
-    id("org.springframework.boot") version "4.0.5"
+    id("org.springframework.boot") version "4.0.6"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.devtools.ksp") version "2.2.21-2.0.4"
 }
 
 group = "me.loghub"
-version = "0.11.1-SNAPSHOT"
+version = "0.11.2-SNAPSHOT"
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(24) } }
 
 repositories { mavenCentral() }
 
-extra["springCloudVersion"] = "2025.1.0"
+extra["springCloudVersion"] = "2025.1.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
