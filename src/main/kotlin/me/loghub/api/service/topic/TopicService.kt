@@ -66,7 +66,7 @@ class TopicService(
         return seriesCustomRepository.findByTopicSlug(
             topicSlug = slug,
             sort = sort,
-            pageable = PageRequest.of(page - 1, ARTICLE_PAGE_SIZE)
+            pageable = PageRequest.of(page - 1, SERIES_PAGE_SIZE)
         ).map { SeriesMapper.map(it) }
     }
 
@@ -77,7 +77,7 @@ class TopicService(
         return questionCustomRepository.findByTopicSlug(
             topicSlug = slug,
             sort = sort,
-            pageable = PageRequest.of(page - 1, ARTICLE_PAGE_SIZE)
+            pageable = PageRequest.of(page - 1, QUESTION_PAGE_SIZE)
         ).map { QuestionMapper.map(it) }
     }
 }
